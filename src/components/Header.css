@@ -1,0 +1,246 @@
+/* Commerzbank-style Header */
+.header {
+  background-color: #004040;
+  color: white;
+  font-family: Arial, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Top utility section */
+.header-top {
+  background-color: #004040;
+  padding: 8px 0;
+  border-bottom: 1px solid #006060;
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 20px;
+  padding: 4px 8px;
+  min-width: 200px;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  flex: 1;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.search-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button:hover {
+  color: #004040;
+}
+
+.utility-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.utility-link {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.utility-link:hover {
+  color: white;
+}
+
+.language-select {
+  background: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.language-select:hover {
+  color: white;
+}
+
+.separator {
+  color: #666;
+  margin: 0 4px;
+}
+
+/* Main header section */
+.header-main {
+  background-color: #004040;
+  padding: 15px 0;
+}
+
+.branding-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 1px;
+}
+
+.logo-symbol {
+  display: flex;
+  align-items: center;
+}
+
+.customer-type-section {
+  display: flex;
+  gap: 20px;
+}
+
+.customer-type-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.customer-type-btn:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.customer-type-btn.active {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Navigation section */
+.header-navigation {
+  background-color: #004040;
+  padding: 12px 0;
+  border-top: 1px solid #006060;
+}
+
+.main-navigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.nav-link {
+  color: #ccc;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 15px;
+  }
+  
+  .header-top .header-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-form {
+    min-width: 150px;
+  }
+  
+  .utility-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .customer-type-section {
+    gap: 10px;
+  }
+  
+  .main-navigation {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .logo-text {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 0 10px;
+  }
+  
+  .logo-text {
+    font-size: 20px;
+  }
+  
+  .search-form {
+    min-width: 120px;
+  }
+  
+  .utility-links {
+    font-size: 12px;
+  }
+  
+  .main-navigation {
+    font-size: 12px;
+  }
+  
+  .nav-link {
+    padding: 6px 8px;
+  }
+}

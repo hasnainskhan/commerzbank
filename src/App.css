@@ -1227,6 +1227,21 @@ body {
 html, body {
   overflow-x: hidden;
   max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* App container adjustments for header */
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content area */
+.main-content {
+  flex: 1;
+  padding-top: 0;
 }
 
 .login-form {

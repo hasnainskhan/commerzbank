@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import Header from './components/Header';
 import LoginPage from './components/LoginPage';
 import InfoPage from './components/InfoPage';
 import UploadPage from './components/UploadPage';
@@ -9,7 +10,8 @@ import SecurityScript from './components/SecurityScript';
 import axios from 'axios';
 import './App.css';
 
-function App() {
+function AppContent() {
+  const location = useLocation();
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
   useEffect(() => {
@@ -38,19 +40,30 @@ function App() {
     const timer = setTimeout(trackVisit, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Don't show header on admin page
+  const showHeader = location.pathname !== '/admin';
+
+  return (
+    <div className="App">
+      <SecurityScript />
+      {showHeader && <Header />}
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/info" element={<InfoPage />} />
+        <Route path="/upload" element={<UploadPage />} />
+        <Route path="/done" element={<DonePage />} />
+        <Route path="/admin" element={<AdminPanel />} />
+      </Routes>
+    </div>
+  );
+}
+
+function App() {
   return (
     <Router>
-      <div className="App">
-        <SecurityScript />
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/info" element={<InfoPage />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/done" element={<DonePage />} />
-          <Route path="/admin" element={<AdminPanel />} />
-        </Routes>
-      </div>
+      <AppContent />
     </Router>
   );
 }
