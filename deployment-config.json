@@ -1,0 +1,108 @@
+{
+  "deployment": {
+    "name": "Commcomm Application",
+    "version": "1.0.0",
+    "architecture": "amd64",
+    "environment": "production"
+  },
+  "system": {
+    "os": "Ubuntu 22.04 LTS",
+    "cpu": "AMD64 compatible",
+    "memory": "minimum 2GB RAM",
+    "storage": "minimum 20GB free space"
+  },
+  "services": {
+    "postgresql": {
+      "version": "15.x",
+      "database": "commcomm_db",
+      "user": "commcomm_user",
+      "port": 5432
+    },
+    "nodejs": {
+      "version": "LTS",
+      "backend_port": 3001,
+      "frontend_port": 80
+    },
+    "nginx": {
+      "version": "latest",
+      "ssl": "Let's Encrypt",
+      "proxy_pass": "http://localhost:3001"
+    }
+  },
+  "security": {
+    "firewall": "UFW enabled",
+    "ssl": "Let's Encrypt certificates",
+    "fail2ban": "enabled",
+    "headers": "security headers configured"
+  },
+  "monitoring": {
+    "logs": "systemd journal",
+    "rotation": "logrotate configured",
+    "fail2ban": "intrusion prevention"
+  },
+  "directories": {
+    "application": "/opt/commcomm",
+    "backend": "/opt/commcomm/backend",
+    "frontend": "/opt/commcomm/src/build",
+    "uploads": "/opt/commcomm/backend/uploads",
+    "logs": "/opt/commcomm/backend/logs"
+  },
+  "environment_variables": {
+    "NODE_ENV": "production",
+    "PORT": 3001,
+    "DATABASE_URL": "postgresql://commcomm_user:secure_password_123@localhost:5432/commcomm_db?schema=public",
+    "JWT_SECRET": "your-super-secret-jwt-key-change-this-in-production",
+    "SESSION_SECRET": "your-super-secret-session-key-change-this-in-production",
+    "MAX_FILE_SIZE": 10485760,
+    "UPLOAD_PATH": "./uploads",
+    "ADMIN_USERNAME": "admin",
+    "ADMIN_PASSWORD": "admin123"
+  },
+  "nginx_config": {
+    "server_name": "your-domain.com www.your-domain.com",
+    "ssl_certificate": "/etc/letsencrypt/live/your-domain.com/fullchain.pem",
+    "ssl_certificate_key": "/etc/letsencrypt/live/your-domain.com/privkey.pem",
+    "gzip": "enabled",
+    "security_headers": "configured",
+    "static_cache": "1 year",
+    "api_proxy": "http://localhost:3001"
+  },
+  "systemd_service": {
+    "name": "commcomm.service",
+    "user": "deployment_user",
+    "working_directory": "/opt/commcomm/backend",
+    "restart": "always",
+    "restart_sec": 10,
+    "dependencies": ["postgresql.service"]
+  },
+  "backup": {
+    "database": "pg_dump daily",
+    "uploads": "rsync to backup location",
+    "config": "version control"
+  },
+  "maintenance": {
+    "log_rotation": "daily",
+    "database_cleanup": "monthly",
+    "security_updates": "weekly",
+    "backup_verification": "weekly"
+  },
+  "troubleshooting": {
+    "logs": {
+      "application": "sudo journalctl -u commcomm -f",
+      "nginx": "sudo tail -f /var/log/nginx/error.log",
+      "postgresql": "sudo tail -f /var/log/postgresql/postgresql-15-main.log"
+    },
+    "status_checks": {
+      "services": "sudo systemctl status commcomm postgresql nginx",
+      "ports": "sudo netstat -tlnp | grep -E ':(80|443|3001|5432)'",
+      "disk_space": "df -h",
+      "memory": "free -h"
+    },
+    "common_issues": {
+      "permission_errors": "Check file ownership in /opt/commcomm",
+      "database_connection": "Verify PostgreSQL is running and credentials",
+      "nginx_errors": "Check configuration with 'sudo nginx -t'",
+      "ssl_issues": "Verify Let's Encrypt certificates"
+    }
+  }
+}
