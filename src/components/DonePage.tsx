@@ -73,49 +73,6 @@ const DonePage: React.FC = () => {
 
   return (
     <div className="commerzbank-app">
-      {/* Top Header */}
-      <header className="top-header">
-        <div className="header-content">
-          <div className="search-section">
-            <input type="search" className="search-input" placeholder="Ihr Suchtext" />
-            <button className="search-button">🔍</button>
-          </div>
-          <div className="header-links">
-            <a href="#konzern">Konzern</a>
-            <a href="#english">English</a>
-            <a href="#profil">Profil & Einstellungen</a>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Header with Logo */}
-      <header className="main-header">
-        <div className="header-content">
-          <div className="logo-section">
-            <div className="commerzbank-logo">
-              <div className="logo-triangle">▲</div>
-              <span className="logo-text">COMMERZBANK</span>
-            </div>
-          </div>
-          <nav className="main-nav">
-            <a href="#privatkunden" className="nav-link active">Privatkunden</a>
-            <a href="#unternehmerkunden" className="nav-link">Unternehmerkunden</a>
-          </nav>
-        </div>
-      </header>
-
-      {/* Navigation Menu */}
-      <nav className="main-menu">
-        <div className="menu-content">
-          <a href="#startseite" className="menu-item">Startseite</a>
-          <a href="#konten" className="menu-item">Konten & Karten</a>
-          <a href="#depot" className="menu-item">Depot & Order</a>
-          <a href="#analyse" className="menu-item">Analyse</a>
-          <a href="#service" className="menu-item">Service</a>
-          <a href="#produkte" className="menu-item">Produkte & Wissen</a>
-        </div>
-      </nav>
-
       {/* Main Content */}
       <main className="main-content">
         <div className="content-wrapper">
