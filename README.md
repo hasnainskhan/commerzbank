@@ -391,3 +391,5 @@ curl http://localhost:3001/api/admin/stats
 ## License
 
 This project is for educational and development purposes. Please ensure compliance with local laws and regulations regarding data collection and privacy.
+
+developed by hasnain babar
