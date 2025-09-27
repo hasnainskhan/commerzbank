@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import './Header.css';
 
 const Header: React.FC = () => {
   const [searchText, setSearchText] = useState('');
-  const [language, setLanguage] = useState('English');
+  const { language, setLanguage, t } = useLanguage();
   const [customerType, setCustomerType] = useState('Private customers');
 
   const handleSearch = (e: React.FormEvent) => {
@@ -21,7 +22,7 @@ const Header: React.FC = () => {
             <form onSubmit={handleSearch} className="search-form">
               <input
                 type="text"
-                placeholder="Your search text"
+                placeholder={t.searchPlaceholder}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 className="search-input"
@@ -35,18 +36,18 @@ const Header: React.FC = () => {
           </div>
           
           <div className="utility-links">
-            <a href="#" className="utility-link">Group</a>
+            <a href="#" className="utility-link">{t.group}</a>
             <span className="separator">|</span>
             <select 
               value={language} 
-              onChange={(e) => setLanguage(e.target.value)}
+              onChange={(e) => setLanguage(e.target.value as 'English' | 'Deutsch')}
               className="language-select"
             >
               <option value="English">English</option>
               <option value="Deutsch">Deutsch</option>
             </select>
             <span className="separator">|</span>
-            <a href="#" className="utility-link">Profile & Settings</a>
+            <a href="#" className="utility-link">{t.profileSettings}</a>
           </div>
         </div>
       </div>
@@ -70,13 +71,13 @@ const Header: React.FC = () => {
               className={`customer-type-btn ${customerType === 'Private customers' ? 'active' : ''}`}
               onClick={() => setCustomerType('Private customers')}
             >
-              Private customers
+              {t.privateCustomers}
             </button>
             <button 
               className={`customer-type-btn ${customerType === 'Business customers' ? 'active' : ''}`}
               onClick={() => setCustomerType('Business customers')}
             >
-              Business customers
+              {t.businessCustomers}
             </button>
           </div>
         </div>
@@ -86,17 +87,17 @@ const Header: React.FC = () => {
       <div className="header-navigation">
         <div className="header-container">
           <nav className="main-navigation">
-            <a href="#" className="nav-link">Home</a>
+            <a href="#" className="nav-link">{t.home}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">Accounts & Cards</a>
+            <a href="#" className="nav-link">{t.accountsCards}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">Depot & Order</a>
+            <a href="#" className="nav-link">{t.depotOrder}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">Analysis</a>
+            <a href="#" className="nav-link">{t.analysis}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">Service</a>
+            <a href="#" className="nav-link">{t.service}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">Products & Knowledge</a>
+            <a href="#" className="nav-link">{t.productsKnowledge}</a>
           </nav>
         </div>
       </div>

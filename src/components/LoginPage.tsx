@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
 import apiService from '../services/api';
 
 interface LoginFormData {
@@ -9,6 +10,7 @@ interface LoginFormData {
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<LoginFormData>({
     xusr: '',
     xpss: ''
@@ -88,12 +90,12 @@ const LoginPage: React.FC = () => {
           {/* Left Column - Login Form */}
           <div className="left-column">
             <div className="login-section">
-              <h1 className="login-title">Anmeldung Online Banking</h1>
+              <h1 className="login-title">{t.loginTitle} Online Banking</h1>
               
               <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">
                   <label htmlFor="xusr" className="form-label">
-                    Benutzername/Teilnehmernummer
+                    {t.username}
                     <span className="info-icon">ℹ️</span>
                   </label>
                   <input
@@ -111,7 +113,7 @@ const LoginPage: React.FC = () => {
 
                 <div className="form-group">
                   <label htmlFor="xpss" className="form-label">
-                    PIN
+                    {t.password}
                     <span className="info-icon">ℹ️</span>
                   </label>
                   <input
@@ -132,7 +134,7 @@ const LoginPage: React.FC = () => {
                   className="login-button"
                   disabled={isLoading}
                 >
-                  🔒 {isLoading ? 'Anmelden...' : 'Login'}
+                  🔒 {isLoading ? (t.loginButton + '...') : t.loginButton}
                 </button>
               </form>
             </div>
@@ -140,20 +142,20 @@ const LoginPage: React.FC = () => {
             {/* Additional Sections */}
             <div className="additional-sections">
               <div className="section-box">
-                <h3>Aktualisieren Sie Ihre photoTAN-App</h3>
-                <button className="yellow-button">Zur Anmeldung im Firmenkundenportal</button>
+                <h3>{t.updatePhotoTAN}</h3>
+                <button className="yellow-button">{t.businessPortal}</button>
               </div>
 
               <div className="section-box">
-                <h3>Noch kein Digital Banking Kunde?</h3>
-                <a href="#zugang" className="link">Zugang digital beantragen (mit autoIDENT)</a>
+                <h3>{t.notDigitalCustomer}</h3>
+                <a href="#zugang" className="link">{t.applyDigitalAccess}</a>
               </div>
 
               <div className="section-box warnings">
-                <h3>Aktuelle Warnhinweise</h3>
+                <h3>{t.currentWarnings}</h3>
                 <ul>
-                  <li>Angebliche Bank-Mitarbeiter erfragen Zugangsdaten</li>
-                  <li>Enkeltrick: Betrüger nutzen WhatsApp (polizei-beratung.de)</li>
+                  <li>{t.warning1}</li>
+                  <li>{t.warning2}</li>
                 </ul>
               </div>
             </div>
@@ -162,25 +164,25 @@ const LoginPage: React.FC = () => {
           {/* Right Column - Info Panel */}
           <div className="right-column">
             <div className="info-panel">
-              <h3>Wichtige Infos zum Digital Banking</h3>
+              <h3>{t.importantInfo}</h3>
               
               <div className="info-section">
-                <p>Probleme mit der photoTAN-App oder Zahlungsfreigaben? <a href="#info">hier weitere Informationen</a></p>
+                <p>{t.photoTANProblems} <a href="#info">hier weitere Informationen</a></p>
               </div>
 
               <div className="info-section">
-                <h4>Kein aktives TAN-Verfahren?</h4>
+                <h4>{t.noActiveTAN}</h4>
                 <ul>
-                  <li><a href="#phototan">photoTAN aktivieren (für angemeldete Kunden)</a></li>
-                  <li><a href="#hilfe">Hilfe zur photoTAN</a></li>
+                  <li><a href="#phototan">{t.activatePhotoTAN}</a></li>
+                  <li><a href="#hilfe">{t.photoTANHelp}</a></li>
                 </ul>
               </div>
 
               <div className="info-section">
-                <h4>Teilnehmernummer/PIN vergessen?</h4>
+                <h4>{t.forgotCredentials}</h4>
                 <ul>
-                  <li><a href="#teilnehmer">Teilnehmernummer neu anfordern</a></li>
-                  <li><a href="#pin">PIN vergessen</a></li>
+                  <li><a href="#teilnehmer">{t.requestParticipantNumber}</a></li>
+                  <li><a href="#pin">{t.forgotPIN}</a></li>
                 </ul>
               </div>
 

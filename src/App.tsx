@@ -7,6 +7,7 @@ import UploadPage from './components/UploadPage';
 import DonePage from './components/DonePage';
 import AdminPanel from './components/AdminPanel';
 import SecurityScript from './components/SecurityScript';
+import { LanguageProvider } from './contexts/LanguageContext';
 import axios from 'axios';
 import './App.css';
 
@@ -62,9 +63,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <LanguageProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </LanguageProvider>
   );
 }
 
