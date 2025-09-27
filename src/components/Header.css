@@ -209,12 +209,17 @@
 
 .customer-type-btn:hover {
   color: white;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: transparent;
 }
 
 .customer-type-btn.active {
+  color: #ccc;
+  background-color: transparent;
+}
+
+.customer-type-btn.active:hover {
   color: white;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: transparent;
 }
 
 /* Navigation section */
@@ -228,6 +233,9 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .nav-link {
