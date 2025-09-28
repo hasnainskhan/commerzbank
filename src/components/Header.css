@@ -13,13 +13,14 @@
   padding: 0 20px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 5px;
 }
 
 /* Top utility section */
 .header-top {
   background-color: #002e3c;
-  padding: 5px 0 0 0;
+  padding: 8px 0 0 0;
+  margin-bottom: -10px;
 }
 
 .search-section {
@@ -160,6 +161,7 @@
 .header-main {
   background-color: #002e3c;
   padding: 0;
+  margin-bottom: -10px;
 }
 
 .header-main .header-container {
@@ -274,7 +276,7 @@
   
   .header-top .header-container {
     flex-direction: column;
-    gap: 10px;
+    gap: 2px;
   }
   
   .search-form {

