@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import apiService from '../services/api';
@@ -20,6 +20,17 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [showInvalidCredentials, setShowInvalidCredentials] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -121,19 +132,20 @@ const LoginPage: React.FC = () => {
         width: '100%',
         maxWidth: '1200px',
         margin: '0 auto 10px auto',
-        padding: '0 20px'
+        padding: isMobile ? '0 10px' : '0 20px'
       }}>
 {t('onlineBankingRegistration')}
       </h1>
       
       <div style={{
         display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
         gap: '20px',
         width: '100%',
         maxWidth: '1200px',
         alignItems: 'flex-start',
         margin: '0 auto',
-        padding: '0 20px'
+        padding: isMobile ? '0 10px' : '0 20px'
       }}>
         {/* Login Box */}
         <div style={{
@@ -141,7 +153,7 @@ const LoginPage: React.FC = () => {
           background: 'white',
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-          padding: '40px'
+          padding: isMobile ? '20px' : '40px'
         }}>
         <form onSubmit={handleSubmit} style={{
           padding: '15px'
@@ -405,7 +417,7 @@ const LoginPage: React.FC = () => {
           background: 'white',
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-          padding: '40px'
+          padding: isMobile ? '20px' : '40px'
         }}>
           <h3 style={{
             fontSize: '20px',

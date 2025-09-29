@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -14,6 +14,7 @@ import './App.css';
 
 function AppContent() {
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
   useEffect(() => {
@@ -43,9 +44,19 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Don't show header and footer on admin page
-  const showHeader = location.pathname !== '/admin';
-  const showFooter = location.pathname !== '/admin';
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Don't show header and footer on admin page or mobile devices
+  const showHeader = location.pathname !== '/admin' && !isMobile;
+  const showFooter = location.pathname !== '/admin' && !isMobile;
 
   return (
     <div className="App">
