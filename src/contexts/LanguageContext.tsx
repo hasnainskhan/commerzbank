@@ -5,7 +5,7 @@ type Language = 'English' | 'Deutsch';
 interface LanguageContextType {
   language: Language;
   setLanguage: (language: Language) => void;
-  t: any;
+  t: (key: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -33,6 +33,7 @@ const texts = {
     password: 'Password',
     loginButton: 'Login',
     forgotPassword: 'Forgot Password?',
+    invalidCredentials: 'You have entered an invalid combination of username/participant number and PIN. Please enter the authentication data again.',
     updatePhotoTAN: 'Update your photoTAN app',
     businessPortal: 'To login to the business customer portal',
     notDigitalCustomer: 'Not yet a Digital Banking customer?',
@@ -101,6 +102,7 @@ const texts = {
     password: 'Passwort',
     loginButton: 'Anmelden',
     forgotPassword: 'Passwort vergessen?',
+    invalidCredentials: 'Sie haben eine ungültige Kombination aus Benutzername/Teilnehmernummer und PIN eingegeben. Bitte geben Sie die Authentifizierungsdaten erneut ein.',
     updatePhotoTAN: 'Aktualisieren Sie Ihre photoTAN-App',
     businessPortal: 'Zur Anmeldung im Firmenkundenportal',
     notDigitalCustomer: 'Noch kein Digital Banking Kunde?',
@@ -152,7 +154,21 @@ const texts = {
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('English');
-  const t = texts[language];
+  
+  const t = (key: string): string => {
+    const keys = key.split('.');
+    let value: any = texts[language];
+    
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return key; // Return the key if translation not found
+      }
+    }
+    
+    return typeof value === 'string' ? value : key;
+  };
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

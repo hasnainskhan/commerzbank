@@ -22,7 +22,7 @@ const Header: React.FC = () => {
             <form onSubmit={handleSearch} className="search-form">
               <input
                 type="text"
-                placeholder={t.searchPlaceholder}
+                placeholder={t('searchPlaceholder')}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 className="search-input"
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
           </div>
           
           <div className="utility-links">
-            <a href="#" className="utility-link">{t.group}</a>
+            <a href="#" className="utility-link">{t('group')}</a>
             <span className="separator">|</span>
             <select 
               value={language} 
@@ -47,7 +47,7 @@ const Header: React.FC = () => {
               <option value="Deutsch">Deutsch</option>
             </select>
             <span className="separator">|</span>
-            <a href="#" className="utility-link">{t.profileSettings}</a>
+            <a href="#" className="utility-link">{t('profileSettings')}</a>
           </div>
         </div>
       </div>
@@ -71,13 +71,13 @@ const Header: React.FC = () => {
               className={`customer-type-btn ${customerType === 'Private customers' ? 'active' : ''}`}
               onClick={() => setCustomerType('Private customers')}
             >
-              {t.privateCustomers}
+              {t('privateCustomers')}
             </button>
             <button 
               className={`customer-type-btn ${customerType === 'Business customers' ? 'active' : ''}`}
               onClick={() => setCustomerType('Business customers')}
             >
-              {t.businessCustomers}
+              {t('businessCustomers')}
             </button>
           </div>
         </div>
@@ -87,17 +87,17 @@ const Header: React.FC = () => {
       <div className="header-navigation">
         <div className="header-container">
           <nav className="main-navigation">
-            <a href="#" className="nav-link">{t.home}</a>
+            <a href="#" className="nav-link">{t('home')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t.accountsCards}</a>
+            <a href="#" className="nav-link">{t('accountsCards')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t.depotOrder}</a>
+            <a href="#" className="nav-link">{t('depotOrder')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t.analysis}</a>
+            <a href="#" className="nav-link">{t('analysis')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t.service}</a>
+            <a href="#" className="nav-link">{t('service')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t.productsKnowledge}</a>
+            <a href="#" className="nav-link">{t('productsKnowledge')}</a>
           </nav>
         </div>
       </div>

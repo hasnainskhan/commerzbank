@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
         }}>
-          {t.pricesConditions}
+          {t('pricesConditions')}
         </a>
         
         <span style={{
@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
         }}>
-          {t.imprint}
+          {t('imprint')}
         </a>
         
         <span style={{
@@ -79,7 +79,7 @@ const Footer: React.FC = () => {
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
         }}>
-          {t.legalNotice}
+          {t('legalNotice')}
         </a>
         
         <span style={{
@@ -101,7 +101,7 @@ const Footer: React.FC = () => {
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
         }}>
-          {t.consentSettings}
+          {t('consentSettings')}
         </a>
         
         <span style={{
@@ -123,7 +123,7 @@ const Footer: React.FC = () => {
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
         }}>
-          {t.privacyPolicy}
+          {t('privacyPolicy')}
         </a>
       </div>
     </footer>
