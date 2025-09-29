@@ -89,11 +89,27 @@ const LoginPage: React.FC = () => {
       backgroundColor: '#f5f5f5',
       minHeight: '100vh',
       display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '20px',
+      padding: '0px 20px 20px 20px',
       margin: 0
     }}>
+      {/* Online banking registration heading */}
+      <h1 style={{
+        fontSize: '32px',
+        fontWeight: 'bold',
+        color: '#333',
+        marginTop: '-30px',
+        marginBottom: '10px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        textAlign: 'left',
+        width: '100%',
+        maxWidth: '500px'
+      }}>
+{t.onlineBankingRegistration}
+      </h1>
+      
       <div style={{
         width: '100%',
         maxWidth: '500px',
@@ -132,7 +148,7 @@ const LoginPage: React.FC = () => {
               onFocus={(e) => {
                 e.target.style.backgroundColor = 'white';
               }}
-                  placeholder="Username/Participant number"
+                  placeholder={t.username}
                   autoComplete="off"
                   required
                 />
@@ -180,7 +196,7 @@ const LoginPage: React.FC = () => {
                   onFocus={(e) => {
                     e.target.style.backgroundColor = 'white';
                   }}
-              placeholder="PIN"
+              placeholder={t.password}
               autoComplete="off"
               required
             />
@@ -258,7 +274,7 @@ const LoginPage: React.FC = () => {
             color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
-          }}>Update your photoTAN app</h3>
+          }}>{t.updatePhotoTAN}</h3>
               <button 
                 style={{
                   background: 'linear-gradient(135deg, #FFC107 0%, #FFD54F 50%, #FFC107 100%)',
@@ -278,7 +294,7 @@ const LoginPage: React.FC = () => {
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'linear-gradient(135deg, #FFC107 0%, #FFD54F 50%, #FFC107 100%)';
                 }}
-              >To register in the corporate customer portal</button>
+              >{t.businessPortal}</button>
         </div>
 
         {/* Divider after photoTAN section */}
@@ -300,7 +316,7 @@ const LoginPage: React.FC = () => {
             color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
-          }}>Not a digital banking customer yet?</h3>
+          }}>{t.notDigitalCustomer}</h3>
           <a href="#zugang" style={{
             color: 'black',
             textDecoration: 'none',
@@ -311,7 +327,7 @@ const LoginPage: React.FC = () => {
           }}>
             {/* @ts-ignore */}
             <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-            Apply for access digitally (with autoIDENT)
+{t.applyDigitalAccess}
           </a>
         </div>
 
@@ -326,7 +342,7 @@ const LoginPage: React.FC = () => {
             color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
-          }}>Current warnings</h3>
+          }}>{t.currentWarnings}</h3>
           <div>
             <div style={{
               display: 'flex',
@@ -337,7 +353,7 @@ const LoginPage: React.FC = () => {
             }}>
               {/* @ts-ignore */}
               <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-              Alleged bank employees request access data
+{t.warning1}
             </div>
             <div style={{
               display: 'flex',
@@ -347,7 +363,7 @@ const LoginPage: React.FC = () => {
             }}>
               {/* @ts-ignore */}
               <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
-              Grandparent scam: Fraudsters use WhatsApp (polizei-beratung.de)
+{t.warning2}
             </div>
           </div>
         </div>

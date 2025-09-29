@@ -26,9 +26,10 @@ const texts = {
     service: 'Service',
     productsKnowledge: 'Products & Knowledge',
     
-    // Login Page
-    loginTitle: 'Login',
-    username: 'Username',
+           // Login Page
+           loginTitle: 'Login',
+           onlineBankingRegistration: 'Online banking registration',
+           username: 'Username',
     password: 'Password',
     loginButton: 'Login',
     forgotPassword: 'Forgot Password?',
@@ -81,9 +82,10 @@ const texts = {
     service: 'Service',
     productsKnowledge: 'Produkte & Wissen',
     
-    // Login Page
-    loginTitle: 'Anmeldung',
-    username: 'Benutzername',
+           // Login Page
+           loginTitle: 'Anmeldung',
+           onlineBankingRegistration: 'Online-Banking-Registrierung',
+           username: 'Benutzername',
     password: 'Passwort',
     loginButton: 'Anmelden',
     forgotPassword: 'Passwort vergessen?',
