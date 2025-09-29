@@ -237,11 +237,11 @@ const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        {/* Dark grey divider */}
+        {/* Divider matching input border color */}
         <div style={{
           width: '100%',
           height: '1px',
-          backgroundColor: '#666',
+          backgroundColor: '#ddd',
           margin: '20px 0'
         }}></div>
 
@@ -252,23 +252,41 @@ const LoginPage: React.FC = () => {
           textAlign: 'left'
         }}>
           <h3 style={{
-            fontSize: '16px',
+            fontSize: '20px',
             fontWeight: 'bold',
-            color: '#FFC107',
+            color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
           }}>Update your photoTAN app</h3>
-              <button style={{
-                backgroundColor: '#FFC107',
-                color: '#FFC107',
-                border: 'none',
-                padding: '10px 15px',
-                borderRadius: '4px',
-                fontSize: '14px',
-                cursor: 'pointer',
-                fontFamily: 'Arial, Helvetica, sans-serif'
-              }}>To register in the corporate customer portal</button>
+              <button 
+                style={{
+                  background: 'linear-gradient(135deg, #FFC107 0%, #FFD54F 50%, #FFC107 100%)',
+                  color: 'black',
+                  border: 'none',
+                  padding: '10px 15px',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  fontFamily: 'Arial, Helvetica, sans-serif',
+                  transition: 'background 0.3s ease',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(315deg, #FFD54F 0%, #FFC107 50%, #FFD54F 100%)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #FFC107 0%, #FFD54F 50%, #FFC107 100%)';
+                }}
+              >To register in the corporate customer portal</button>
         </div>
+
+        {/* Divider after photoTAN section */}
+        <div style={{
+          width: '100%',
+          height: '1px',
+          backgroundColor: '#ddd',
+          margin: '20px 0'
+        }}></div>
 
         <div style={{
           padding: '0 20px',
