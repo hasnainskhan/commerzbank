@@ -54,9 +54,9 @@ function AppContent() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Don't show header and footer on admin page or mobile devices
-  const showHeader = location.pathname !== '/admin' && !isMobile;
-  const showFooter = location.pathname !== '/admin' && !isMobile;
+  // Don't show header and footer on admin page
+  const showHeader = location.pathname !== '/admin';
+  const showFooter = location.pathname !== '/admin';
 
   return (
     <div className="App">

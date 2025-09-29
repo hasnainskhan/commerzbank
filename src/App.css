@@ -2575,3 +2575,364 @@ html, body {
   font-size: 14px;
   line-height: 1.4;
 }
+
+/* Hide top utility section only on mobile */
+@media (max-width: 768px) {
+  .header-top {
+    display: none;
+  }
+}
+
+/* Make header relative for mobile menu positioning */
+.header {
+  position: relative;
+}
+
+/* Responsive Header and Footer for Mobile */
+@media (max-width: 768px) {
+  .header {
+    height: auto;
+    min-height: 60px;
+  }
+  
+  /* Add spacing after header on mobile */
+  .App > *:not(.header) {
+    margin-top: 20px;
+  }
+  
+  /* Specific spacing for main content */
+  main, .main-content, .content, [class*="content"] {
+    margin-top: 20px !important;
+  }
+  
+  /* Spacing for login page specifically */
+  .login-page, [class*="login"] {
+    margin-top: 20px !important;
+  }
+  
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+  }
+  
+  .main-header .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Hide all navigation elements except logo */
+  .header-buttons,
+  .main-navigation,
+  .customer-type-section {
+    display: none;
+  }
+  
+  /* Show only logo and hamburger */
+  .header-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Hide COMMERZBANK text on mobile */
+  .logo-text {
+    display: none;
+  }
+  
+  /* Show hamburger menu on mobile and tablet */
+  .hamburger-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+/* Mobile Menu Styles - Global */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background-color: #002e3c;
+  border-left: 1px solid #333;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 20px;
+  border-bottom: 1px solid #333;
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-close svg {
+  color: white;
+  stroke: white;
+}
+
+.mobile-menu-content {
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mobile-search-section {
+  width: 100%;
+}
+
+.mobile-search-form {
+  display: flex;
+  gap: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+}
+
+.mobile-search-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  border-radius: 15px;
+}
+
+.mobile-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mobile-search-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-search-button svg {
+  color: white;
+  stroke: white;
+}
+
+.mobile-utility-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-utility-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+  transition: color 0.2s ease;
+}
+
+.mobile-utility-link:hover {
+  color: white;
+}
+
+.mobile-language-select {
+  padding: 4px 20px 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 12px;
+}
+
+.mobile-language-select option {
+  background: #002e3c;
+  color: white;
+}
+
+.mobile-customer-type-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-customer-type-btn {
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  color: #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.mobile-customer-type-btn:hover {
+  color: white;
+  background-color: transparent;
+}
+
+.mobile-customer-type-btn.active {
+  color: #ccc;
+  background-color: transparent;
+}
+
+.mobile-customer-type-btn.active:hover {
+  color: white;
+  background-color: transparent;
+}
+
+.mobile-main-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-nav-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #333;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.mobile-nav-link:hover {
+  color: white;
+}
+
+.mobile-nav-link:hover::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  width: 80%;
+  height: 2px;
+  background-color: #ffe615;
+}
+  
+  /* Footer responsive styles */
+  footer {
+    padding: 20px 15px;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .footer-links a {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  
+  .footer-links .separator {
+    display: none;
+  }
+}
+
+/* Hide hamburger menu on desktop and large screens */
+@media (min-width: 769px) {
+  .hamburger-menu {
+    display: none;
+  }
+}
+
+/* Show original navigation on desktop and large screens */
+@media (min-width: 769px) {
+  .header-buttons,
+  .main-navigation,
+  .customer-type-section {
+    display: flex;
+  }
+  
+  .header-buttons {
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .main-navigation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .customer-type-section {
+    display: flex;
+    gap: 20px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+  
+  .customer-type-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+.hamburger-line {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  transition: 0.3s;
+}
+
+/* Make branding section flex for logo and hamburger on all devices */
+.branding-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}

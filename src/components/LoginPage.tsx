@@ -125,7 +125,7 @@ const LoginPage: React.FC = () => {
         fontSize: '32px',
         fontWeight: 'bold',
         color: '#333',
-        marginTop: '-30px',
+        marginTop: isMobile ? '20px' : '-30px',
         marginBottom: '10px',
         fontFamily: 'Arial, Helvetica, sans-serif',
         textAlign: 'left',
