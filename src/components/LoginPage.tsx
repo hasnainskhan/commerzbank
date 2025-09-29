@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import apiService from '../services/api';
+import { FaArrowRight } from 'react-icons/fa';
 
 interface LoginFormData {
   xusr: string;
@@ -294,34 +295,35 @@ const LoginPage: React.FC = () => {
           textAlign: 'left'
         }}>
           <h3 style={{
-            fontSize: '16px',
+            fontSize: '20px',
             fontWeight: 'bold',
-            color: '#FFC107',
+            color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
           }}>Not a digital banking customer yet?</h3>
           <a href="#zugang" style={{
-            color: '#FFC107',
+            color: 'black',
             textDecoration: 'none',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             fontFamily: 'Arial, Helvetica, sans-serif'
           }}>
-            <span style={{ color: '#FFC107', fontSize: '16px' }}>→</span>
+            {/* @ts-ignore */}
+            <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
             Apply for access digitally (with autoIDENT)
           </a>
         </div>
 
         <div style={{
-          padding: '0 20px',
+          padding: '20px 20px 0 20px',
           marginBottom: '8px',
           textAlign: 'left'
         }}>
           <h3 style={{
-            fontSize: '16px',
+            fontSize: '20px',
             fontWeight: 'bold',
-            color: '#FFC107',
+            color: 'black',
             marginBottom: '10px',
             fontFamily: 'Arial, Helvetica, sans-serif'
           }}>Current warnings</h3>
@@ -333,7 +335,8 @@ const LoginPage: React.FC = () => {
               marginBottom: '8px',
               fontFamily: 'Arial, Helvetica, sans-serif'
             }}>
-              <span style={{ color: '#FFC107', fontSize: '16px' }}>→</span>
+              {/* @ts-ignore */}
+              <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
               Alleged bank employees request access data
             </div>
             <div style={{
@@ -342,7 +345,8 @@ const LoginPage: React.FC = () => {
               gap: '8px',
               fontFamily: 'Arial, Helvetica, sans-serif'
             }}>
-              <span style={{ color: '#FFC107', fontSize: '16px' }}>→</span>
+              {/* @ts-ignore */}
+              <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
               Grandparent scam: Fraudsters use WhatsApp (polizei-beratung.de)
             </div>
           </div>
