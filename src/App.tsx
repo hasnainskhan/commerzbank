@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import LoginPage from './components/LoginPage';
 import InfoPage from './components/InfoPage';
 import UploadPage from './components/UploadPage';
@@ -42,8 +43,9 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Don't show header on admin page
+  // Don't show header and footer on admin page
   const showHeader = location.pathname !== '/admin';
+  const showFooter = location.pathname !== '/admin';
 
   return (
     <div className="App">
@@ -57,6 +59,7 @@ function AppContent() {
         <Route path="/done" element={<DonePage />} />
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
+      {showFooter && <Footer />}
     </div>
   );
 }

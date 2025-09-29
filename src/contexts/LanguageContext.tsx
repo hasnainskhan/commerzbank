@@ -54,6 +54,13 @@ const texts = {
     instructionsHelp: 'Instructions/Help',
     security: 'Security',
     
+    // Footer
+    pricesConditions: 'Prices & Conditions',
+    imprint: 'Imprint',
+    legalNotice: 'Legal Notice',
+    consentSettings: 'Consent settings',
+    privacyPolicy: 'Privacy Policy',
+    
     // Info Page
     personalInfo: 'Personal Information',
     firstName: 'First Name',
@@ -114,6 +121,13 @@ const texts = {
     allAboutOnlineBanking: 'Alles rund ums Online Banking',
     instructionsHelp: 'Anleitung/Hilfe',
     security: 'Sicherheit',
+    
+    // Footer
+    pricesConditions: 'Preise & Bedingungen',
+    imprint: 'Impressum',
+    legalNotice: 'Rechtliche Hinweise',
+    consentSettings: 'Einwilligungseinstellungen',
+    privacyPolicy: 'Datenschutz',
     
     // Info Page
     personalInfo: 'Persönliche Informationen',

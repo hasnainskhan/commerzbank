@@ -1206,7 +1206,7 @@ html, body {
   padding: 0;
 }
 
-/* App container adjustments for header */
+/* App container adjustments for header and footer */
 .App {
   min-height: 100vh;
   display: flex;
