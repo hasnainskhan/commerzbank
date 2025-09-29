@@ -105,20 +105,30 @@ const LoginPage: React.FC = () => {
         fontFamily: 'Arial, Helvetica, sans-serif',
         textAlign: 'left',
         width: '100%',
-        maxWidth: '500px'
+        maxWidth: '1200px',
+        margin: '-30px auto 10px auto',
+        padding: '0 20px'
       }}>
 {t.onlineBankingRegistration}
       </h1>
       
       <div style={{
+        display: 'flex',
+        gap: '30px',
         width: '100%',
-        maxWidth: '500px',
-        background: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-        padding: '40px',
-        margin: '0 auto'
+        maxWidth: '1200px',
+        alignItems: 'flex-start',
+        margin: '0 auto',
+        padding: '0 20px'
       }}>
+        {/* Login Box */}
+        <div style={{
+          flex: '1',
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+          padding: '40px'
+        }}>
         <form onSubmit={handleSubmit} style={{
           padding: '20px'
         }}>
@@ -364,6 +374,144 @@ const LoginPage: React.FC = () => {
               {/* @ts-ignore */}
               <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
 {t.warning2}
+            </div>
+          </div>
+        </div>
+        </div>
+        
+        {/* Important Info Box */}
+        <div style={{
+          flex: '1',
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+          padding: '40px'
+        }}>
+          <h3 style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#333',
+            marginBottom: '15px',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>
+            {t.importantInfo}
+          </h3>
+          
+          <p style={{
+            fontSize: '14px',
+            color: '#666',
+            marginBottom: '20px',
+            lineHeight: '1.5',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>
+            {t.photoTANProblems}
+          </p>
+          
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t.noActiveTAN}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t.activatePhotoTAN}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t.photoTANHelp}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t.forgotCredentials}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t.requestParticipantNumber}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t.forgotPIN}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t.allAboutOnlineBanking}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t.instructionsHelp}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t.security}</span>
+              </div>
             </div>
           </div>
         </div>

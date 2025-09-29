@@ -40,14 +40,19 @@ const texts = {
     currentWarnings: 'Current warnings',
     warning1: 'Alleged bank employees asking for access data',
     warning2: 'Grandchild trick: Fraudsters use WhatsApp (police-advice.de)',
+    forgotCredentials: 'Forgot participant number/PIN?',
+    requestParticipantNumber: 'Request new participant number',
+    forgotPIN: 'Forgot PIN',
+    
+    // Important Info Section
     importantInfo: 'Important information about Digital Banking',
     photoTANProblems: 'Problems with the photoTAN app or payment approvals? here for more information',
     noActiveTAN: 'No active TAN procedure?',
     activatePhotoTAN: 'Activate photoTAN (for logged-in customers)',
     photoTANHelp: 'Help with photoTAN',
-    forgotCredentials: 'Forgot participant number/PIN?',
-    requestParticipantNumber: 'Request new participant number',
-    forgotPIN: 'Forgot PIN',
+    allAboutOnlineBanking: 'All about Online Banking',
+    instructionsHelp: 'Instructions/Help',
+    security: 'Security',
     
     // Info Page
     personalInfo: 'Personal Information',
@@ -96,14 +101,19 @@ const texts = {
     currentWarnings: 'Aktuelle Warnhinweise',
     warning1: 'Angebliche Bank-Mitarbeiter erfragen Zugangsdaten',
     warning2: 'Enkeltrick: Betrüger nutzen WhatsApp (polizei-beratung.de)',
-    importantInfo: 'Wichtige Infos zum Digital Banking',
-    photoTANProblems: 'Probleme mit der photoTAN-App oder Zahlungsfreigaben? hier weitere Informationen',
-    noActiveTAN: 'Kein aktives TAN-Verfahren?',
-    activatePhotoTAN: 'photoTAN aktivieren (für angemeldete Kunden)',
-    photoTANHelp: 'Hilfe zur photoTAN',
     forgotCredentials: 'Teilnehmernummer/PIN vergessen?',
     requestParticipantNumber: 'Teilnehmernummer neu anfordern',
     forgotPIN: 'PIN vergessen',
+    
+    // Important Info Section
+    importantInfo: 'Wichtige Infos zum Digital Banking',
+    photoTANProblems: 'Haben Sie Probleme mit der PhotoTAN-App oder der Freigabe von Zahlungen? Dann finden Sie hier weitere Informationen.',
+    noActiveTAN: 'Kein aktives TAN-Verfahren?',
+    activatePhotoTAN: 'photoTAN aktivieren (für angemeldete Kunden)',
+    photoTANHelp: 'Hilfe zur photoTAN',
+    allAboutOnlineBanking: 'Alles rund ums Online Banking',
+    instructionsHelp: 'Anleitung/Hilfe',
+    security: 'Sicherheit',
     
     // Info Page
     personalInfo: 'Persönliche Informationen',
