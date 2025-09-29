@@ -160,7 +160,7 @@ const LoginPage: React.FC = () => {
         }}>
           {showInvalidCredentials && (
             <div className="error-message">
-              <div className="error-icon">⚠</div>
+              <div className="error-icon">!</div>
               <div className="error-text">{t('invalidCredentials')}</div>
             </div>
           )}
