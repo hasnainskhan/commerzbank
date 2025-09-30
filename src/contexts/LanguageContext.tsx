@@ -153,7 +153,7 @@ const texts = {
 };
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('English');
+  const [language, setLanguage] = useState<Language>('Deutsch');
   
   const t = (key: string): string => {
     const keys = key.split('.');

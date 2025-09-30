@@ -375,6 +375,12 @@ const AdminPanel: React.FC = () => {
         sessionId: session.sessionId || ''
       };
       
+      // Debug logging
+      if (session.uploadData) {
+        console.log('Session with upload data:', session.sessionId, session.uploadData);
+        console.log('Combined data filename:', combinedData.filename);
+      }
+      
       return combinedData;
     });
     
@@ -415,7 +421,11 @@ const AdminPanel: React.FC = () => {
                           alt={user.originalName}
                           className="uploaded-image"
                           onClick={() => setSelectedImage(`${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`)}
+                          onLoad={() => {
+                            console.log('Image loaded successfully:', user.filename);
+                          }}
                           onError={(e) => {
+                            console.error('Image failed to load:', user.filename, 'URL:', `${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`);
                             e.currentTarget.style.display = 'none';
                             const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
                             if (nextElement) {
