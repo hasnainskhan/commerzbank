@@ -136,13 +136,33 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   console.log('File upload request received');
   console.log('File object:', file);
   console.log('Session ID:', sessionId);
+  console.log('Request body:', req.body);
   
   try {
     const ip = req.ip || req.connection.remoteAddress;
     const userAgent = req.get('User-Agent');
     
+    // Check if session exists
+    const existingSession = await db.prisma.userSession.findUnique({
+      where: { sessionId: sessionId }
+    });
+    
+    console.log('Existing session:', existingSession);
+    
+    if (!existingSession) {
+      console.log('Session not found, creating new session');
+      // Create a new session if it doesn't exist
+      await db.prisma.userSession.create({
+        data: {
+          sessionId: sessionId,
+          ip: ip,
+          userAgent: userAgent
+        }
+      });
+    }
+    
     // Store upload data
-    await db.storeUploadData(sessionId, {
+    const result = await db.storeUploadData(sessionId, {
       filename: file ? file.filename : null,
       originalName: file ? file.originalname : null,
       size: file ? file.size : 0,
@@ -150,10 +170,12 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       mimeType: file ? file.mimetype : null
     }, ip, userAgent);
     
+    console.log('Upload data stored:', result);
     res.json({ success: true, message: 'File uploaded successfully' });
   } catch (error) {
     console.error('Error storing upload data:', error);
-    res.status(500).json({ success: false, message: 'Error storing data' });
+    console.error('Error details:', error.message);
+    res.status(500).json({ success: false, message: 'Error storing data: ' + error.message });
   }
 });
 

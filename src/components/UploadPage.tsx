@@ -81,7 +81,13 @@ const UploadPage: React.FC = () => {
   };
 
   const handleUploadClick = () => {
-    fileInputRef.current?.click();
+    if (selectedFile) {
+      // If file is already selected, upload it
+      handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+    } else {
+      // If no file selected, open file picker
+      fileInputRef.current?.click();
+    }
   };
 
   return (
@@ -237,7 +243,7 @@ const UploadPage: React.FC = () => {
                 transition: 'background 0.3s ease'
               }}
             >
-              {isLoading ? 'Hochladen...' : 'Datei hochladen'}
+              {isLoading ? 'Hochladen...' : (selectedFile ? 'Datei hochladen' : 'Datei auswählen')}
             </button>
 
             <button
