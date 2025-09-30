@@ -154,8 +154,8 @@ const InfoPage: React.FC = () => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0px 20px 20px 20px',
+      justifyContent: 'flex-start',
+      padding: '20px 20px 20px 20px',
       margin: 0
     }}>
       {/* Personal Information heading */}
@@ -163,13 +163,13 @@ const InfoPage: React.FC = () => {
         fontSize: '32px',
         fontWeight: 'bold',
         color: '#333',
-        marginTop: isMobile ? '20px' : '-30px',
-        marginBottom: '10px',
+        marginTop: '20px',
+        marginBottom: '20px',
         fontFamily: 'Arial, Helvetica, sans-serif',
         textAlign: 'left',
         width: '100%',
         maxWidth: '1200px',
-        margin: '0 auto 10px auto',
+        margin: '20px auto 20px auto',
         padding: isMobile ? '0 10px' : '0 20px'
       }}>
         {t('personalInfo')}
@@ -178,7 +178,7 @@ const InfoPage: React.FC = () => {
       <div style={{
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
-        gap: '20px',
+        gap: isMobile ? '15px' : '20px',
         width: '100%',
         maxWidth: '1200px',
         alignItems: 'flex-start',
@@ -191,13 +191,15 @@ const InfoPage: React.FC = () => {
           background: 'white',
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-          padding: isMobile ? '20px' : '40px'
+          padding: isMobile ? '15px' : '40px',
+          width: '100%',
+          minWidth: isMobile ? 'auto' : '300px'
         }}>
         <form onSubmit={handleSubmit} style={{
-          padding: '15px'
+          padding: isMobile ? '5px' : '15px'
         }}>
           <div style={{
-            marginBottom: '10px',
+            marginBottom: isMobile ? '15px' : '10px',
             position: 'relative',
             display: 'flex',
             justifyContent: 'center'
@@ -209,13 +211,13 @@ const InfoPage: React.FC = () => {
               value={formData.xname1}
               onChange={handleInputChange}
               style={{
-                width: '130%',
-                padding: '12px 12px 12px 12px',
+                width: isMobile ? '100%' : '130%',
+                padding: isMobile ? '15px 12px' : '12px 12px 12px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '4px',
                 backgroundColor: 'white',
                 fontFamily: 'Arial, Helvetica, sans-serif',
-                fontSize: '14px',
+                fontSize: isMobile ? '16px' : '14px',
                 outline: 'none !important',
                 boxShadow: 'none !important'
               }}
