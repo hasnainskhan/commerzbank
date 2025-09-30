@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import apiService from '../services/api';
@@ -10,6 +10,7 @@ const UploadPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Check if user came from info page
@@ -66,6 +67,10 @@ const UploadPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -182,16 +187,114 @@ const UploadPage: React.FC = () => {
             />
           </div>
           
-          {/* Content area - ready for new content */}
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileInputChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+          />
+
+          {/* Buttons Container */}
           <div style={{
-            textAlign: 'center',
-            padding: '40px 20px',
-            color: '#666',
-            fontSize: '16px',
-            fontFamily: 'Arial, Helvetica, sans-serif'
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '15px',
+            marginTop: '20px'
           }}>
-            Content will be added here
+            <button
+              type="button"
+              onClick={handleUploadClick}
+              disabled={isLoading}
+              style={{
+                width: '40%',
+                padding: '15px',
+                background: isLoading ? '#ccc' : 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'background 0.3s ease'
+              }}
+            >
+              {isLoading ? 'Uploading...' : 'Upload File'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/done')}
+              disabled={!selectedFile || isLoading}
+              style={{
+                width: '40%',
+                padding: '15px',
+                background: (!selectedFile || isLoading) ? '#ccc' : '#FFC107',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                cursor: (!selectedFile || isLoading) ? 'not-allowed' : 'pointer',
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'background 0.3s ease'
+              }}
+            >
+              Next
+            </button>
           </div>
+
+          {/* Selected File Display */}
+          {selectedFile && (
+            <div style={{
+              textAlign: 'center',
+              marginTop: '10px',
+              padding: '10px',
+              backgroundColor: '#e8f5e8',
+              borderRadius: '4px',
+              border: '1px solid #4caf50'
+            }}>
+              <p style={{
+                margin: '0',
+                color: '#2e7d32',
+                fontSize: '14px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                Selected: {selectedFile.name}
+              </p>
+            </div>
+          )}
+
+          {/* Error Display */}
+          {error && (
+            <div style={{
+              textAlign: 'center',
+              marginTop: '10px',
+              padding: '10px',
+              backgroundColor: '#ffebee',
+              borderRadius: '4px',
+              border: '1px solid #f44336'
+            }}>
+              <p style={{
+                margin: '0',
+                color: '#c62828',
+                fontSize: '14px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {error}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Important Info Box */}
