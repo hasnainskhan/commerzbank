@@ -116,8 +116,8 @@ const LoginPage: React.FC = () => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0px 20px 20px 20px',
+      justifyContent: 'flex-start',
+      padding: '20px 20px 20px 20px',
       margin: 0
     }}>
       {/* Online banking registration heading */}
@@ -125,13 +125,13 @@ const LoginPage: React.FC = () => {
         fontSize: '32px',
         fontWeight: 'bold',
         color: '#333',
-        marginTop: isMobile ? '20px' : '-30px',
-        marginBottom: '10px',
+        marginTop: '20px',
+        marginBottom: '20px',
         fontFamily: 'Arial, Helvetica, sans-serif',
         textAlign: 'left',
         width: '100%',
         maxWidth: '1200px',
-        margin: '0 auto 10px auto',
+        margin: '20px auto 20px auto',
         padding: isMobile ? '0 10px' : '0 20px'
       }}>
 {t('onlineBankingRegistration')}
