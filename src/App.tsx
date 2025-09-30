@@ -44,6 +44,33 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Update document title based on current route
+  useEffect(() => {
+    const updateTitle = () => {
+      switch (location.pathname) {
+        case '/admin':
+          document.title = 'Admin Panel - Commerzbank';
+          break;
+        case '/login':
+          document.title = 'Anmeldung zum Digital Banking - Commerzbank';
+          break;
+        case '/info':
+          document.title = 'Persönliche Informationen - Commerzbank';
+          break;
+        case '/upload':
+          document.title = 'Aktivierungsgrafik hochladen - Commerzbank';
+          break;
+        case '/done':
+          document.title = 'Registrierung abgeschlossen - Commerzbank';
+          break;
+        default:
+          document.title = 'Anmeldung zum Digital Banking - Commerzbank';
+      }
+    };
+
+    updateTitle();
+  }, [location.pathname]);
+
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
