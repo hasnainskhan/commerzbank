@@ -118,8 +118,8 @@ const DonePage: React.FC = () => {
                 fontFamily: 'Arial, Helvetica, sans-serif',
                 boxShadow: '0 2px 8px rgba(0, 100, 0, 0.3)',
                 transition: 'all 0.3s ease',
-                minWidth: isMobile ? '100%' : '200px',
-                width: isMobile ? '100%' : 'auto'
+                minWidth: isMobile ? '200px' : '200px',
+                width: isMobile ? '60%' : 'auto'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
