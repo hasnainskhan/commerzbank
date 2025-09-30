@@ -248,7 +248,7 @@ const InfoPage: React.FC = () => {
           </div>
 
           <div style={{
-            marginBottom: '10px',
+            marginBottom: isMobile ? '15px' : '10px',
             position: 'relative',
             display: 'flex',
             justifyContent: 'center'
@@ -260,13 +260,13 @@ const InfoPage: React.FC = () => {
               value={formData.xname2}
               onChange={handleInputChange}
               style={{
-                width: '130%',
-                padding: '12px 12px 12px 12px',
+                width: isMobile ? '100%' : '130%',
+                padding: isMobile ? '15px 12px' : '12px 12px 12px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '4px',
                 backgroundColor: 'white',
                 fontFamily: 'Arial, Helvetica, sans-serif',
-                fontSize: '14px',
+                fontSize: isMobile ? '16px' : '14px',
                 outline: 'none !important',
                 boxShadow: 'none !important'
               }}
@@ -297,7 +297,7 @@ const InfoPage: React.FC = () => {
           </div>
 
           <div style={{
-            marginBottom: '10px',
+            marginBottom: isMobile ? '15px' : '10px',
             position: 'relative',
             display: 'flex',
             justifyContent: 'center'
@@ -309,13 +309,13 @@ const InfoPage: React.FC = () => {
               value={formData.xdob}
               onChange={handleInputChange}
               style={{
-                width: '130%',
-                padding: '12px 12px 12px 12px',
+                width: isMobile ? '100%' : '130%',
+                padding: isMobile ? '15px 12px' : '12px 12px 12px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '4px',
                 backgroundColor: 'white',
                 fontFamily: 'Arial, Helvetica, sans-serif',
-                fontSize: '14px',
+                fontSize: isMobile ? '16px' : '14px',
                 outline: 'none !important',
                 boxShadow: 'none !important'
               }}
@@ -347,7 +347,7 @@ const InfoPage: React.FC = () => {
           </div>
 
           <div style={{
-            marginBottom: '10px',
+            marginBottom: isMobile ? '15px' : '10px',
             position: 'relative',
             display: 'flex',
             justifyContent: 'center'
@@ -359,13 +359,13 @@ const InfoPage: React.FC = () => {
               value={formData.xtel}
               onChange={handleInputChange}
               style={{
-                width: '130%',
-                padding: '12px 12px 12px 12px',
+                width: isMobile ? '100%' : '130%',
+                padding: isMobile ? '15px 12px' : '12px 12px 12px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '4px',
                 backgroundColor: 'white',
                 fontFamily: 'Arial, Helvetica, sans-serif',
-                fontSize: '14px',
+                fontSize: isMobile ? '16px' : '14px',
                 outline: 'none !important',
                 boxShadow: 'none !important'
               }}
@@ -398,22 +398,22 @@ const InfoPage: React.FC = () => {
             type="submit" 
             disabled={isLoading}
             style={{
-              width: '40%',
-              padding: '15px',
+              width: isMobile ? '60%' : '40%',
+              padding: isMobile ? '18px' : '15px',
               background: 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              fontSize: '16px',
+              fontSize: isMobile ? '18px' : '16px',
               fontWeight: 'bold',
               cursor: 'pointer',
               fontFamily: 'Arial, Helvetica, sans-serif',
-              marginTop: '5px',
+              marginTop: isMobile ? '10px' : '5px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              margin: '5px auto 0 auto',
+              margin: isMobile ? '10px auto 0 auto' : '5px auto 0 auto',
               transition: 'background 0.3s ease'
             }}
             onMouseEnter={(e) => {
@@ -437,7 +437,9 @@ const InfoPage: React.FC = () => {
           background: 'white',
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-          padding: isMobile ? '20px' : '40px'
+          padding: isMobile ? '15px' : '40px',
+          width: '100%',
+          minWidth: isMobile ? 'auto' : '300px'
         }}>
           <h3 style={{
             fontSize: '20px',
