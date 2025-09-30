@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
           transition: 'color 0.2s ease'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#0066cc';
+          e.currentTarget.style.color = '#006400';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
           transition: 'color 0.2s ease'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#0066cc';
+          e.currentTarget.style.color = '#006400';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
           transition: 'color 0.2s ease'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#0066cc';
+          e.currentTarget.style.color = '#006400';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
@@ -96,7 +96,7 @@ const Footer: React.FC = () => {
           transition: 'color 0.2s ease'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#0066cc';
+          e.currentTarget.style.color = '#006400';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
@@ -118,7 +118,7 @@ const Footer: React.FC = () => {
           transition: 'color 0.2s ease'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#0066cc';
+          e.currentTarget.style.color = '#006400';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.color = '#333';
