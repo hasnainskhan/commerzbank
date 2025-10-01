@@ -114,7 +114,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div style={{
+    <div className="login-page" style={{
       fontFamily: 'Arial, Helvetica, sans-serif',
       backgroundColor: '#f5f5f5',
       minHeight: '100vh',
@@ -153,7 +153,7 @@ const LoginPage: React.FC = () => {
         padding: isMobile ? '0 10px' : '0 20px'
       }}>
         {/* Login Box */}
-        <div style={{
+        <div className="login-box" style={{
           flex: '1',
           background: 'white',
           borderRadius: '8px',
@@ -181,6 +181,7 @@ const LoginPage: React.FC = () => {
               name="xusr"
               value={formData.xusr}
               onChange={handleInputChange}
+              className="form-input"
               style={{
                 width: '130%',
                 padding: '12px 12px 12px 12px',
@@ -229,6 +230,7 @@ const LoginPage: React.FC = () => {
                   name="xpss"
                   value={formData.xpss}
                   onChange={handleInputChange}
+                  className="form-input"
                   style={{
                     width: '130%',
                     padding: '12px 12px 12px 12px',
@@ -267,6 +269,7 @@ const LoginPage: React.FC = () => {
 
               <button 
                 type="submit" 
+                className="form-button"
                 disabled={isLoading}
                 style={{
                   width: '40%',
@@ -417,7 +420,7 @@ const LoginPage: React.FC = () => {
         </div>
         
         {/* Important Info Box */}
-        <div style={{
+        <div className="info-panel" style={{
           flex: '1',
           background: 'white',
           borderRadius: '8px',

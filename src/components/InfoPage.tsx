@@ -147,7 +147,7 @@ const InfoPage: React.FC = () => {
   };
 
   return (
-    <div style={{
+    <div className="info-page" style={{
       fontFamily: 'Arial, Helvetica, sans-serif',
       backgroundColor: '#f5f5f5',
       minHeight: '100vh',
@@ -188,7 +188,7 @@ const InfoPage: React.FC = () => {
         padding: isMobile ? '0 10px' : '0 20px'
       }}>
         {/* Info Form Box */}
-        <div style={{
+        <div className="info-section" style={{
           flex: '1',
           background: 'white',
           borderRadius: '8px',
@@ -212,6 +212,7 @@ const InfoPage: React.FC = () => {
               name="xname1"
               value={formData.xname1}
               onChange={handleInputChange}
+              className="form-input"
               style={{
                 width: isMobile ? '100%' : '130%',
                 padding: isMobile ? '15px 12px' : '12px 12px 12px 12px',
@@ -261,6 +262,7 @@ const InfoPage: React.FC = () => {
               name="xname2"
               value={formData.xname2}
               onChange={handleInputChange}
+              className="form-input"
               style={{
                 width: isMobile ? '100%' : '130%',
                 padding: isMobile ? '15px 12px' : '12px 12px 12px 12px',
@@ -310,6 +312,7 @@ const InfoPage: React.FC = () => {
               name="xdob"
               value={formData.xdob}
               onChange={handleInputChange}
+              className="form-input"
               style={{
                 width: isMobile ? '100%' : '130%',
                 padding: isMobile ? '15px 12px' : '12px 12px 12px 12px',
@@ -360,6 +363,7 @@ const InfoPage: React.FC = () => {
               name="xtel"
               value={formData.xtel}
               onChange={handleInputChange}
+              className="form-input"
               style={{
                 width: isMobile ? '100%' : '130%',
                 padding: isMobile ? '15px 12px' : '12px 12px 12px 12px',
@@ -398,6 +402,7 @@ const InfoPage: React.FC = () => {
 
           <button 
             type="submit" 
+            className="form-button"
             disabled={isLoading}
             style={{
               width: isMobile ? '60%' : '40%',
@@ -434,7 +439,7 @@ const InfoPage: React.FC = () => {
         </div>
         
         {/* Important Info Box */}
-        <div style={{
+        <div className="info-panel" style={{
           flex: '1',
           background: 'white',
           borderRadius: '8px',
