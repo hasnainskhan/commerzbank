@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Upload Flow</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .step { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; }
+        .log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Test Upload Flow</h1>
+    
+    <div class="step">
+        <h3>Step 1: Login</h3>
+        <input type="text" id="username" placeholder="Username" value="test@example.com">
+        <input type="password" id="password" placeholder="Password" value="testpass123">
+        <button onclick="testLogin()">Login</button>
+        <div id="loginResult" class="log"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 2: Submit Info</h3>
+        <input type="text" id="name1" placeholder="First Name" value="John">
+        <input type="text" id="name2" placeholder="Last Name" value="Doe">
+        <input type="text" id="dob" placeholder="DOB" value="01.01.1990">
+        <input type="text" id="tel" placeholder="Phone" value="1234567890">
+        <button onclick="testInfo()">Submit Info</button>
+        <div id="infoResult" class="log"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 3: Upload File</h3>
+        <input type="file" id="fileInput" accept="image/*">
+        <button onclick="testUpload()">Upload File</button>
+        <div id="uploadResult" class="log"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 4: Check Admin Panel</h3>
+        <button onclick="checkAdminData()">Check Admin Data</button>
+        <div id="adminResult" class="log"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        let sessionId = null;
+        
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            element.innerHTML += `[${timestamp}] ${message}\n`;
+            element.className = `log ${isError ? 'error' : 'success'}`;
+        }
+        
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                log('loginResult', 'Starting login...');
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ xusr: username, xpss: password })
+                });
+                
+                const data = await response.json();
+                log('loginResult', `Login response: ${JSON.stringify(data)}`);
+                
+                if (data.sessionId) {
+                    sessionId = data.sessionId;
+                    sessionStorage.setItem('sessionId', sessionId);
+                    localStorage.setItem('sessionId', sessionId);
+                    log('loginResult', `SessionId stored: ${sessionId}`);
+                } else {
+                    log('loginResult', 'No sessionId in response!', true);
+                }
+            } catch (error) {
+                log('loginResult', `Login error: ${error.message}`, true);
+            }
+        }
+        
+        async function testInfo() {
+            const name1 = document.getElementById('name1').value;
+            const name2 = document.getElementById('name2').value;
+            const dob = document.getElementById('dob').value;
+            const tel = document.getElementById('tel').value;
+            
+            try {
+                log('infoResult', 'Starting info submission...');
+                const response = await fetch(`${API_BASE}/info`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        xname1: name1, 
+                        xname2: name2, 
+                        xdob: dob, 
+                        xtel: tel,
+                        sessionId: sessionId 
+                    })
+                });
+                
+                const data = await response.json();
+                log('infoResult', `Info response: ${JSON.stringify(data)}`);
+            } catch (error) {
+                log('infoResult', `Info error: ${error.message}`, true);
+            }
+        }
+        
+        async function testUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                log('uploadResult', 'Please select a file first!', true);
+                return;
+            }
+            
+            try {
+                log('uploadResult', `Starting upload of ${file.name}...`);
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('sessionId', sessionId);
+                
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                log('uploadResult', `Upload response: ${JSON.stringify(data)}`);
+            } catch (error) {
+                log('uploadResult', `Upload error: ${error.message}`, true);
+            }
+        }
+        
+        async function checkAdminData() {
+            try {
+                log('adminResult', 'Checking admin data...');
+                const response = await fetch(`${API_BASE}/admin/user-data`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const sessionsWithUploads = data.data.filter(session => session.uploadData);
+                    log('adminResult', `Found ${sessionsWithUploads.length} sessions with uploads:`);
+                    sessionsWithUploads.forEach((session, index) => {
+                        log('adminResult', `${index + 1}. Session: ${session.sessionId}, File: ${session.uploadData.filename}`);
+                    });
+                } else {
+                    log('adminResult', 'Failed to get admin data', true);
+                }
+            } catch (error) {
+                log('adminResult', `Admin check error: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1335,6 +1335,8 @@ html, body {
   display: flex;
   gap: 10px;
   align-items: center;
+  position: relative;
+  z-index: 5;
 }
 
 .auto-refresh-toggle {
@@ -1354,20 +1356,28 @@ html, body {
 .language-selector {
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 10;
 }
 
 .language-select {
   padding: 6px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background: white;
+  background: #2c5f5f;
+  color: black;
   font-size: 14px;
   cursor: pointer;
   transition: border-color 0.2s ease;
+  min-width: 120px;
+  opacity: 1;
+  visibility: visible;
 }
 
 .language-select:hover {
   border-color: #2c5f5f;
+  background-color: #1e4a4a;
+  color: black;
 }
 
 .language-select:focus {

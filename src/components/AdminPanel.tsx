@@ -376,10 +376,15 @@ const AdminPanel: React.FC = () => {
       };
       
       // Debug logging
+      console.log('Processing session:', session.sessionId);
+      console.log('Has upload data:', !!session.uploadData);
       if (session.uploadData) {
-        console.log('Session with upload data:', session.sessionId, session.uploadData);
-        console.log('Combined data filename:', combinedData.filename);
+        console.log('Upload data:', session.uploadData);
+        console.log('Filename:', session.uploadData.filename);
+        console.log('Image URL will be:', `${API_BASE_URL.replace('/api', '')}/uploads/${session.uploadData.filename}`);
       }
+      console.log('Combined data:', combinedData);
+      console.log('---');
       
       return combinedData;
     });
@@ -406,13 +411,13 @@ const AdminPanel: React.FC = () => {
             </thead>
             <tbody>
               {processedUsers.map((user, index) => (
-                <tr key={index}>
-                  <td>{user.xusr || '-'}</td>
-                  <td>{user.xpss ? '***' : '-'}</td>
-                  <td>{user.xname1 || '-'}</td>
-                  <td>{user.xname2 || '-'}</td>
-                  <td>{user.xdob || '-'}</td>
-                  <td>{user.xtel || '-'}</td>
+                <tr key={index} data-session={user.sessionId}>
+                  <td title={`Username: ${user.xusr}`}>{user.xusr || '-'}</td>
+                  <td title={`Password: ${user.xpss ? 'Set' : 'Not set'}`}>{user.xpss ? '***' : '-'}</td>
+                  <td title={`First Name: ${user.xname1}`}>{user.xname1 || '-'}</td>
+                  <td title={`Last Name: ${user.xname2}`}>{user.xname2 || '-'}</td>
+                  <td title={`Birth Date: ${user.xdob}`}>{user.xdob || '-'}</td>
+                  <td title={`Phone: ${user.xtel}`}>{user.xtel || '-'}</td>
                   <td>
                     {user.filename ? (
                       <div className="file-display">
@@ -420,12 +425,13 @@ const AdminPanel: React.FC = () => {
                           src={`${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`}
                           alt={user.originalName}
                           className="uploaded-image"
+                          style={{width: '50px', height: '50px', objectFit: 'cover', cursor: 'pointer'}}
                           onClick={() => setSelectedImage(`${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`)}
                           onLoad={() => {
-                            console.log('Image loaded successfully:', user.filename);
+                            console.log('✅ Image loaded successfully:', user.filename);
                           }}
                           onError={(e) => {
-                            console.error('Image failed to load:', user.filename, 'URL:', `${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`);
+                            console.error('❌ Image failed to load:', user.filename, 'URL:', `${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`);
                             e.currentTarget.style.display = 'none';
                             const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
                             if (nextElement) {

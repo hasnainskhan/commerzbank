@@ -64,8 +64,21 @@ class DatabaseService {
       throw new Error('Session ID is required');
     }
     
-    return await this.prisma.uploadData.create({
-      data: {
+    return await this.prisma.uploadData.upsert({
+      where: {
+        sessionId: sessionId
+      },
+      update: {
+        filename: uploadData.filename,
+        originalName: uploadData.originalName,
+        fileSize: uploadData.size,
+        filePath: uploadData.path,
+        mimeType: uploadData.mimeType,
+        ip,
+        userAgent,
+        timestamp: new Date()
+      },
+      create: {
         sessionId,
         filename: uploadData.filename,
         originalName: uploadData.originalName,

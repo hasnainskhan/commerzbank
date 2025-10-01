@@ -115,7 +115,7 @@ const InfoPage: React.FC = () => {
 
     try {
       // Send data to backend (simulating the PHP behavior)
-      await apiService.info(formData);
+      const infoResponse = await apiService.info(formData);
       
       // Store in both session and local storage for mobile compatibility
       sessionStorage.setItem('xname1', formData.xname1);
@@ -174,6 +174,8 @@ const InfoPage: React.FC = () => {
       }}>
         {t('personalInfo')}
       </h1>
+
+
       
       <div style={{
         display: 'flex',
