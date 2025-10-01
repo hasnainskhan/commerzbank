@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
         flexWrap: 'wrap',
         gap: '10px'
       }}>
-        <a href="#prices" style={{
+        <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
           color: '#333',
           textDecoration: 'none',
           fontSize: '14px',
@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
           margin: '0 5px'
         }}>|</span>
         
-        <a href="#imprint" style={{
+        <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
           color: '#333',
           textDecoration: 'none',
           fontSize: '14px',
@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
           margin: '0 5px'
         }}>|</span>
         
-        <a href="#legal" style={{
+        <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
           color: '#333',
           textDecoration: 'none',
           fontSize: '14px',
@@ -88,7 +88,7 @@ const Footer: React.FC = () => {
           margin: '0 5px'
         }}>|</span>
         
-        <a href="#consent" style={{
+        <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
           color: '#333',
           textDecoration: 'none',
           fontSize: '14px',
@@ -110,7 +110,7 @@ const Footer: React.FC = () => {
           margin: '0 5px'
         }}>|</span>
         
-        <a href="#privacy" style={{
+        <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
           color: '#333',
           textDecoration: 'none',
           fontSize: '14px',

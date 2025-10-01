@@ -96,7 +96,7 @@ const AdminPanel: React.FC = () => {
     de: {
       adminPanel: 'Admin Panel',
       lastUpdated: 'Zuletzt aktualisiert',
-      autoRefresh: 'Auto-Aktualisierung (30s)',
+      autoRefresh: 'Auto-Aktualisierung (10s)',
       refreshData: 'Daten aktualisieren',
       refreshing: 'Aktualisiere...',
       logout: 'Abmelden',
@@ -140,7 +140,7 @@ const AdminPanel: React.FC = () => {
     en: {
       adminPanel: 'Admin Panel',
       lastUpdated: 'Last updated',
-      autoRefresh: 'Auto-refresh (30s)',
+      autoRefresh: 'Auto-refresh (10s)',
       refreshData: 'Refresh Data',
       refreshing: 'Refreshing...',
       logout: 'Logout',
@@ -192,7 +192,7 @@ const AdminPanel: React.FC = () => {
     if (autoRefresh && isAuthenticated) {
       interval = setInterval(() => {
         loadData(false); // Silent refresh
-      }, 30000); // Refresh every 30 seconds
+      }, 10000); // Refresh every 10 seconds for more dynamic updates
     }
     
     return () => {

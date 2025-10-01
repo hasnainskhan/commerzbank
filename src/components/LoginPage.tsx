@@ -455,28 +455,46 @@ const LoginPage: React.FC = () => {
               {t('noActiveTAN')}
             </h4>
             <div style={{ marginBottom: '8px' }}>
-              <div style={{
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontFamily: 'Arial, Helvetica, sans-serif'
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                textDecoration: 'none',
+                color: 'inherit',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textDecoration = 'underline';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textDecoration = 'none';
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('activatePhotoTAN')}</span>
-              </div>
+              </a>
             </div>
             <div>
-              <div style={{
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontFamily: 'Arial, Helvetica, sans-serif'
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                textDecoration: 'none',
+                color: 'inherit',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textDecoration = 'underline';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textDecoration = 'none';
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('photoTANHelp')}</span>
-              </div>
+              </a>
             </div>
           </div>
           
@@ -491,28 +509,46 @@ const LoginPage: React.FC = () => {
               {t('forgotCredentials')}
             </h4>
             <div style={{ marginBottom: '8px' }}>
-              <div style={{
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontFamily: 'Arial, Helvetica, sans-serif'
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                textDecoration: 'none',
+                color: 'inherit',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textDecoration = 'underline';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textDecoration = 'none';
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('requestParticipantNumber')}</span>
-              </div>
+              </a>
             </div>
             <div>
-              <div style={{
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontFamily: 'Arial, Helvetica, sans-serif'
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                textDecoration: 'none',
+                color: 'inherit',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textDecoration = 'underline';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textDecoration = 'none';
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('forgotPIN')}</span>
-              </div>
+              </a>
             </div>
           </div>
           
@@ -527,28 +563,46 @@ const LoginPage: React.FC = () => {
               {t('allAboutOnlineBanking')}
             </h4>
             <div style={{ marginBottom: '8px' }}>
-              <div style={{
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontFamily: 'Arial, Helvetica, sans-serif'
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                textDecoration: 'none',
+                color: 'inherit',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textDecoration = 'underline';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textDecoration = 'none';
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('instructionsHelp')}</span>
-              </div>
+              </a>
             </div>
             <div>
-              <div style={{
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontFamily: 'Arial, Helvetica, sans-serif'
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                textDecoration: 'none',
+                color: 'inherit',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textDecoration = 'underline';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textDecoration = 'none';
               }}>
                 {/* @ts-ignore */}
                 <FaArrowRight style={{ color: '#FFC107', fontSize: '16px' }} />
                 <span style={{ fontSize: '14px', color: '#333' }}>{t('security')}</span>
-              </div>
+              </a>
             </div>
           </div>
         </div>

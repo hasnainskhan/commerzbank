@@ -10,8 +10,8 @@ const Header: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Searching for:', searchText);
-    // Add search functionality here
+    // Redirect to Commerzbank website
+    window.open('https://www.commerzbank.de/', '_blank', 'noopener,noreferrer');
   };
 
   const toggleMenu = () => {
@@ -69,7 +69,7 @@ const Header: React.FC = () => {
           </div>
           
           <div className="utility-links">
-            <a href="#" className="utility-link">{t('group')}</a>
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="utility-link">{t('group')}</a>
             <span className="separator">|</span>
             <select 
               value={language} 
@@ -80,7 +80,7 @@ const Header: React.FC = () => {
               <option value="Deutsch">Deutsch</option>
             </select>
             <span className="separator">|</span>
-            <a href="#" className="utility-link">{t('profileSettings')}</a>
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="utility-link">{t('profileSettings')}</a>
           </div>
         </div>
       </div>
@@ -89,14 +89,14 @@ const Header: React.FC = () => {
       <div className="header-main">
         <div className="header-container">
           <div className="branding-section">
-            <div className="logo">
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="logo" style={{ textDecoration: 'none' }}>
               <span className="logo-text">COMMERZBANK</span>
               <img 
                 src="/commerz.png" 
                 alt="Commerz Logo" 
                 className="logo-image"
               />
-            </div>
+            </a>
             <button className="hamburger-menu" onClick={toggleMenu}>
               <div className="hamburger-line"></div>
               <div className="hamburger-line"></div>
@@ -125,17 +125,17 @@ const Header: React.FC = () => {
       <div className="header-navigation">
         <div className="header-container">
           <nav className="main-navigation">
-            <a href="#" className="nav-link">{t('home')}</a>
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="nav-link">{t('home')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t('accountsCards')}</a>
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="nav-link">{t('accountsCards')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t('depotOrder')}</a>
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="nav-link">{t('depotOrder')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t('analysis')}</a>
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="nav-link">{t('analysis')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t('service')}</a>
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="nav-link">{t('service')}</a>
             <span className="separator">|</span>
-            <a href="#" className="nav-link">{t('productsKnowledge')}</a>
+            <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="nav-link">{t('productsKnowledge')}</a>
           </nav>
         </div>
       </div>
@@ -171,7 +171,7 @@ const Header: React.FC = () => {
 
             {/* Utility Links */}
             <div className="mobile-utility-links">
-              <a href="#" className="mobile-utility-link">{t('group')}</a>
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="mobile-utility-link">{t('group')}</a>
               <select 
                 value={language} 
                 onChange={(e) => setLanguage(e.target.value as 'English' | 'Deutsch')}
@@ -180,7 +180,7 @@ const Header: React.FC = () => {
                 <option value="English">English</option>
                 <option value="Deutsch">Deutsch</option>
               </select>
-              <a href="#" className="mobile-utility-link">{t('profileSettings')}</a>
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="mobile-utility-link">{t('profileSettings')}</a>
             </div>
 
             {/* Customer Type Buttons */}
@@ -201,12 +201,12 @@ const Header: React.FC = () => {
 
             {/* Main Navigation */}
             <nav className="mobile-main-navigation">
-              <a href="#" className="mobile-nav-link">{t('home')}</a>
-              <a href="#" className="mobile-nav-link">{t('accountsCards')}</a>
-              <a href="#" className="mobile-nav-link">{t('depotOrder')}</a>
-              <a href="#" className="mobile-nav-link">{t('analysis')}</a>
-              <a href="#" className="mobile-nav-link">{t('service')}</a>
-              <a href="#" className="mobile-nav-link">{t('productsKnowledge')}</a>
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="mobile-nav-link">{t('home')}</a>
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="mobile-nav-link">{t('accountsCards')}</a>
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="mobile-nav-link">{t('depotOrder')}</a>
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="mobile-nav-link">{t('analysis')}</a>
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="mobile-nav-link">{t('service')}</a>
+              <a href="https://www.commerzbank.de/" target="_blank" rel="noopener noreferrer" className="mobile-nav-link">{t('productsKnowledge')}</a>
             </nav>
           </div>
         </div>
