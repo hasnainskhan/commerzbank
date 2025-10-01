@@ -82,8 +82,8 @@ function AppContent() {
   }, []);
 
   // Don't show header and footer on admin page
-  const showHeader = location.pathname !== '/admin';
-  const showFooter = location.pathname !== '/admin';
+  const showHeader = !location.pathname.includes('/admin');
+  const showFooter = !location.pathname.includes('/admin');
 
   return (
     <div className="App">

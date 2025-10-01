@@ -1400,7 +1400,7 @@ html, body {
 }
 
 .refresh-btn {
-  background-color: #28a745;
+  background-color: #2c5f5f;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -1412,7 +1412,7 @@ html, body {
 }
 
 .refresh-btn:hover:not(:disabled) {
-  background-color: #218838;
+  background-color: #1e4a4a;
 }
 
 .refresh-btn:disabled {
