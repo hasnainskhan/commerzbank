@@ -5,7 +5,8 @@ A comprehensive React.js application with PostgreSQL backend, featuring multi-st
 ## 🚀 Features
 
 ### **Core Functionality**
-- **Multi-step form process**: Login → Information → Upload → Done
+- **Captcha security**: Anti-bot protection with math verification before login
+- **Multi-step form process**: Captcha → Login → Information → Upload → Done
 - **Direct file upload**: Streamlined upload process with immediate processing
 - **Session management**: Data persistence across pages with unique session IDs
 - **Database integration**: PostgreSQL with Prisma ORM
@@ -22,9 +23,10 @@ A comprehensive React.js application with PostgreSQL backend, featuring multi-st
 - **German interface**: Fully localized admin panel
 
 ### **Security & UX Features**
+- **Captcha verification**: Math-based security check (3 + 4 = ?) before login access
 - **Anti-bot protection**: IP tracking, developer tools blocking
 - **External redirects**: All links redirect to official Commerzbank website
-- **Responsive design**: Mobile-friendly interface
+- **Responsive design**: Mobile-friendly interface for all devices including xsm
 - **Professional styling**: Commerzbank brand colors and design
 - **Error handling**: Graceful error management and user feedback
 - **Production ready**: Complete deployment setup for AMD64 systems
@@ -36,6 +38,7 @@ A comprehensive React.js application with PostgreSQL backend, featuring multi-st
 Commcomm-main/
 ├── src/
 │   ├── components/
+│   │   ├── CaptchaPage.tsx    # Captcha security verification
 │   │   ├── LoginPage.tsx      # Login form
 │   │   ├── InfoPage.tsx       # Personal information form
 │   │   ├── UploadPage.tsx     # File upload form
@@ -123,7 +126,7 @@ Commcomm-main/
    npm start
    ```
 
-- **Frontend**: `http://localhost:3000`
+- **Frontend**: `http://localhost:3000` (starts with captcha page)
 - **Backend API**: `http://localhost:3001`
 - **Admin Panel**: `http://localhost:3000/admin`
 
@@ -212,6 +215,7 @@ The application collects the following data:
 6. **Technical data**: Browser information, file sizes, upload timestamps
 
 ### Data Flow
+- **Captcha Page**: Security verification with math problem (3 + 4 = ?)
 - **Login Page**: Captures credentials and creates session
 - **Info Page**: Collects personal information
 - **Upload Page**: Handles file upload with direct processing
@@ -441,11 +445,12 @@ curl http://localhost:3001/api/admin/stats
 ### ✅ Completed Features (Latest Version)
 
 #### **Frontend Enhancements**
+- **Captcha Security**: Math-based verification (3 + 4 = ?) before login access
 - **Fixed Upload Flow**: Direct file upload with immediate processing
 - **Streamlined UI**: Removed debug information and unnecessary elements
 - **External Redirects**: All links redirect to official Commerzbank website
 - **Professional Styling**: Consistent Commerzbank branding and colors
-- **Responsive Design**: Optimized for all device sizes
+- **Responsive Design**: Optimized for all device sizes including xsm devices
 
 #### **Admin Panel Upgrades**
 - **User Details View**: Eye icon button with complete user information dialog
@@ -463,11 +468,13 @@ curl http://localhost:3001/api/admin/stats
 - **File Processing**: Enhanced file upload with proper validation
 
 #### **Technical Fixes**
+- **Captcha Implementation**: Math verification system with error handling
 - **Upload Process**: Fixed broken upload flow with direct processing
 - **Session Completion**: Automatic marking of completed sessions
 - **Data Integrity**: Proper handling of database constraints
 - **PDF Generation**: jsPDF integration with image embedding
 - **External Linking**: Secure external redirects with proper attributes
+- **React Error Fixes**: Resolved DOM manipulation issues in captcha component
 
 ### 🎯 Current Status
 - **Frontend**: ✅ Fully functional with all features working
@@ -475,6 +482,8 @@ curl http://localhost:3001/api/admin/stats
 - **Database**: ✅ Proper schema with constraint handling
 - **Admin Panel**: ✅ Complete with PDF export and user management
 - **File Upload**: ✅ Direct upload with session tracking
+- **Captcha Security**: ✅ Math verification system implemented
+- **Responsive Design**: ✅ Optimized for all devices including xsm
 - **Security**: ✅ All security features active
 
 ## License
