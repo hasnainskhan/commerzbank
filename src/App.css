@@ -2460,6 +2460,69 @@ html, body {
     padding: 60px 5px 10px 5px;
   }
   
+  /* Captcha Page xsm adjustments */
+  .captcha-page {
+    padding: 10px !important;
+  }
+  
+  .captcha-page .security-header {
+    padding: 12px 15px !important;
+  }
+  
+  .captcha-page .security-header h1 {
+    font-size: 18px !important;
+  }
+  
+  .captcha-page .security-header p {
+    font-size: 11px !important;
+  }
+  
+  .captcha-page .captcha-form {
+    padding: 20px 15px !important;
+  }
+  
+  .captcha-page .captcha-form h2 {
+    font-size: 16px !important;
+  }
+  
+  .captcha-page .math-problem {
+    padding: 15px 10px !important;
+  }
+  
+  .captcha-page .math-problem p {
+    font-size: 13px !important;
+  }
+  
+  .captcha-page .math-problem .equation {
+    font-size: 20px !important;
+  }
+  
+  .captcha-page .math-problem .hint {
+    font-size: 11px !important;
+  }
+  
+  .captcha-page .form-input {
+    width: 100% !important;
+    padding: 15px 12px !important;
+    font-size: 16px !important;
+  }
+  
+  .captcha-page .form-button {
+    width: 100% !important;
+    padding: 18px !important;
+    font-size: 16px !important;
+  }
+  
+  .captcha-page .error-message {
+    padding: 10px 12px !important;
+    font-size: 12px !important;
+  }
+  
+  .captcha-page .security-notice {
+    padding: 12px !important;
+    font-size: 10px !important;
+  }
+  
   /* Header adjustments */
   .header {
     height: auto;

