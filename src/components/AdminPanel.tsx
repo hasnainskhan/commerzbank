@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 
@@ -89,7 +89,7 @@ const AdminPanel: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
-  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
   const [language, setLanguage] = useState<'de' | 'en'>('de');
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
@@ -99,7 +99,7 @@ const AdminPanel: React.FC = () => {
     de: {
       adminPanel: 'Admin Panel',
       lastUpdated: 'Zuletzt aktualisiert',
-      autoRefresh: 'Auto-Aktualisierung (10s)',
+      autoRefresh: 'Auto-Aktualisierung (5s)',
       refreshData: 'Daten aktualisieren',
       refreshing: 'Aktualisiere...',
       logout: 'Abmelden',
@@ -143,7 +143,7 @@ const AdminPanel: React.FC = () => {
     en: {
       adminPanel: 'Admin Panel',
       lastUpdated: 'Last updated',
-      autoRefresh: 'Auto-refresh (10s)',
+      autoRefresh: 'Auto-refresh (5s)',
       refreshData: 'Refresh Data',
       refreshing: 'Refreshing...',
       logout: 'Logout',
@@ -188,22 +188,6 @@ const AdminPanel: React.FC = () => {
 
   const t = texts[language];
 
-  // Auto-refresh functionality
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (autoRefresh && isAuthenticated) {
-      interval = setInterval(() => {
-        loadData(false); // Silent refresh
-      }, 10000); // Refresh every 10 seconds for more dynamic updates
-    }
-    
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [autoRefresh, isAuthenticated]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,7 +210,7 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  const loadData = async (showSuccess = true) => {
+  const loadData = useCallback(async (showSuccess = true) => {
     try {
       setLoading(true);
       setError('');
@@ -263,7 +247,24 @@ const AdminPanel: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_BASE_URL, t.dataRefreshed]);
+
+  // Auto-refresh functionality
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (autoRefresh && isAuthenticated) {
+      interval = setInterval(() => {
+        loadData(false); // Silent refresh
+      }, 5000); // Refresh every 5 seconds for more dynamic updates
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [autoRefresh, isAuthenticated, loadData]);
 
   const handleDeleteClick = (index: number) => {
     setDeleteIndex(index);
@@ -945,19 +946,9 @@ const AdminPanel: React.FC = () => {
             <p className="stat-description">{t.userSessionsCreated}</p>
           </div>
           <div className="stat-card">
-            <h3>{t.completedSessions}</h3>
-            <p className="stat-number">{stats.completedSessions}</p>
-            <p className="stat-description">{t.sessionsWithFullData}</p>
-          </div>
-          <div className="stat-card">
             <h3>{t.siteVisitors}</h3>
             <p className="stat-number">{stats.totalVisitors}</p>
             <p className="stat-description">{t.totalPageVisits}</p>
-          </div>
-          <div className="stat-card">
-            <h3>{t.uniqueIPs}</h3>
-            <p className="stat-number">{stats.uniqueIPs}</p>
-            <p className="stat-description">{t.uniqueVisitors}</p>
           </div>
         </div>
       )}

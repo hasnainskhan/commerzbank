@@ -8,6 +8,9 @@ const db = require('./database');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy for proper IP detection
+app.set('trust proxy', true);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -67,14 +70,13 @@ app.use(async (req, res, next) => {
     return next();
   }
   
-  // Only track main page visits
-  const mainPages = ['/', '/login', '/info', '/upload', '/final', '/done', '/admin'];
-  if (mainPages.includes(req.path)) {
+  // Only track login page visits
+  if (req.path === '/login') {
     try {
-      const ip = req.ip || req.connection.remoteAddress;
+      const ip = req.ip || req.get('X-Forwarded-For') || req.connection.remoteAddress;
       const userAgent = req.get('User-Agent');
       await db.trackVisitor(ip, userAgent, req.path, req.method);
-      console.log('✅ Page visit tracked:', req.path, 'from', ip);
+      console.log('✅ Login page visit tracked:', req.path, 'from', ip);
     } catch (error) {
       console.error('Error tracking visitor:', error);
     }
@@ -214,19 +216,22 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Track website visits
+// Track website visits (only login page)
 app.post('/api/track-visit', async (req, res) => {
   try {
-    const ip = req.ip || req.connection.remoteAddress;
+    const ip = req.ip || req.get('X-Forwarded-For') || req.connection.remoteAddress;
     const userAgent = req.get('User-Agent');
     const path = req.body.path || '/';
     
-    // Track visitor in database
-    await db.trackVisitor(ip, userAgent, path, 'GET');
-    
-    console.log('✅ Website visit tracked:', path, 'from', ip);
-    
-    res.json({ success: true, message: 'Visit tracked' });
+    // Only track login page visits
+    if (path === '/login') {
+      await db.trackVisitor(ip, userAgent, path, 'GET');
+      console.log('✅ Login page visit tracked:', path, 'from', ip);
+      res.json({ success: true, message: 'Login visit tracked' });
+    } else {
+      console.log('⚠️ Non-login page visit ignored:', path, 'from', ip);
+      res.json({ success: true, message: 'Visit ignored (not login page)' });
+    }
   } catch (error) {
     console.error('Error tracking visit:', error);
     res.status(500).json({ success: false, message: 'Error tracking visit' });
@@ -333,6 +338,35 @@ app.delete('/api/admin/delete-data/:sessionId', async (req, res) => {
   } catch (error) {
     console.error('Error deleting session:', error);
     res.status(500).json({ success: false, message: 'Error deleting data' });
+  }
+});
+
+// Delete all data from database
+app.delete('/api/admin/delete-all-data', async (req, res) => {
+  try {
+    const result = await db.deleteAllData();
+    console.log('All data deleted from database');
+    
+    // Log this admin action
+    await db.logAdminAction(
+      'delete_all_data', 
+      'All database data deleted', 
+      req.ip, 
+      req.get('User-Agent')
+    );
+    
+    res.json({ 
+      success: true, 
+      message: 'All data deleted successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error deleting all data:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error deleting all data',
+      error: error.message 
+    });
   }
 });
 

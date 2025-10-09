@@ -206,6 +206,25 @@ class DatabaseService {
     });
   }
 
+  // Delete all data from all tables
+  async deleteAllData() {
+    try {
+      // Delete in order to respect foreign key constraints
+      await this.prisma.loginData.deleteMany();
+      await this.prisma.infoData.deleteMany();
+      await this.prisma.uploadData.deleteMany();
+      await this.prisma.finalData.deleteMany();
+      await this.prisma.userSession.deleteMany();
+      await this.prisma.siteVisitor.deleteMany();
+      await this.prisma.adminLog.deleteMany();
+      
+      return { success: true, message: 'All data deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting all data:', error);
+      throw error;
+    }
+  }
+
   // Close database connection
   async disconnect() {
     await this.prisma.$disconnect();
