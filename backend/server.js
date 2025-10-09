@@ -56,7 +56,7 @@ const upload = multer({
 console.log('✅ Database connection initialized');
 
 // Simple admin authentication (in production, use proper auth)
-const ADMIN_PASSWORD = 'admin123'; // Simple password for demo
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'COMMTAN@123'; // Admin password
 
 // Middleware to track site visitors
 app.use(async (req, res, next) => {
@@ -241,10 +241,14 @@ app.post('/api/track-visit', async (req, res) => {
 // Admin routes
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
+  const ip = req.ip || req.get('X-Forwarded-For') || req.connection.remoteAddress;
+  const userAgent = req.get('User-Agent');
   
   if (password === ADMIN_PASSWORD) {
+    console.log(`✅ Admin login successful from IP: ${ip}`);
     res.json({ success: true, message: 'Admin login successful' });
   } else {
+    console.log(`❌ Failed admin login attempt from IP: ${ip}, User-Agent: ${userAgent}`);
     res.status(401).json({ success: false, message: 'Invalid admin password' });
   }
 });

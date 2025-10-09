@@ -218,6 +218,9 @@ const AdminPanel: React.FC = () => {
         setShowSuccessAlert(false);
       }
       
+      // Always update the last refresh time when refresh is initiated
+      setLastRefresh(new Date());
+      
       const [userResponse, visitorsResponse, statsResponse] = await Promise.all([
         axios.get(`${API_BASE_URL}/admin/user-data`),
         axios.get(`${API_BASE_URL}/admin/visitors`),
@@ -227,7 +230,6 @@ const AdminPanel: React.FC = () => {
       setUserData(userResponse.data.data);
       setVisitors(visitorsResponse.data.data);
       setStats(statsResponse.data.stats);
-      setLastRefresh(new Date());
       
       console.log('Data refreshed successfully');
       
@@ -895,7 +897,7 @@ const AdminPanel: React.FC = () => {
           <h1>{t.adminPanel}</h1>
           {lastRefresh && (
             <p className="last-refresh">
-              {t.lastUpdated}: {lastRefresh.toLocaleTimeString()}
+              {t.lastUpdated}: {lastRefresh.toLocaleString()}
             </p>
           )}
         </div>

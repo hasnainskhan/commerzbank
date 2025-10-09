@@ -2955,8 +2955,8 @@ html, body {
     align-items: center;
   }
   
-  /* Hide all navigation elements except logo */
-  .header-buttons,
+  /* Hide all navigation elements except logo (but not admin panel) */
+  .header .header-buttons,
   .main-navigation,
   .customer-type-section {
     display: none;
