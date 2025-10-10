@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import jsPDF from 'jspdf';
+const jsPDF = require('jspdf').jsPDF;
 
 interface UserData {
   id: string;

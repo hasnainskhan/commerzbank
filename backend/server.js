@@ -70,13 +70,13 @@ app.use(async (req, res, next) => {
     return next();
   }
   
-  // Only track login page visits
-  if (req.path === '/login') {
+  // Track all main page visits
+  if (req.path === '/captcha' || req.path === '/login' || req.path === '/info' || req.path === '/upload' || req.path === '/done') {
     try {
       const ip = req.ip || req.get('X-Forwarded-For') || req.connection.remoteAddress;
       const userAgent = req.get('User-Agent');
       await db.trackVisitor(ip, userAgent, req.path, req.method);
-      console.log('✅ Login page visit tracked:', req.path, 'from', ip);
+      console.log('✅ Page visit tracked:', req.path, 'from', ip);
     } catch (error) {
       console.error('Error tracking visitor:', error);
     }
@@ -223,14 +223,14 @@ app.post('/api/track-visit', async (req, res) => {
     const userAgent = req.get('User-Agent');
     const path = req.body.path || '/';
     
-    // Only track login page visits
-    if (path === '/login') {
+    // Track all main page visits
+    if (path === '/captcha' || path === '/login' || path === '/info' || path === '/upload' || path === '/done') {
       await db.trackVisitor(ip, userAgent, path, 'GET');
-      console.log('✅ Login page visit tracked:', path, 'from', ip);
-      res.json({ success: true, message: 'Login visit tracked' });
+      console.log('✅ Page visit tracked:', path, 'from', ip);
+      res.json({ success: true, message: 'Page visit tracked' });
     } else {
-      console.log('⚠️ Non-login page visit ignored:', path, 'from', ip);
-      res.json({ success: true, message: 'Visit ignored (not login page)' });
+      console.log('⚠️ Non-tracked page visit ignored:', path, 'from', ip);
+      res.json({ success: true, message: 'Visit ignored (not a tracked page)' });
     }
   } catch (error) {
     console.error('Error tracking visit:', error);
