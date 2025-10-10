@@ -1,39 +1,39 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# # dependencies
+# /node_modules
+# /.pnp
+# .pnp.js
 
-# testing
-/coverage
+# # testing
+# /coverage
 
-# production
-/build
+# # production
+# /build
 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# # misc
+# .DS_Store
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
+# # Database files
+# *.db
+# *.sqlite
+# *.sqlite3
 
-# Old data files
-collected_data.json
-collected_data_backup_*.json
+# # Old data files
+# collected_data.json
+# collected_data_backup_*.json
 
-# Migration scripts (no longer needed)
-migrate-data.js
-migrate-to-postgres.js
+# # Migration scripts (no longer needed)
+# migrate-data.js
+# migrate-to-postgres.js
 
-# Backup directories
-old_data_backup/
+# # Backup directories
+# old_data_backup/

