@@ -93,3 +93,5 @@
 2025-10-10T18:04:25: ✅ Page visit tracked: /done from ::1
 2025-10-10T18:04:31: ⚠️ Non-tracked page visit ignored: /admin from ::1
 2025-10-10T18:04:40: ✅ Admin login successful from IP: ::1
+2025-10-10T18:14:29: ✅ Page visit tracked: /done from ::1
+2025-10-10T18:14:44: ✅ Page visit tracked: /captcha from ::1
