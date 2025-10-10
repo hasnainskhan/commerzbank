@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            background-color: #fafafa;
+        }
+        .upload-area.dragover {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .device-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-info {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>📱 Mobile Upload Test</h1>
+        
+        <div class="device-info">
+            <h3>Device Information:</h3>
+            <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+            <p><strong>Is Mobile:</strong> <span id="isMobile"></span></p>
+            <p><strong>Screen Size:</strong> <span id="screenSize"></span></p>
+            <p><strong>API URL:</strong> <span id="apiUrl"></span></p>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <h3>📷 Upload Test Area</h3>
+            <p>Tap to select a file or drag and drop</p>
+            <input type="file" id="fileInput" accept="image/*" capture="environment">
+            <button onclick="document.getElementById('fileInput').click()">
+                📷 Select Photo
+            </button>
+        </div>
+
+        <div id="fileInfo" class="file-info" style="display: none;">
+            <h4>Selected File:</h4>
+            <p id="fileName"></p>
+            <p id="fileSize"></p>
+            <p id="fileType"></p>
+        </div>
+
+        <div id="preview" style="display: none;">
+            <h4>Preview:</h4>
+            <img id="previewImg" class="preview" alt="Preview">
+        </div>
+
+        <button id="uploadBtn" onclick="uploadFile()" disabled>
+            🚀 Upload File
+        </button>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Device detection
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // API URL detection
+        const getApiUrl = () => {
+            const hostname = window.location.hostname;
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'http://localhost:3001/api';
+            }
+            return `https://${hostname}/api`;
+        };
+
+        // Update device info
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('isMobile').textContent = isMobile ? 'Yes' : 'No';
+        document.getElementById('screenSize').textContent = `${window.innerWidth}x${window.innerHeight}`;
+        document.getElementById('apiUrl').textContent = getApiUrl();
+
+        let selectedFile = null;
+
+        // File input change handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                showFileInfo(file);
+                showPreview(file);
+                document.getElementById('uploadBtn').disabled = false;
+                showStatus('File selected successfully!', 'success');
+            }
+        });
+
+        // Drag and drop handlers
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    selectedFile = file;
+                    showFileInfo(file);
+                    showPreview(file);
+                    document.getElementById('uploadBtn').disabled = false;
+                    showStatus('File selected successfully!', 'success');
+                } else {
+                    showStatus('Please select an image file.', 'error');
+                }
+            }
+        });
+
+        function showFileInfo(file) {
+            document.getElementById('fileName').textContent = `Name: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024).toFixed(2)} KB`;
+            document.getElementById('fileType').textContent = `Type: ${file.type}`;
+            document.getElementById('fileInfo').style.display = 'block';
+        }
+
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('preview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        async function uploadFile() {
+            if (!selectedFile) {
+                showStatus('Please select a file first.', 'error');
+                return;
+            }
+
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '⏳ Uploading...';
+
+            try {
+                showStatus('Starting upload...', 'info');
+
+                // Test connectivity first
+                const apiUrl = getApiUrl();
+                showStatus('Testing connectivity...', 'info');
+                
+                const healthResponse = await fetch(`${apiUrl}/health`, {
+                    method: 'GET',
+                    timeout: 5000
+                });
+
+                if (!healthResponse.ok) {
+                    throw new Error('Cannot connect to server');
+                }
+
+                showStatus('Connectivity test passed. Uploading file...', 'info');
+
+                // Create FormData
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('sessionId', 'test-session-' + Date.now());
+
+                // Upload file
+                const response = await fetch(`${apiUrl}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showStatus('✅ Upload successful!', 'success');
+                } else {
+                    showStatus(`❌ Upload failed: ${result.message}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                showStatus(`❌ Upload failed: ${error.message}`, 'error');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '🚀 Upload File';
+            }
+        }
+
+        // Mobile-specific optimizations
+        if (isMobile) {
+            // Add mobile-specific styles
+            document.body.style.fontSize = '16px'; // Prevent zoom on iOS
+            document.querySelectorAll('input, button').forEach(el => {
+                el.style.fontSize = '16px';
+            });
+        }
+    </script>
+</body>
+</html>

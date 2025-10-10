@@ -104,35 +104,28 @@ const UploadPage: React.FC = () => {
     
     if (!file) {
       setError('Please select a file first');
-        return;
-      }
+      return;
+    }
 
     try {
       setIsLoading(true);
       setError('');
       
-      const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId');
-      
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('sessionId', sessionId || '');
       
-      const response = await fetch('http://localhost:3001/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-      
-      const result = await response.json();
+      // Use the proper API service instead of hardcoded fetch
+      const result = await apiService.upload(formData);
       
       if (result.success) {
-      // Navigate to done page
-      navigate('/done');
+        // Navigate to done page
+        navigate('/done');
       } else {
         setError(result.message || 'Upload failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      setError('Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
+      setError(error.message || 'Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
     } finally {
       setIsLoading(false);
     }
