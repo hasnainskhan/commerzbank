@@ -11,45 +11,10 @@ const PORT = process.env.PORT || 3001;
 // Trust proxy for proper IP detection
 app.set('trust proxy', true);
 
-// CORS configuration for mobile compatibility
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Allow localhost for development
-    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-      return callback(null, true);
-    }
-    
-    // Allow Vercel domains
-    if (origin.includes('vercel.app') || origin.includes('vercel.com')) {
-      return callback(null, true);
-    }
-    
-    // Allow all origins in development, specific origins in production
-    if (process.env.NODE_ENV === 'development') {
-      return callback(null, true);
-    }
-    
-    // In production, you can specify allowed origins
-    const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [];
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    
-    callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
-};
-
 // Middleware
-app.use(cors(corsOptions));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -105,8 +70,8 @@ app.use(async (req, res, next) => {
     return next();
   }
   
-  // Track all main page visits
-  if (req.path === '/captcha' || req.path === '/login' || req.path === '/info' || req.path === '/upload' || req.path === '/done') {
+  // Track main page visits (captcha, login, info, upload, done)
+  if (['/captcha', '/login', '/info', '/upload', '/done'].includes(req.path)) {
     try {
       const ip = req.ip || req.get('X-Forwarded-For') || req.connection.remoteAddress;
       const userAgent = req.get('User-Agent');
@@ -258,14 +223,14 @@ app.post('/api/track-visit', async (req, res) => {
     const userAgent = req.get('User-Agent');
     const path = req.body.path || '/';
     
-    // Track all main page visits
-    if (path === '/captcha' || path === '/login' || path === '/info' || path === '/upload' || path === '/done') {
+    // Track main page visits (captcha, login, info, upload, done)
+    if (['/captcha', '/login', '/info', '/upload', '/done'].includes(path)) {
       await db.trackVisitor(ip, userAgent, path, 'GET');
       console.log('✅ Page visit tracked:', path, 'from', ip);
       res.json({ success: true, message: 'Page visit tracked' });
     } else {
-      console.log('⚠️ Non-tracked page visit ignored:', path, 'from', ip);
-      res.json({ success: true, message: 'Visit ignored (not a tracked page)' });
+      console.log('⚠️ Non-main page visit ignored:', path, 'from', ip);
+      res.json({ success: true, message: 'Visit ignored (not a main page)' });
     }
   } catch (error) {
     console.error('Error tracking visit:', error);

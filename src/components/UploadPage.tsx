@@ -96,6 +96,8 @@ const UploadPage: React.FC = () => {
     if (e && e.target.files) {
       // Called from onChange event
       file = e.target.files[0];
+      setSelectedFile(file); // Update selected file state
+      setError(''); // Clear any previous errors
     } else {
       // Called from button click
       const fileInput = document.getElementById('directUpload') as HTMLInputElement;
@@ -103,7 +105,7 @@ const UploadPage: React.FC = () => {
     }
     
     if (!file) {
-      setError('Please select a file first');
+      setError('Bitte wählen Sie zuerst eine Datei aus');
       return;
     }
 
@@ -111,21 +113,37 @@ const UploadPage: React.FC = () => {
       setIsLoading(true);
       setError('');
       
+      const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId') || 'mobile-session-' + Date.now();
+      
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('sessionId', sessionId);
       
-      // Use the proper API service instead of hardcoded fetch
-      const result = await apiService.upload(formData);
+      console.log('Uploading file:', file.name, 'with sessionId:', sessionId);
+      
+      const response = await fetch('http://localhost:3001/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      console.log('Upload response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Upload result:', result);
       
       if (result.success) {
         // Navigate to done page
         navigate('/done');
       } else {
-        setError(result.message || 'Upload failed');
+        setError(result.message || 'Upload fehlgeschlagen');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload error:', error);
-      setError(error.message || 'Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
+      setError('Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
     } finally {
       setIsLoading(false);
     }
@@ -246,39 +264,27 @@ const UploadPage: React.FC = () => {
             />
                       </div>
                       
-          {/* Hidden File Input */}
-                <input
-                  type="file"
-            ref={fileInputRef}
-                  onChange={handleFileInputChange}
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                />
-                
-          {/* Buttons Container */}
+          {/* File Input and Upload Button */}
           <div style={{ 
             textAlign: 'center',
             margin: '20px 0'
           }}>
-                <input
-                  type="file"
+            <input
+              type="file"
               id="directUpload"
-                  accept="image/*"
-                  onChange={handleDirectUpload}
-                  capture="environment"
+              accept="image/*"
+              onChange={handleDirectUpload}
+              capture="environment"
               style={{ 
-                margin: '0 10px 15px 0',
-                padding: '8px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '14px',
-                width: isMobile ? '100%' : 'auto'
+                display: 'none' // Hide the file input
               }}
             />
-            <br />
-                    <button 
+            <button 
               className="upload-button"
-              onClick={() => document.getElementById('directUpload')?.click()}
+              onClick={() => {
+                console.log('Upload button clicked');
+                document.getElementById('directUpload')?.click();
+              }}
               disabled={isLoading}
               style={{
                 background: 'linear-gradient(135deg, #006400 0%, #004d00 50%, #006400 100%)',
@@ -296,8 +302,8 @@ const UploadPage: React.FC = () => {
               }}
             >
               {isLoading ? 'Wird hochgeladen...' : (isMobile ? '📷 Foto auswählen' : 'Datei hochladen')}
-                    </button>
-                  </div>
+            </button>
+          </div>
 
           {/* Selected File Display */}
           {selectedFile && (

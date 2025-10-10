@@ -8,7 +8,7 @@ import InfoPage from './components/InfoPage';
 import UploadPage from './components/UploadPage';
 import DonePage from './components/DonePage';
 import AdminPanel from './components/AdminPanel';
-import SecurityScript from './components/SecurityScript';
+// import SecurityScript from './components/SecurityScript'; // Disabled to allow developer tools
 import { LanguageProvider } from './contexts/LanguageContext';
 import axios from 'axios';
 import './App.css';
@@ -91,7 +91,7 @@ function AppContent() {
 
   return (
     <div className="App">
-      <SecurityScript />
+      {/* <SecurityScript /> */} {/* Disabled to allow developer tools */}
       {showHeader && <Header />}
       <Routes>
         <Route path="/" element={<Navigate to="/captcha" replace />} />
