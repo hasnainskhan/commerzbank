@@ -1,4 +1,3 @@
-
 # Commcomm Application
 
 A comprehensive React.js application with PostgreSQL backend, featuring multi-step form processing, advanced admin panel, and secure data collection with visitor tracking.
