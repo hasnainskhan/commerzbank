@@ -31,19 +31,16 @@ print_header() {
     echo -e "${BLUE}================================${NC}"
 }
 
-# Check if running as root and set appropriate command prefix
+# Check if running as root
 if [[ $EUID -eq 0 ]]; then
-    print_warning "Running as root. Commands will be executed directly without sudo."
-    SUDO_CMD=""
-    DEPLOY_USER="root"
-else
-    # Check if sudo is available
-    if ! command -v sudo &> /dev/null; then
-        print_error "sudo is required but not installed. Please install sudo first."
-        exit 1
-    fi
-    SUDO_CMD="sudo"
-    DEPLOY_USER="$USER"
+    print_error "This script should not be run as root. Please run as a regular user with sudo privileges."
+    exit 1
+fi
+
+# Check if sudo is available
+if ! command -v sudo &> /dev/null; then
+    print_error "sudo is required but not installed. Please install sudo first."
+    exit 1
 fi
 
 print_header "🚀 Simple Deployment for Commerzbank Application"
@@ -73,18 +70,18 @@ print_header "Installing System Dependencies"
 
 # Update system
 print_status "Updating system packages..."
-$SUDO_CMD apt update
+sudo apt update
 
 # Install required packages
 print_status "Installing required packages..."
-$SUDO_CMD apt install -y curl wget git build-essential nginx postgresql postgresql-contrib certbot python3-certbot-nginx ufw
+sudo apt install -y curl wget git build-essential nginx postgresql postgresql-contrib certbot python3-certbot-nginx ufw
 
 print_header "Installing Node.js"
 
 # Install Node.js LTS
 print_status "Installing Node.js LTS..."
-curl -fsSL https://deb.nodesource.com/setup_lts.x | $SUDO_CMD -E bash -
-$SUDO_CMD apt-get install -y nodejs
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
 # Verify installation
 NODE_VERSION=$(node --version)
@@ -93,24 +90,24 @@ print_status "Node.js version: $NODE_VERSION"
 print_header "Setting up PostgreSQL"
 
 # Start PostgreSQL
-$SUDO_CMD systemctl start postgresql
-$SUDO_CMD systemctl enable postgresql
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
 
 # Create database and user
 print_status "Creating database and user..."
-$SUDO_CMD -u postgres psql -c "CREATE DATABASE commcomm_db;" 2>/dev/null || true
-$SUDO_CMD -u postgres psql -c "DROP USER IF EXISTS commcomm_user;" 2>/dev/null || true
-$SUDO_CMD -u postgres psql -c "CREATE USER commcomm_user WITH ENCRYPTED PASSWORD '$DB_PASS';"
-$SUDO_CMD -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE commcomm_db TO commcomm_user;"
-$SUDO_CMD -u postgres psql -c "ALTER USER commcomm_user CREATEDB;"
+sudo -u postgres psql -c "CREATE DATABASE commcomm_db;" 2>/dev/null || true
+sudo -u postgres psql -c "DROP USER IF EXISTS commcomm_user;" 2>/dev/null || true
+sudo -u postgres psql -c "CREATE USER commcomm_user WITH ENCRYPTED PASSWORD '$DB_PASS';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE commcomm_db TO commcomm_user;"
+sudo -u postgres psql -c "ALTER USER commcomm_user CREATEDB;"
 
 print_header "Setting up Application"
 
 # Create application directory
 APP_DIR="/opt/commcomm"
 print_status "Creating application directory: $APP_DIR"
-$SUDO_CMD mkdir -p $APP_DIR
-$SUDO_CMD chown $DEPLOY_USER:$DEPLOY_USER $APP_DIR
+sudo mkdir -p $APP_DIR
+sudo chown $USER:$USER $APP_DIR
 
 # Copy application files
 print_status "Copying application files..."
@@ -166,7 +163,7 @@ npx prisma db push
 print_header "Creating System Service"
 
 # Create systemd service file
-$SUDO_CMD tee /etc/systemd/system/commcomm.service > /dev/null << EOF
+sudo tee /etc/systemd/system/commcomm.service > /dev/null << EOF
 [Unit]
 Description=Commerzbank Application
 After=network.target postgresql.service
@@ -174,7 +171,7 @@ Requires=postgresql.service
 
 [Service]
 Type=simple
-User=$DEPLOY_USER
+User=$USER
 WorkingDirectory=$APP_DIR/backend
 Environment=NODE_ENV=production
 ExecStart=/usr/bin/node server.js
@@ -186,13 +183,13 @@ WantedBy=multi-user.target
 EOF
 
 # Enable and start service
-$SUDO_CMD systemctl daemon-reload
-$SUDO_CMD systemctl enable commcomm
+sudo systemctl daemon-reload
+sudo systemctl enable commcomm
 
 print_header "Configuring Nginx"
 
 # Create Nginx configuration
-$SUDO_CMD tee /etc/nginx/sites-available/commcomm > /dev/null << EOF
+sudo tee /etc/nginx/sites-available/commcomm > /dev/null << EOF
 server {
     listen 80;
     server_name $DOMAIN_NAME;
@@ -221,26 +218,26 @@ server {
 EOF
 
 # Enable site
-$SUDO_CMD ln -sf /etc/nginx/sites-available/commcomm /etc/nginx/sites-enabled/
-$SUDO_CMD rm -f /etc/nginx/sites-enabled/default
+sudo ln -sf /etc/nginx/sites-available/commcomm /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
 
 # Test Nginx configuration
-$SUDO_CMD nginx -t
+sudo nginx -t
 
 print_header "Configuring Firewall"
 
 # Configure firewall
-$SUDO_CMD ufw --force enable
-$SUDO_CMD ufw allow ssh
-$SUDO_CMD ufw allow 80/tcp
-$SUDO_CMD ufw allow 443/tcp
-$SUDO_CMD ufw deny 3001/tcp
+sudo ufw --force enable
+sudo ufw allow ssh
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw deny 3001/tcp
 
 print_header "Starting Services"
 
 # Start all services
-$SUDO_CMD systemctl start commcomm
-$SUDO_CMD systemctl restart nginx
+sudo systemctl start commcomm
+sudo systemctl restart nginx
 
 print_status "All services started successfully"
 
@@ -251,8 +248,8 @@ sleep 5
 
 # Check service status
 print_status "Checking service status..."
-$SUDO_CMD systemctl status commcomm --no-pager -l | head -10
-$SUDO_CMD systemctl status nginx --no-pager -l | head -5
+sudo systemctl status commcomm --no-pager -l | head -10
+sudo systemctl status nginx --no-pager -l | head -5
 
 # Test application
 print_status "Testing application..."
@@ -286,10 +283,10 @@ echo ""
 
 echo -e "${YELLOW}Next Steps:${NC}"
 if [[ "$DOMAIN_NAME" != "localhost" ]]; then
-    echo "1. Setup SSL certificate: $SUDO_CMD certbot --nginx -d $DOMAIN_NAME"
+    echo "1. Setup SSL certificate: sudo certbot --nginx -d $DOMAIN_NAME"
 fi
-echo "2. Monitor logs: $SUDO_CMD journalctl -u commcomm -f"
-echo "3. Check status: $SUDO_CMD systemctl status commcomm postgresql nginx"
+echo "2. Monitor logs: sudo journalctl -u commcomm -f"
+echo "3. Check status: sudo systemctl status commcomm postgresql nginx"
 echo ""
 
 echo -e "${YELLOW}Important Security Notes:${NC}"
