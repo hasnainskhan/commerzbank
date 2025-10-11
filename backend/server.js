@@ -262,6 +262,35 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Test endpoint to list uploaded files
+app.get('/api/test-uploads', (req, res) => {
+  try {
+    const files = fs.readdirSync(uploadsDir);
+    const fileList = files.map(file => {
+      const filePath = path.join(uploadsDir, file);
+      const stats = fs.statSync(filePath);
+      return {
+        filename: file,
+        size: stats.size,
+        url: `/uploads/${file}`,
+        fullUrl: `${req.protocol}://${req.get('host')}/uploads/${file}`
+      };
+    });
+    
+    res.json({
+      success: true,
+      uploadsDir: uploadsDir,
+      fileCount: files.length,
+      files: fileList
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Track website visits (only login page)
 app.post('/api/track-visit', async (req, res) => {
   try {
