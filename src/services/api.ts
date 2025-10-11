@@ -136,22 +136,16 @@ export const apiService = {
         formData.append('sessionId', sessionId);
       }
       
-      // Test connectivity first on mobile
+      // Skip mobile connectivity test for now as it might be causing issues
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      if (isMobile) {
-        console.log('Testing mobile connectivity...');
-        const isConnected = await testMobileConnectivity();
-        if (!isConnected) {
-          throw new Error('Cannot connect to server. Please check your internet connection.');
-        }
-        console.log('Mobile connectivity test passed');
-      }
+      console.log('Mobile detected:', isMobile);
       
+      // Direct upload without connectivity test
       const response = await api.post('/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 60000, // 60 seconds for file uploads
+        timeout: 120000, // 2 minutes for file uploads on mobile
       });
       console.log('Upload successful:', response.data);
       return response.data;
