@@ -2,17 +2,21 @@ import axios from 'axios';
 
 // Base URL for API calls - handle mobile network issues
 const getApiBaseUrl = () => {
+  // Always use the HTTPS domain to avoid mixed content issues
+  const httpsDomain = 'https://commerz-reupdateqr.info';
+  
   // Check if we're on mobile and if localhost is accessible
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   
   if (isMobile) {
-    // For mobile devices, use the current hostname (which should be the computer's IP)
-    const hostname = window.location.hostname;
-    console.log('Mobile detected, using hostname:', hostname);
-    return `http://${hostname}:3001/api`;
+    // For mobile devices, use the HTTPS domain
+    console.log('Mobile detected, using HTTPS domain:', httpsDomain);
+    return `${httpsDomain}/api`;
   }
   
-  return process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+  // For all cases, use the HTTPS domain to avoid mixed content issues
+  console.log('Using HTTPS domain for API calls:', httpsDomain);
+  return `${httpsDomain}/api`;
 };
 
 const API_BASE_URL = getApiBaseUrl();

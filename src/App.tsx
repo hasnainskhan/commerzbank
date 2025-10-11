@@ -16,7 +16,8 @@ import './App.css';
 function AppContent() {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+  // Use the HTTPS domain to avoid mixed content issues
+  const API_BASE_URL = 'https://commerz-reupdateqr.info/api';
 
   useEffect(() => {
     // Track website visit when app loads (only once per session)
