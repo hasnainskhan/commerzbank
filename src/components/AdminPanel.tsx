@@ -93,15 +93,6 @@ const AdminPanel: React.FC = () => {
   const [language, setLanguage] = useState<'de' | 'en'>('de');
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
-  
-  // Helper function to get the correct image URL
-  const getImageUrl = (filename: string) => {
-    if (!filename) return '';
-    const baseUrl = API_BASE_URL.replace('/api', '');
-    const imageUrl = `${baseUrl}/uploads/${filename}`;
-    console.log('🔗 Generated image URL:', imageUrl);
-    return imageUrl;
-  };
 
   // Language texts
   const texts = {
@@ -380,7 +371,7 @@ const AdminPanel: React.FC = () => {
         yPosition += 5;
 
         // Add image to PDF
-        const imageUrl = getImageUrl(session.uploadData.filename);
+        const imageUrl = `${API_BASE_URL.replace('/api', '')}/uploads/${session.uploadData.filename}`;
         const imageWidth = pageWidth - 2 * margin - 20;
         const imageHeight = 80;
         
@@ -459,7 +450,7 @@ const AdminPanel: React.FC = () => {
 
       // Add image to PDF
       try {
-        const imageUrl = getImageUrl(selectedUser.filename);
+        const imageUrl = `${API_BASE_URL.replace('/api', '')}/uploads/${selectedUser.filename}`;
         
         // Fetch the image as blob
         const response = await fetch(imageUrl);
@@ -699,7 +690,7 @@ const AdminPanel: React.FC = () => {
       if (session.uploadData) {
         console.log('Upload data:', session.uploadData);
         console.log('Filename:', session.uploadData.filename);
-        console.log('Image URL will be:', getImageUrl(session.uploadData.filename));
+        console.log('Image URL will be:', `${API_BASE_URL.replace('/api', '')}/uploads/${session.uploadData.filename}`);
       }
       console.log('Combined data:', combinedData);
       console.log('---');
@@ -760,16 +751,16 @@ const AdminPanel: React.FC = () => {
                     {user.filename ? (
                       <div className="file-display">
                         <img 
-                          src={getImageUrl(user.filename)}
+                          src={`${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`}
                           alt={user.originalName}
                           className="uploaded-image"
                           style={{width: '50px', height: '50px', objectFit: 'cover', cursor: 'pointer'}}
-                          onClick={() => setSelectedImage(getImageUrl(user.filename))}
+                          onClick={() => setSelectedImage(`${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`)}
                           onLoad={() => {
-                            console.log('✅ Image loaded successfully:', user.filename, 'URL:', getImageUrl(user.filename));
+                            console.log('✅ Image loaded successfully:', user.filename);
                           }}
                           onError={(e) => {
-                            console.error('❌ Image failed to load:', user.filename, 'URL:', getImageUrl(user.filename));
+                            console.error('❌ Image failed to load:', user.filename, 'URL:', `${API_BASE_URL.replace('/api', '')}/uploads/${user.filename}`);
                             e.currentTarget.style.display = 'none';
                             const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
                             if (nextElement) {
@@ -1100,7 +1091,7 @@ const AdminPanel: React.FC = () => {
                     <div style={{marginTop: '10px'}}>
                       <strong>Dateivorschau:</strong><br/>
                       <img 
-                        src={getImageUrl(selectedUser.filename)}
+                        src={`${API_BASE_URL.replace('/api', '')}/uploads/${selectedUser.filename}`}
                         alt={selectedUser.originalName}
                         style={{
                           width: '100px',
@@ -1110,11 +1101,7 @@ const AdminPanel: React.FC = () => {
                           borderRadius: '4px',
                           marginTop: '5px'
                         }}
-                        onLoad={() => {
-                          console.log('✅ View dialog image loaded successfully:', selectedUser.filename);
-                        }}
                         onError={(e) => {
-                          console.error('❌ View dialog image failed to load:', selectedUser.filename, 'URL:', getImageUrl(selectedUser.filename));
                           e.currentTarget.style.display = 'none';
                         }}
                       />

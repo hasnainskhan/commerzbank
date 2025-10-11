@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  commerzbank-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: commerzbank-backend-dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DATABASE_URL=file:./prisma/dev.db
+      - ADMIN_PASSWORD=COMMTAN@123
+    volumes:
+      # Mount source code for hot reload
+      - ./backend:/app
+      - /app/node_modules
+      # Persist database
+      - ./backend/prisma:/app/prisma
+      # Persist uploads
+      - ./backend/uploads:/app/uploads
+    restart: unless-stopped
+    command: npm run dev
+
+  commerzbank-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.dev
+    container_name: commerzbank-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/app/src
+      - ./public:/app/public
+      - /app/node_modules
+    restart: unless-stopped
+    depends_on:
+      - commerzbank-backend
+
+

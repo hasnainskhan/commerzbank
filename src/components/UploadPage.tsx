@@ -117,22 +117,12 @@ const UploadPage: React.FC = () => {
       
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('sessionId', sessionId);
       
       console.log('Uploading file:', file.name, 'with sessionId:', sessionId);
       
-      const response = await fetch('http://localhost:3001/api/upload', {
-        method: 'POST',
-        body: formData
-      });
+      // Use the API service which handles mobile URLs automatically
+      const result = await apiService.upload(formData);
       
-      console.log('Upload response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
       console.log('Upload result:', result);
       
       if (result.success) {
