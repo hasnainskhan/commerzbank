@@ -100,10 +100,9 @@ export const apiService = {
         console.log('No sessionId in response:', response.data);
       }
       return response.data;
-    } catch (error) {
-      console.log('Login error, but continuing for demo:', error);
-      // For demo purposes, always return success
-      return { success: true, message: 'Login successful' };
+    } catch (error: any) {
+      console.log('Login error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Login failed. Please try again.');
     }
   },
 
@@ -115,10 +114,9 @@ export const apiService = {
       const response = await api.post('/info', { ...data, sessionId });
       console.log('Info API - Response:', response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.log('Info API - Error:', error);
-      // For demo purposes, always return success
-      return { success: true, message: 'Info submitted successfully' };
+      throw new Error(error.response?.data?.message || error.message || 'Info submission failed. Please try again.');
     }
   },
 
@@ -168,9 +166,8 @@ export const apiService = {
         throw new Error('Cannot connect to server. Please check your internet connection and try again.');
       }
       
-      // For demo purposes, still return success for other errors
-      console.log('Upload failed but returning success for demo purposes');
-      return { success: true, message: 'File uploaded successfully' };
+      // Re-throw the error so the frontend knows the upload actually failed
+      throw new Error(error.response?.data?.message || error.message || 'Upload failed. Please try again.');
     }
   },
 
@@ -182,10 +179,9 @@ export const apiService = {
       const response = await api.post('/final', { ...data, sessionId });
       console.log('Final API - Response:', response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.log('Final API - Error:', error);
-      // For demo purposes, always return success
-      return { success: true, message: 'Data submitted successfully' };
+      throw new Error(error.response?.data?.message || error.message || 'Final submission failed. Please try again.');
     }
   },
 
