@@ -11,7 +11,14 @@ const UploadPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isMobile, setIsMobile] = useState(false);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Add debug message to screen (visible on mobile)
+  const addDebugLog = (message: string) => {
+    console.log(message);
+    setDebugLog(prev => [...prev.slice(-15), `${message}`]);
+  };
 
   useEffect(() => {
     // Check if user came from info page (check both sessionStorage and localStorage)
@@ -92,25 +99,25 @@ const UploadPage: React.FC = () => {
 
   // Process and compress image for camera uploads
   const processImageFile = async (file: File): Promise<File> => {
-    console.log('=== PROCESSING IMAGE FILE ===');
-    console.log('File name:', file.name);
-    console.log('File size:', file.size);
-    console.log('File type:', file.type);
+    addDebugLog('📷 Processing image...');
+    addDebugLog(`File: ${file.name}`);
+    addDebugLog(`Size: ${Math.round(file.size / 1024)}KB`);
+    addDebugLog(`Type: ${file.type || 'none'}`);
     
     // Always try to process camera photos, but with timeout and fallback
     const needsProcessing = file.size > 3 * 1024 * 1024 || !file.type || file.type === '';
     
     if (!needsProcessing) {
-      console.log('File does not need processing - size OK and has type');
+      addDebugLog('✅ No compression needed');
       return file;
     }
     
-    console.log('File needs processing - will compress...');
+    addDebugLog('🔄 Compressing...');
     
     return new Promise((resolve) => {
       // Set a timeout - if processing takes too long, use original file
       const timeout = setTimeout(() => {
-        console.warn('Image processing timeout - using original file');
+        addDebugLog('⏱️ Timeout - using original');
         resolve(file);
       }, 10000); // 10 second timeout
       
@@ -178,10 +185,9 @@ const UploadPage: React.FC = () => {
                   lastModified: Date.now(),
                 });
                 
-                console.log('✅ Image processed successfully!');
-                console.log('Original size:', file.size, 'bytes');
-                console.log('New size:', processedFile.size, 'bytes');
-                console.log('Compression ratio:', Math.round((1 - processedFile.size / file.size) * 100) + '%');
+                const ratio = Math.round((1 - processedFile.size / file.size) * 100);
+                addDebugLog(`✅ Compressed ${ratio}%`);
+                addDebugLog(`New size: ${Math.round(processedFile.size / 1024)}KB`);
                 resolve(processedFile);
               },
               'image/jpeg',
@@ -241,54 +247,37 @@ const UploadPage: React.FC = () => {
     try {
       setIsLoading(true);
       setError('');
+      setDebugLog([]); // Clear previous logs
       
-      console.log('=== STARTING UPLOAD PROCESS ===');
+      addDebugLog('🚀 Starting upload...');
       
       const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId') || 'mobile-session-' + Date.now();
-      console.log('SessionId:', sessionId);
       
-      // Process the image file (especially important for camera captures)
-      console.log('=== STEP 1: Original file ===');
-      console.log('Name:', file.name);
-      console.log('Size:', file.size, 'bytes');
-      console.log('Type:', file.type);
-      
-      console.log('=== STEP 2: Processing file ===');
       const processedFile = await processImageFile(file);
       
-      console.log('=== STEP 3: Processed file ===');
-      console.log('Name:', processedFile.name);
-      console.log('Size:', processedFile.size, 'bytes');
-      console.log('Type:', processedFile.type);
-      
-      console.log('=== STEP 4: Creating FormData ===');
+      addDebugLog('📦 Creating upload data...');
       const formData = new FormData();
       formData.append('file', processedFile);
       formData.append('sessionId', sessionId);
-      console.log('FormData created with entries:', Array.from(formData.entries()).length);
       
-      console.log('=== STEP 5: Calling upload API ===');
+      addDebugLog('📤 Uploading to server...');
       const result = await apiService.upload(formData);
       
-      console.log('=== STEP 6: Upload complete ===');
-      console.log('Result:', result);
+      addDebugLog('✅ Upload complete!');
       
       if (result.success) {
-        console.log('✅ Upload successful! Navigating to done page...');
-        navigate('/done');
+        addDebugLog('🎉 Success! Redirecting...');
+        setTimeout(() => navigate('/done'), 1000);
       } else {
-        console.error('❌ Upload failed:', result.message);
+        addDebugLog(`❌ Failed: ${result.message}`);
         setError(result.message || 'Upload fehlgeschlagen');
       }
     } catch (error: any) {
-      console.error('=== UPLOAD ERROR ===');
-      console.error('Error type:', typeof error);
-      console.error('Error message:', error?.message);
-      console.error('Error stack:', error?.stack);
-      console.error('Full error:', error);
+      addDebugLog('❌ ERROR!');
+      addDebugLog(`Type: ${typeof error}`);
+      addDebugLog(`Msg: ${error?.message || 'Unknown'}`);
       setError('Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
     } finally {
-      console.log('=== UPLOAD PROCESS ENDED ===');
       setIsLoading(false);
     }
   };
@@ -491,6 +480,25 @@ const UploadPage: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Debug Log (visible on mobile) */}
+        {debugLog.length > 0 && (
+          <div style={{
+            background: '#000',
+            color: '#0f0',
+            padding: '10px',
+            borderRadius: '5px',
+            fontSize: '12px',
+            fontFamily: 'monospace',
+            marginBottom: '20px',
+            maxHeight: '300px',
+            overflowY: 'auto'
+          }}>
+            {debugLog.map((log, i) => (
+              <div key={i}>{log}</div>
+            ))}
+          </div>
+        )}
 
         {/* Important Info Box */}
         <div className="info-panel" style={{
