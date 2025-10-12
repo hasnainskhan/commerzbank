@@ -24,11 +24,15 @@ const API_BASE_URL = getApiBaseUrl();
 // Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000, // Increased timeout for mobile networks
+  timeout: 300000, // 5 minutes for mobile networks
   headers: {
     'Accept': 'application/json',
     'Cache-Control': 'no-cache'
-  }
+  },
+  // Enhanced configuration for mobile uploads
+  maxContentLength: 50 * 1024 * 1024, // 50MB
+  maxBodyLength: 50 * 1024 * 1024, // 50MB
+  withCredentials: false, // Disable credentials for mobile compatibility
 });
 
 // Request interceptor to add common headers
@@ -85,6 +89,30 @@ const testMobileConnectivity = async (): Promise<boolean> => {
   }
 };
 
+// Fallback mobile upload using fetch API
+const fallbackMobileUpload = async (formData: FormData): Promise<any> => {
+  console.log('=== FALLBACK MOBILE UPLOAD ===');
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      body: formData,
+      // Don't set Content-Type, let browser set it with boundary
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Fallback upload successful:', data);
+    return data;
+  } catch (error) {
+    console.error('Fallback upload failed:', error);
+    throw error;
+  }
+};
+
 // API endpoints
 export const apiService = {
   // Login endpoint
@@ -122,39 +150,54 @@ export const apiService = {
 
   // Upload endpoint
   upload: async (formData: FormData) => {
+    // Skip mobile connectivity test for now as it might be causing issues
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     try {
       console.log('=== UPLOAD START ===');
       console.log('Starting upload request...');
       console.log('API Base URL:', API_BASE_URL);
       console.log('FormData entries:', Array.from(formData.entries()));
+      console.log('Mobile detected:', isMobile);
+      console.log('User Agent:', navigator.userAgent);
       
       // SessionId should already be in formData from the component
       console.log('Upload API - FormData entries:', Array.from(formData.entries()));
       
-      // Skip mobile connectivity test for now as it might be causing issues
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      console.log('Mobile detected:', isMobile);
-      console.log('User Agent:', navigator.userAgent);
+      // Check file size for mobile
+      const file = formData.get('file') as File;
+      if (file && isMobile) {
+        console.log('File size:', file.size, 'bytes');
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit for mobile
+          console.log('File too large for mobile, compressing...');
+          // For now, just warn but continue
+        }
+      }
       
       // Direct upload without connectivity test
       console.log('Sending upload request to:', `${API_BASE_URL}/upload`);
       
-      // Add more detailed error handling for mobile
-      const response = await api.post('/upload', formData, {
+      // Mobile-optimized upload configuration
+      const uploadConfig = {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          // Don't set Content-Type for FormData, let browser set it with boundary
         },
-        timeout: 120000, // 2 minutes for file uploads on mobile
-        onUploadProgress: (progressEvent) => {
+        timeout: isMobile ? 300000 : 120000, // 5 minutes for mobile, 2 for desktop
+        maxContentLength: 50 * 1024 * 1024, // 50MB
+        maxBodyLength: 50 * 1024 * 1024, // 50MB
+        onUploadProgress: (progressEvent: any) => {
           if (isMobile && progressEvent.total) {
-            console.log('Mobile upload progress:', Math.round((progressEvent.loaded * 100) / progressEvent.total));
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log('Mobile upload progress:', progress + '%');
           }
         },
-        validateStatus: function (status) {
+        validateStatus: function (status: number) {
           console.log('Response status:', status);
           return status < 500; // Resolve only if the status code is less than 500
         }
-      });
+      };
+      
+      const response = await api.post('/upload', formData, uploadConfig);
       console.log('Upload successful:', response.data);
       console.log('=== UPLOAD END ===');
       return response.data;
@@ -186,6 +229,17 @@ export const apiService = {
       
       if (!error.response) {
         console.error('NO RESPONSE - Request never reached server');
+        
+        // For mobile devices, try a fallback approach
+        if (isMobile) {
+          console.log('Attempting fallback upload for mobile...');
+          try {
+            return await fallbackMobileUpload(formData);
+          } catch (fallbackError) {
+            console.error('Fallback upload also failed:', fallbackError);
+          }
+        }
+        
         throw new Error('Upload failed: Request could not reach server. Please check your internet connection.');
       }
       
