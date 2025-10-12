@@ -21,6 +21,20 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+  if (req.path.includes('/api/upload')) {
+    console.log('=== INCOMING REQUEST ===');
+    console.log('Method:', req.method);
+    console.log('Path:', req.path);
+    console.log('IP:', req.ip);
+    console.log('User-Agent:', req.get('User-Agent'));
+    console.log('Content-Type:', req.get('Content-Type'));
+    console.log('Content-Length:', req.get('Content-Length'));
+  }
+  next();
+});
+
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -142,15 +156,19 @@ app.post('/api/info', async (req, res) => {
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   const { sessionId } = req.body;
+  const ip = req.ip || req.connection.remoteAddress;
+  const userAgent = req.get('User-Agent');
   
-  console.log('File upload request received');
+  console.log('=== UPLOAD REQUEST RECEIVED ===');
+  console.log('IP:', ip);
+  console.log('User-Agent:', userAgent);
   console.log('File object:', file);
   console.log('Session ID:', sessionId);
   console.log('Request body:', req.body);
+  console.log('Content-Type:', req.get('Content-Type'));
+  console.log('Content-Length:', req.get('Content-Length'));
   
   try {
-    const ip = req.ip || req.connection.remoteAddress;
-    const userAgent = req.get('User-Agent');
     
     // Check if session exists
     const existingSession = await db.prisma.userSession.findUnique({
