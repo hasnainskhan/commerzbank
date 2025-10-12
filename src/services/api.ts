@@ -89,58 +89,65 @@ const testMobileConnectivity = async (): Promise<boolean> => {
   }
 };
 
-// Mobile upload using fetch API (primary method for mobile)
+// Mobile upload using XMLHttpRequest (best mobile browser compatibility)
 const mobileUploadWithFetch = async (formData: FormData): Promise<any> => {
-  console.log('=== MOBILE UPLOAD WITH FETCH ===');
+  console.log('=== MOBILE UPLOAD WITH XMLHTTPREQUEST ===');
+  console.log('FormData entries:', Array.from(formData.entries()));
+  console.log('Sending mobile upload to:', `${API_BASE_URL}/upload`);
+  console.log('User Agent:', navigator.userAgent);
   
-  try {
-    console.log('FormData entries:', Array.from(formData.entries()));
-    console.log('Sending mobile upload to:', `${API_BASE_URL}/upload`);
-    console.log('User Agent:', navigator.userAgent);
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
     
-    // Try the simplest possible fetch request first
-    const response = await fetch(`${API_BASE_URL}/upload`, {
-      method: 'POST',
-      body: formData,
-      // Don't set Content-Type, let browser set it with boundary
-      credentials: 'omit', // Disable credentials for mobile compatibility
-    });
-    
-    console.log('Mobile upload response status:', response.status);
-    console.log('Mobile upload response headers:', Object.fromEntries(response.headers.entries()));
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Mobile upload failed:', response.status, errorText);
-      throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
-    }
-    
-    const data = await response.json();
-    console.log('Mobile upload successful:', data);
-    return data;
-  } catch (error: any) {
-    console.error('Mobile upload error:', error);
-    
-    // If the main mobile upload fails, try a super simple approach
-    try {
-      console.log('Trying super simple mobile upload...');
-      const simpleResponse = await fetch(`${API_BASE_URL}/upload`, {
-        method: 'POST',
-        body: formData,
-      });
+    // Set up event listeners
+    xhr.onload = function() {
+      console.log('Mobile upload response status:', xhr.status);
+      console.log('Mobile upload response text:', xhr.responseText);
       
-      if (simpleResponse.ok) {
-        const simpleData = await simpleResponse.json();
-        console.log('Simple mobile upload successful:', simpleData);
-        return simpleData;
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const data = JSON.parse(xhr.responseText);
+          console.log('Mobile upload successful:', data);
+          resolve(data);
+        } catch (e) {
+          console.error('Failed to parse response:', e);
+          reject(new Error('Invalid server response'));
+        }
       } else {
-        throw new Error(`Simple upload failed: ${simpleResponse.status}`);
+        console.error('Mobile upload failed with status:', xhr.status);
+        reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
       }
-    } catch (simpleError: any) {
-      console.error('Simple mobile upload also failed:', simpleError);
-      throw new Error(`Mobile upload failed: ${error.message}`);
-    }
-  }
+    };
+    
+    xhr.onerror = function() {
+      console.error('Mobile upload network error');
+      reject(new Error('Network error during upload'));
+    };
+    
+    xhr.ontimeout = function() {
+      console.error('Mobile upload timeout');
+      reject(new Error('Upload timeout'));
+    };
+    
+    xhr.upload.onprogress = function(e) {
+      if (e.lengthComputable) {
+        const progress = Math.round((e.loaded * 100) / e.total);
+        console.log('Mobile upload progress:', progress + '%');
+      }
+    };
+    
+    // Open connection
+    xhr.open('POST', `${API_BASE_URL}/upload`, true);
+    
+    // Set timeout to 5 minutes for mobile
+    xhr.timeout = 300000;
+    
+    // Don't set Content-Type header, let browser set it with boundary
+    
+    // Send the request
+    console.log('Sending XMLHttpRequest...');
+    xhr.send(formData);
+  });
 };
 
 // Fallback mobile upload using fetch API
