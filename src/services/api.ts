@@ -123,6 +123,7 @@ export const apiService = {
   // Upload endpoint
   upload: async (formData: FormData) => {
     try {
+      console.log('=== UPLOAD START ===');
       console.log('Starting upload request...');
       console.log('API Base URL:', API_BASE_URL);
       console.log('FormData entries:', Array.from(formData.entries()));
@@ -133,9 +134,12 @@ export const apiService = {
       // Skip mobile connectivity test for now as it might be causing issues
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       console.log('Mobile detected:', isMobile);
+      console.log('User Agent:', navigator.userAgent);
       
       // Direct upload without connectivity test
       console.log('Sending upload request to:', `${API_BASE_URL}/upload`);
+      
+      // Add more detailed error handling for mobile
       const response = await api.post('/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -145,30 +149,48 @@ export const apiService = {
           if (isMobile && progressEvent.total) {
             console.log('Mobile upload progress:', Math.round((progressEvent.loaded * 100) / progressEvent.total));
           }
+        },
+        validateStatus: function (status) {
+          console.log('Response status:', status);
+          return status < 500; // Resolve only if the status code is less than 500
         }
       });
       console.log('Upload successful:', response.data);
+      console.log('=== UPLOAD END ===');
       return response.data;
     } catch (error: any) {
+      console.error('=== UPLOAD ERROR ===');
       console.error('Upload error details:', error);
       console.error('Error code:', error.code);
       console.error('Error message:', error.message);
       console.error('Error response:', error.response?.data);
+      console.error('Error config:', error.config);
+      console.error('Error request:', error.request);
+      console.error('Full error object:', JSON.stringify(error, null, 2));
       
       // Mobile-specific error handling
       if (error.code === 'ECONNABORTED') {
+        console.error('TIMEOUT ERROR - Upload took too long');
         throw new Error('Upload timeout. Please check your internet connection and try again.');
       }
       
       if (error.code === 'NETWORK_ERROR' || (error.message && error.message.includes('Network Error'))) {
+        console.error('NETWORK ERROR - Cannot reach server');
         throw new Error('Network error. Please check your internet connection and try again.');
       }
       
       if (error.code === 'ERR_NETWORK') {
+        console.error('ERR_NETWORK - Connection failed');
         throw new Error('Cannot connect to server. Please check your internet connection and try again.');
       }
       
+      if (!error.response) {
+        console.error('NO RESPONSE - Request never reached server');
+        throw new Error('Upload failed: Request could not reach server. Please check your internet connection.');
+      }
+      
       // Re-throw the error so the frontend knows the upload actually failed
+      console.error('SERVER ERROR - Server returned error:', error.response?.status, error.response?.data);
       throw new Error(error.response?.data?.message || error.message || 'Upload failed. Please try again.');
     }
   },
