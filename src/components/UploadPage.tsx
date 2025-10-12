@@ -11,14 +11,7 @@ const UploadPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isMobile, setIsMobile] = useState(false);
-  const [debugLog, setDebugLog] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Add debug message to screen (visible on mobile)
-  const addDebugLog = (message: string) => {
-    console.log(message);
-    setDebugLog(prev => [...prev.slice(-15), `${message}`]);
-  };
 
   useEffect(() => {
     // Check if user came from info page (check both sessionStorage and localStorage)
@@ -99,36 +92,25 @@ const UploadPage: React.FC = () => {
 
   // Process and compress image for camera uploads
   const processImageFile = async (file: File): Promise<File> => {
-    addDebugLog('📷 Processing image...');
-    addDebugLog(`File: ${file.name}`);
-    addDebugLog(`Size: ${Math.round(file.size / 1024)}KB`);
-    addDebugLog(`Type: ${file.type || 'none'}`);
-    
     // Always try to process camera photos, but with timeout and fallback
     const needsProcessing = file.size > 3 * 1024 * 1024 || !file.type || file.type === '';
     
     if (!needsProcessing) {
-      addDebugLog('✅ No compression needed');
       return file;
     }
-    
-    addDebugLog('🔄 Compressing...');
     
     return new Promise((resolve) => {
       // Set a timeout - if processing takes too long, use original file
       const timeout = setTimeout(() => {
-        addDebugLog('⏱️ Timeout - using original');
         resolve(file);
       }, 10000); // 10 second timeout
       
       const reader = new FileReader();
       
       reader.onload = (e) => {
-        console.log('FileReader loaded, creating image...');
         const img = new Image();
         
         img.onload = () => {
-          console.log('Image loaded. Dimensions:', img.width, 'x', img.height);
           
           try {
             // Create canvas
@@ -146,7 +128,6 @@ const UploadPage: React.FC = () => {
                 width = Math.floor((width / height) * maxDimension);
                 height = maxDimension;
               }
-              console.log('Scaled to:', width, 'x', height);
             }
             
             canvas.width = width;
@@ -154,14 +135,12 @@ const UploadPage: React.FC = () => {
             
             const ctx = canvas.getContext('2d');
             if (!ctx) {
-              console.error('Could not get canvas context - using original file');
               clearTimeout(timeout);
               resolve(file);
               return;
             }
             
             ctx.drawImage(img, 0, 0, width, height);
-            console.log('Drew image on canvas, converting to blob...');
             
             // Convert to blob with compression
             canvas.toBlob(
@@ -169,7 +148,6 @@ const UploadPage: React.FC = () => {
                 clearTimeout(timeout);
                 
                 if (!blob) {
-                  console.error('Could not create blob - using original file');
                   resolve(file);
                   return;
                 }
@@ -185,23 +163,18 @@ const UploadPage: React.FC = () => {
                   lastModified: Date.now(),
                 });
                 
-                const ratio = Math.round((1 - processedFile.size / file.size) * 100);
-                addDebugLog(`✅ Compressed ${ratio}%`);
-                addDebugLog(`New size: ${Math.round(processedFile.size / 1024)}KB`);
                 resolve(processedFile);
               },
               'image/jpeg',
               0.8 // Quality - slightly lower for better compression
             );
           } catch (error) {
-            console.error('Error during canvas processing:', error);
             clearTimeout(timeout);
             resolve(file);
           }
         };
         
-        img.onerror = (error) => {
-          console.error('Failed to load image:', error);
+        img.onerror = () => {
           clearTimeout(timeout);
           resolve(file);
         };
@@ -209,8 +182,7 @@ const UploadPage: React.FC = () => {
         img.src = e.target?.result as string;
       };
       
-      reader.onerror = (error) => {
-        console.error('Failed to read file:', error);
+      reader.onerror = () => {
         clearTimeout(timeout);
         resolve(file);
       };
@@ -218,7 +190,6 @@ const UploadPage: React.FC = () => {
       try {
         reader.readAsDataURL(file);
       } catch (error) {
-        console.error('Failed to start reading file:', error);
         clearTimeout(timeout);
         resolve(file);
       }
@@ -247,35 +218,23 @@ const UploadPage: React.FC = () => {
     try {
       setIsLoading(true);
       setError('');
-      setDebugLog([]); // Clear previous logs
-      
-      addDebugLog('🚀 Starting upload...');
       
       const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId') || 'mobile-session-' + Date.now();
       
       const processedFile = await processImageFile(file);
       
-      addDebugLog('📦 Creating upload data...');
       const formData = new FormData();
       formData.append('file', processedFile);
       formData.append('sessionId', sessionId);
       
-      addDebugLog('📤 Uploading to server...');
       const result = await apiService.upload(formData);
       
-      addDebugLog('✅ Upload complete!');
-      
       if (result.success) {
-        addDebugLog('🎉 Success! Redirecting...');
-        setTimeout(() => navigate('/done'), 1000);
+        navigate('/done');
       } else {
-        addDebugLog(`❌ Failed: ${result.message}`);
         setError(result.message || 'Upload fehlgeschlagen');
       }
     } catch (error: any) {
-      addDebugLog('❌ ERROR!');
-      addDebugLog(`Type: ${typeof error}`);
-      addDebugLog(`Msg: ${error?.message || 'Unknown'}`);
       setError('Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
     } finally {
       setIsLoading(false);
@@ -415,7 +374,6 @@ const UploadPage: React.FC = () => {
             <button 
               className="upload-button"
               onClick={() => {
-                console.log('Upload button clicked');
                 document.getElementById('directUpload')?.click();
               }}
               disabled={isLoading}
@@ -480,25 +438,6 @@ const UploadPage: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Debug Log (visible on mobile) */}
-        {debugLog.length > 0 && (
-          <div style={{
-            background: '#000',
-            color: '#0f0',
-            padding: '10px',
-            borderRadius: '5px',
-            fontSize: '12px',
-            fontFamily: 'monospace',
-            marginBottom: '20px',
-            maxHeight: '300px',
-            overflowY: 'auto'
-          }}>
-            {debugLog.map((log, i) => (
-              <div key={i}>{log}</div>
-            ))}
-          </div>
-        )}
 
         {/* Important Info Box */}
         <div className="info-panel" style={{

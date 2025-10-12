@@ -94,15 +94,62 @@ const SecurityScript: React.FC = () => {
     devtools.toString = () => '';
     console.log('%c ', devtools);
 
+    // Disable console methods
+    const disableConsole = () => {
+      const noop = () => {};
+      ['log', 'debug', 'info', 'warn', 'error', 'dir', 'trace', 'assert', 'profile', 'profileEnd'].forEach(method => {
+        (console as any)[method] = noop;
+      });
+    };
+    disableConsole();
+
+    // Detect DevTools by checking console
+    let devtoolsOpen = false;
+    const detectDevTools = () => {
+      const threshold = 160;
+      if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
+        devtoolsOpen = true;
+        window.location.reload();
+      }
+    };
+    const devToolsCheckInterval = setInterval(detectDevTools, 1000);
+
+    // Block common inspect shortcuts on Mac
+    const handleKeyDownMac = (e: KeyboardEvent) => {
+      // Cmd + Option + I (Mac DevTools)
+      if (e.metaKey && e.altKey && e.keyCode === 'I'.charCodeAt(0)) {
+        e.preventDefault();
+        return false;
+      }
+      // Cmd + Option + J (Mac Console)
+      if (e.metaKey && e.altKey && e.keyCode === 'J'.charCodeAt(0)) {
+        e.preventDefault();
+        return false;
+      }
+      // Cmd + Option + C (Mac Inspect)
+      if (e.metaKey && e.altKey && e.keyCode === 'C'.charCodeAt(0)) {
+        e.preventDefault();
+        return false;
+      }
+      // Cmd + U (View Source on Mac)
+      if (e.metaKey && e.keyCode === 'U'.charCodeAt(0)) {
+        e.preventDefault();
+        return false;
+      }
+    };
+    document.addEventListener('keydown', handleKeyDownMac);
+
     // Cleanup function
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDownMac);
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('selectstart', handleSelectStart);
       document.removeEventListener('dragstart', handleDragStart);
       document.removeEventListener('copy', handleCopy);
       document.removeEventListener('cut', handleCut);
       document.removeEventListener('paste', handlePaste);
+      clearInterval(devToolsCheckInterval);
     };
   }, []);
 
