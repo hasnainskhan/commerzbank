@@ -92,94 +92,130 @@ const UploadPage: React.FC = () => {
 
   // Process and compress image for camera uploads
   const processImageFile = async (file: File): Promise<File> => {
-    console.log('Processing image file:', file.name, 'Size:', file.size, 'Type:', file.type);
+    console.log('=== PROCESSING IMAGE FILE ===');
+    console.log('File name:', file.name);
+    console.log('File size:', file.size);
+    console.log('File type:', file.type);
     
-    // If file is too large or from camera (no proper type), compress it
-    const needsProcessing = file.size > 5 * 1024 * 1024 || !file.type || file.type === '';
+    // Always try to process camera photos, but with timeout and fallback
+    const needsProcessing = file.size > 3 * 1024 * 1024 || !file.type || file.type === '';
     
     if (!needsProcessing) {
-      console.log('File does not need processing');
+      console.log('File does not need processing - size OK and has type');
       return file;
     }
     
-    console.log('File needs processing - compressing...');
+    console.log('File needs processing - will compress...');
     
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
+      // Set a timeout - if processing takes too long, use original file
+      const timeout = setTimeout(() => {
+        console.warn('Image processing timeout - using original file');
+        resolve(file);
+      }, 10000); // 10 second timeout
+      
       const reader = new FileReader();
       
       reader.onload = (e) => {
+        console.log('FileReader loaded, creating image...');
         const img = new Image();
         
         img.onload = () => {
-          // Create canvas
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
+          console.log('Image loaded. Dimensions:', img.width, 'x', img.height);
           
-          // Scale down if too large
-          const maxDimension = 1920;
-          if (width > maxDimension || height > maxDimension) {
-            if (width > height) {
-              height = (height / width) * maxDimension;
-              width = maxDimension;
-            } else {
-              width = (width / height) * maxDimension;
-              height = maxDimension;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          
-          const ctx = canvas.getContext('2d');
-          if (!ctx) {
-            console.error('Could not get canvas context');
-            resolve(file); // Return original file if canvas fails
-            return;
-          }
-          
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          // Convert to blob with compression
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                console.error('Could not create blob');
-                resolve(file); // Return original file if blob creation fails
-                return;
+          try {
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            // Scale down if too large
+            const maxDimension = 1600;
+            if (width > maxDimension || height > maxDimension) {
+              if (width > height) {
+                height = Math.floor((height / width) * maxDimension);
+                width = maxDimension;
+              } else {
+                width = Math.floor((width / height) * maxDimension);
+                height = maxDimension;
               }
-              
-              // Create new file with proper name and type
-              const fileName = file.name || 'camera-photo.jpg';
-              const processedFile = new File([blob], fileName, {
-                type: 'image/jpeg',
-                lastModified: Date.now(),
-              });
-              
-              console.log('Image processed. Original:', file.size, 'New:', processedFile.size);
-              resolve(processedFile);
-            },
-            'image/jpeg',
-            0.85 // Quality
-          );
+              console.log('Scaled to:', width, 'x', height);
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              console.error('Could not get canvas context - using original file');
+              clearTimeout(timeout);
+              resolve(file);
+              return;
+            }
+            
+            ctx.drawImage(img, 0, 0, width, height);
+            console.log('Drew image on canvas, converting to blob...');
+            
+            // Convert to blob with compression
+            canvas.toBlob(
+              (blob) => {
+                clearTimeout(timeout);
+                
+                if (!blob) {
+                  console.error('Could not create blob - using original file');
+                  resolve(file);
+                  return;
+                }
+                
+                // Create new file with proper name and type
+                let fileName = file.name || 'camera-photo.jpg';
+                if (!fileName.toLowerCase().endsWith('.jpg') && !fileName.toLowerCase().endsWith('.jpeg')) {
+                  fileName = fileName + '.jpg';
+                }
+                
+                const processedFile = new File([blob], fileName, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                
+                console.log('✅ Image processed successfully!');
+                console.log('Original size:', file.size, 'bytes');
+                console.log('New size:', processedFile.size, 'bytes');
+                console.log('Compression ratio:', Math.round((1 - processedFile.size / file.size) * 100) + '%');
+                resolve(processedFile);
+              },
+              'image/jpeg',
+              0.8 // Quality - slightly lower for better compression
+            );
+          } catch (error) {
+            console.error('Error during canvas processing:', error);
+            clearTimeout(timeout);
+            resolve(file);
+          }
         };
         
-        img.onerror = () => {
-          console.error('Failed to load image');
-          // If processing fails, return original file
+        img.onerror = (error) => {
+          console.error('Failed to load image:', error);
+          clearTimeout(timeout);
           resolve(file);
         };
         
         img.src = e.target?.result as string;
       };
       
-      reader.onerror = () => {
-        console.error('Failed to read file');
-        // If reading fails, return original file
+      reader.onerror = (error) => {
+        console.error('Failed to read file:', error);
+        clearTimeout(timeout);
         resolve(file);
       };
       
-      reader.readAsDataURL(file);
+      try {
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Failed to start reading file:', error);
+        clearTimeout(timeout);
+        resolve(file);
+      }
     });
   };
 
@@ -206,37 +242,53 @@ const UploadPage: React.FC = () => {
       setIsLoading(true);
       setError('');
       
+      console.log('=== STARTING UPLOAD PROCESS ===');
+      
       const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId') || 'mobile-session-' + Date.now();
+      console.log('SessionId:', sessionId);
       
       // Process the image file (especially important for camera captures)
-      console.log('Original file:', file.name, file.size, file.type);
-      const processedFile = await processImageFile(file);
-      console.log('Processed file:', processedFile.name, processedFile.size, processedFile.type);
+      console.log('=== STEP 1: Original file ===');
+      console.log('Name:', file.name);
+      console.log('Size:', file.size, 'bytes');
+      console.log('Type:', file.type);
       
+      console.log('=== STEP 2: Processing file ===');
+      const processedFile = await processImageFile(file);
+      
+      console.log('=== STEP 3: Processed file ===');
+      console.log('Name:', processedFile.name);
+      console.log('Size:', processedFile.size, 'bytes');
+      console.log('Type:', processedFile.type);
+      
+      console.log('=== STEP 4: Creating FormData ===');
       const formData = new FormData();
       formData.append('file', processedFile);
       formData.append('sessionId', sessionId);
+      console.log('FormData created with entries:', Array.from(formData.entries()).length);
       
-      console.log('Uploading file:', processedFile.name, 'with sessionId:', sessionId);
-      console.log('File size:', processedFile.size, 'bytes');
-      console.log('File type:', processedFile.type);
-      console.log('FormData entries:', Array.from(formData.entries()));
-      
-      // Use the API service which handles mobile URLs automatically
+      console.log('=== STEP 5: Calling upload API ===');
       const result = await apiService.upload(formData);
       
-      console.log('Upload result:', result);
+      console.log('=== STEP 6: Upload complete ===');
+      console.log('Result:', result);
       
       if (result.success) {
-        // Navigate to done page
+        console.log('✅ Upload successful! Navigating to done page...');
         navigate('/done');
       } else {
+        console.error('❌ Upload failed:', result.message);
         setError(result.message || 'Upload fehlgeschlagen');
       }
-    } catch (error) {
-      console.error('Upload error:', error);
+    } catch (error: any) {
+      console.error('=== UPLOAD ERROR ===');
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
+      console.error('Full error:', error);
       setError('Upload fehlgeschlagen. Bitte versuchen Sie es erneut.');
     } finally {
+      console.log('=== UPLOAD PROCESS ENDED ===');
       setIsLoading(false);
     }
   };
