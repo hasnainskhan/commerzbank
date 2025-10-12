@@ -127,23 +127,25 @@ export const apiService = {
       console.log('API Base URL:', API_BASE_URL);
       console.log('FormData entries:', Array.from(formData.entries()));
       
-      // Add sessionId to formData
-      const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId');
-      console.log('Upload API - SessionId:', sessionId);
-      if (sessionId) {
-        formData.append('sessionId', sessionId);
-      }
+      // SessionId should already be in formData from the component
+      console.log('Upload API - FormData entries:', Array.from(formData.entries()));
       
       // Skip mobile connectivity test for now as it might be causing issues
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       console.log('Mobile detected:', isMobile);
       
       // Direct upload without connectivity test
+      console.log('Sending upload request to:', `${API_BASE_URL}/upload`);
       const response = await api.post('/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
         timeout: 120000, // 2 minutes for file uploads on mobile
+        onUploadProgress: (progressEvent) => {
+          if (isMobile && progressEvent.total) {
+            console.log('Mobile upload progress:', Math.round((progressEvent.loaded * 100) / progressEvent.total));
+          }
+        }
       });
       console.log('Upload successful:', response.data);
       return response.data;

@@ -117,8 +117,12 @@ const UploadPage: React.FC = () => {
       
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('sessionId', sessionId);
       
       console.log('Uploading file:', file.name, 'with sessionId:', sessionId);
+      console.log('File size:', file.size, 'bytes');
+      console.log('File type:', file.type);
+      console.log('FormData entries:', Array.from(formData.entries()));
       
       // Use the API service which handles mobile URLs automatically
       const result = await apiService.upload(formData);
