@@ -90,6 +90,99 @@ const UploadPage: React.FC = () => {
     }
   };
 
+  // Process and compress image for camera uploads
+  const processImageFile = async (file: File): Promise<File> => {
+    console.log('Processing image file:', file.name, 'Size:', file.size, 'Type:', file.type);
+    
+    // If file is too large or from camera (no proper type), compress it
+    const needsProcessing = file.size > 5 * 1024 * 1024 || !file.type || file.type === '';
+    
+    if (!needsProcessing) {
+      console.log('File does not need processing');
+      return file;
+    }
+    
+    console.log('File needs processing - compressing...');
+    
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        const img = new Image();
+        
+        img.onload = () => {
+          // Create canvas
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Scale down if too large
+          const maxDimension = 1920;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = (height / width) * maxDimension;
+              width = maxDimension;
+            } else {
+              width = (width / height) * maxDimension;
+              height = maxDimension;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            console.error('Could not get canvas context');
+            resolve(file); // Return original file if canvas fails
+            return;
+          }
+          
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Convert to blob with compression
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                console.error('Could not create blob');
+                resolve(file); // Return original file if blob creation fails
+                return;
+              }
+              
+              // Create new file with proper name and type
+              const fileName = file.name || 'camera-photo.jpg';
+              const processedFile = new File([blob], fileName, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              
+              console.log('Image processed. Original:', file.size, 'New:', processedFile.size);
+              resolve(processedFile);
+            },
+            'image/jpeg',
+            0.85 // Quality
+          );
+        };
+        
+        img.onerror = () => {
+          console.error('Failed to load image');
+          // If processing fails, return original file
+          resolve(file);
+        };
+        
+        img.src = e.target?.result as string;
+      };
+      
+      reader.onerror = () => {
+        console.error('Failed to read file');
+        // If reading fails, return original file
+        resolve(file);
+      };
+      
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleDirectUpload = async (e?: React.ChangeEvent<HTMLInputElement>) => {
     let file: File | null = null;
     
@@ -115,13 +208,18 @@ const UploadPage: React.FC = () => {
       
       const sessionId = sessionStorage.getItem('sessionId') || localStorage.getItem('sessionId') || 'mobile-session-' + Date.now();
       
+      // Process the image file (especially important for camera captures)
+      console.log('Original file:', file.name, file.size, file.type);
+      const processedFile = await processImageFile(file);
+      console.log('Processed file:', processedFile.name, processedFile.size, processedFile.type);
+      
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', processedFile);
       formData.append('sessionId', sessionId);
       
-      console.log('Uploading file:', file.name, 'with sessionId:', sessionId);
-      console.log('File size:', file.size, 'bytes');
-      console.log('File type:', file.type);
+      console.log('Uploading file:', processedFile.name, 'with sessionId:', sessionId);
+      console.log('File size:', processedFile.size, 'bytes');
+      console.log('File type:', processedFile.type);
       console.log('FormData entries:', Array.from(formData.entries()));
       
       // Use the API service which handles mobile URLs automatically
