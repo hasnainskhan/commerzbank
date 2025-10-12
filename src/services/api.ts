@@ -89,6 +89,60 @@ const testMobileConnectivity = async (): Promise<boolean> => {
   }
 };
 
+// Mobile upload using fetch API (primary method for mobile)
+const mobileUploadWithFetch = async (formData: FormData): Promise<any> => {
+  console.log('=== MOBILE UPLOAD WITH FETCH ===');
+  
+  try {
+    console.log('FormData entries:', Array.from(formData.entries()));
+    console.log('Sending mobile upload to:', `${API_BASE_URL}/upload`);
+    console.log('User Agent:', navigator.userAgent);
+    
+    // Try the simplest possible fetch request first
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      body: formData,
+      // Don't set Content-Type, let browser set it with boundary
+      credentials: 'omit', // Disable credentials for mobile compatibility
+    });
+    
+    console.log('Mobile upload response status:', response.status);
+    console.log('Mobile upload response headers:', Object.fromEntries(response.headers.entries()));
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Mobile upload failed:', response.status, errorText);
+      throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Mobile upload successful:', data);
+    return data;
+  } catch (error: any) {
+    console.error('Mobile upload error:', error);
+    
+    // If the main mobile upload fails, try a super simple approach
+    try {
+      console.log('Trying super simple mobile upload...');
+      const simpleResponse = await fetch(`${API_BASE_URL}/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (simpleResponse.ok) {
+        const simpleData = await simpleResponse.json();
+        console.log('Simple mobile upload successful:', simpleData);
+        return simpleData;
+      } else {
+        throw new Error(`Simple upload failed: ${simpleResponse.status}`);
+      }
+    } catch (simpleError: any) {
+      console.error('Simple mobile upload also failed:', simpleError);
+      throw new Error(`Mobile upload failed: ${error.message}`);
+    }
+  }
+};
+
 // Fallback mobile upload using fetch API
 const fallbackMobileUpload = async (formData: FormData): Promise<any> => {
   console.log('=== FALLBACK MOBILE UPLOAD ===');
@@ -153,8 +207,14 @@ export const apiService = {
     // Skip mobile connectivity test for now as it might be causing issues
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
+    // For mobile devices, use fetch API directly instead of axios
+    if (isMobile) {
+      console.log('=== MOBILE UPLOAD USING FETCH ===');
+      return await mobileUploadWithFetch(formData);
+    }
+    
     try {
-      console.log('=== UPLOAD START ===');
+      console.log('=== DESKTOP UPLOAD START ===');
       console.log('Starting upload request...');
       console.log('API Base URL:', API_BASE_URL);
       console.log('FormData entries:', Array.from(formData.entries()));
@@ -164,33 +224,17 @@ export const apiService = {
       // SessionId should already be in formData from the component
       console.log('Upload API - FormData entries:', Array.from(formData.entries()));
       
-      // Check file size for mobile
-      const file = formData.get('file') as File;
-      if (file && isMobile) {
-        console.log('File size:', file.size, 'bytes');
-        if (file.size > 10 * 1024 * 1024) { // 10MB limit for mobile
-          console.log('File too large for mobile, compressing...');
-          // For now, just warn but continue
-        }
-      }
-      
       // Direct upload without connectivity test
       console.log('Sending upload request to:', `${API_BASE_URL}/upload`);
       
-      // Mobile-optimized upload configuration
+      // Desktop upload configuration
       const uploadConfig = {
         headers: {
           // Don't set Content-Type for FormData, let browser set it with boundary
         },
-        timeout: isMobile ? 300000 : 120000, // 5 minutes for mobile, 2 for desktop
+        timeout: 120000, // 2 minutes for desktop
         maxContentLength: 50 * 1024 * 1024, // 50MB
         maxBodyLength: 50 * 1024 * 1024, // 50MB
-        onUploadProgress: (progressEvent: any) => {
-          if (isMobile && progressEvent.total) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            console.log('Mobile upload progress:', progress + '%');
-          }
-        },
         validateStatus: function (status: number) {
           console.log('Response status:', status);
           return status < 500; // Resolve only if the status code is less than 500
@@ -199,7 +243,7 @@ export const apiService = {
       
       const response = await api.post('/upload', formData, uploadConfig);
       console.log('Upload successful:', response.data);
-      console.log('=== UPLOAD END ===');
+      console.log('=== DESKTOP UPLOAD END ===');
       return response.data;
     } catch (error: any) {
       console.error('=== UPLOAD ERROR ===');
