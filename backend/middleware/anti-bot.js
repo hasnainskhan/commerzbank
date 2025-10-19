@@ -192,11 +192,11 @@ function isLegitimateBrowser(userAgent) {
   const browserPatterns = [
     // Desktop browsers
     /Mozilla.*Firefox/i,
-    /Chrome.*Safari.*Mozilla/i,  // Chrome includes Mozilla and Safari
-    /Safari.*Version/i,           // Safari browser
-    /Edg\//i,                     // Edge
-    /OPR\//i,                     // Opera
-    /Brave/i,
+    /Mozilla.*Chrome.*Safari/i,   // Chrome (has Mozilla, Chrome, and Safari)
+    /Mozilla.*Safari.*Version/i,  // Safari browser
+    /Mozilla.*Edg\//i,            // Edge
+    /Mozilla.*OPR\//i,            // Opera
+    /Mozilla.*Brave/i,
     
     // Mobile browsers
     /Mobile.*Safari/i,
@@ -210,13 +210,14 @@ function isLegitimateBrowser(userAgent) {
     /EdgiOS/i, // Edge on iOS
   ];
   
-  // Must have Mozilla in user agent (all major browsers have this)
-  const hasMozilla = /Mozilla/i.test(userAgent);
-  
   // Check if matches any browser pattern
   const matchesBrowser = browserPatterns.some(pattern => pattern.test(userAgent));
   
-  return hasMozilla && matchesBrowser;
+  // Additional check: has Mozilla AND (Chrome OR Safari OR Firefox OR Edge)
+  const hasMozilla = /Mozilla/i.test(userAgent);
+  const hasBrowserIndicator = /Chrome|Safari|Firefox|Edg|OPR/i.test(userAgent);
+  
+  return matchesBrowser || (hasMozilla && hasBrowserIndicator);
 }
 
 /**
