@@ -92,7 +92,7 @@ const AdminPanel: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [language, setLanguage] = useState<'de' | 'en'>('de');
 
-  const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
+  const API_BASE_URL = `${window.location.origin}/api`;
 
   // Language texts
   const texts = {
