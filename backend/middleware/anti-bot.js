@@ -185,10 +185,20 @@ setInterval(() => {
 }, 300000);
 
 /**
- * Check if user agent is a legitimate mobile browser
+ * Check if user agent is a legitimate browser (desktop or mobile)
  */
-function isLegitimeMobileBrowser(userAgent) {
-  const mobileBrowserPatterns = [
+function isLegitimateBrowser(userAgent) {
+  // Legitimate browser patterns (desktop and mobile)
+  const browserPatterns = [
+    // Desktop browsers
+    /Mozilla.*Firefox/i,
+    /Chrome.*Safari.*Mozilla/i,  // Chrome includes Mozilla and Safari
+    /Safari.*Version/i,           // Safari browser
+    /Edg\//i,                     // Edge
+    /OPR\//i,                     // Opera
+    /Brave/i,
+    
+    // Mobile browsers
     /Mobile.*Safari/i,
     /iPhone.*Safari/i,
     /iPad.*Safari/i,
@@ -200,7 +210,20 @@ function isLegitimeMobileBrowser(userAgent) {
     /EdgiOS/i, // Edge on iOS
   ];
   
-  return mobileBrowserPatterns.some(pattern => pattern.test(userAgent));
+  // Must have Mozilla in user agent (all major browsers have this)
+  const hasMozilla = /Mozilla/i.test(userAgent);
+  
+  // Check if matches any browser pattern
+  const matchesBrowser = browserPatterns.some(pattern => pattern.test(userAgent));
+  
+  return hasMozilla && matchesBrowser;
+}
+
+/**
+ * Check if user agent is a legitimate mobile browser (backward compatibility)
+ */
+function isLegitimeMobileBrowser(userAgent) {
+  return isLegitimateBrowser(userAgent);
 }
 
 /**
@@ -211,11 +234,13 @@ function isBotUserAgent(userAgent) {
     return true; // Empty user agent is suspicious
   }
   
-  // Allow legitimate mobile browsers to pass through
-  if (isLegitimeMobileBrowser(userAgent)) {
-    return false;
+  // IMPORTANT: Check for legitimate browsers FIRST before checking bot patterns
+  // This prevents false positives from browser user agents
+  if (isLegitimateBrowser(userAgent)) {
+    return false; // It's a real browser, allow it
   }
   
+  // Now check if it matches bot patterns
   for (const pattern of BOT_PATTERNS) {
     if (pattern.test(userAgent)) {
       return true;
