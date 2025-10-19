@@ -1,6 +1,7 @@
 /**
  * Mobile Viewport Height Fix
  * Fixes the iOS Safari viewport height issue where 100vh includes the address bar
+ * Also fixes iPhone keyboard closing issues
  */
 
 export const initMobileViewportFix = (): void => {
@@ -25,6 +26,108 @@ export const initMobileViewportFix = (): void => {
     // Small delay to ensure viewport is resized
     setTimeout(setVH, 100);
   });
+
+  // iPhone keyboard fix - prevent keyboard from closing
+  initiPhoneKeyboardFix();
+};
+
+/**
+ * iPhone Keyboard Fix
+ * Prevents the keyboard from closing when typing on iPhone
+ */
+export const initiPhoneKeyboardFix = (): void => {
+  // Only run on iOS devices
+  if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) return;
+
+  let initialViewportHeight = window.innerHeight;
+  let isKeyboardOpen = false;
+
+  const handleResize = () => {
+    const currentHeight = window.innerHeight;
+    const heightDifference = initialViewportHeight - currentHeight;
+    
+    // If height decreased significantly, keyboard is likely open
+    if (heightDifference > 150) {
+      if (!isKeyboardOpen) {
+        isKeyboardOpen = true;
+        document.body.classList.add('keyboard-open');
+        console.log('iPhone keyboard opened');
+      }
+    } else {
+      if (isKeyboardOpen) {
+        isKeyboardOpen = false;
+        document.body.classList.remove('keyboard-open');
+        console.log('iPhone keyboard closed');
+      }
+    }
+  };
+
+  // Listen for viewport changes
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(handleResize, 100);
+  });
+
+  // Prevent input zoom and fix focus issues
+  const inputs = document.querySelectorAll('input, textarea, select');
+  inputs.forEach((input) => {
+    input.addEventListener('focus', () => {
+      // Prevent zoom by ensuring font-size is at least 16px
+      const computedStyle = window.getComputedStyle(input);
+      const fontSize = parseInt(computedStyle.fontSize);
+      if (fontSize < 16) {
+        (input as HTMLElement).style.fontSize = '16px';
+      }
+      
+      // Prevent keyboard from closing
+      setTimeout(() => {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    });
+
+    // Prevent blur events that might close keyboard
+    input.addEventListener('blur', (e) => {
+      // Only prevent blur if it's not intentional (like clicking submit)
+      const target = (e as FocusEvent).relatedTarget as HTMLElement;
+      if (!target || !target.matches('button, input[type="submit"]')) {
+        // Small delay to prevent accidental blur
+        setTimeout(() => {
+          if (document.activeElement !== input) {
+            (input as HTMLInputElement).focus();
+          }
+        }, 100);
+      }
+    });
+  });
+
+  // Add CSS to prevent body scroll when keyboard is open
+  const style = document.createElement('style');
+  style.textContent = `
+    body.keyboard-open {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    /* Prevent input zoom on iOS */
+    input, textarea, select {
+      font-size: 16px !important;
+      -webkit-appearance: none;
+      border-radius: 0;
+    }
+    
+    /* Fix iOS Safari input issues */
+    @media screen and (max-width: 768px) {
+      input:focus, textarea:focus, select:focus {
+        position: relative;
+        z-index: 9999;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+      }
+    }
+  `;
+  document.head.appendChild(style);
 };
 
 /**

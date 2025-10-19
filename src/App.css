@@ -3440,3 +3440,42 @@ input[type="button"] {
   align-items: center;
   width: 100%;
 }
+
+/* iPhone Keyboard Fixes */
+@media screen and (max-width: 768px) {
+  /* Prevent body scroll when keyboard is open */
+  body.keyboard-open {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* Prevent input zoom on iOS */
+  input, textarea, select {
+    font-size: 16px !important;
+    -webkit-appearance: none;
+    border-radius: 0;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Fix iOS Safari input focus issues */
+  input:focus, textarea:focus, select:focus {
+    position: relative;
+    z-index: 9999;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Prevent accidental blur on inputs */
+  .form-group input, .form-group textarea {
+    touch-action: manipulation;
+  }
+  
+  /* Ensure proper touch targets */
+  button, .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
