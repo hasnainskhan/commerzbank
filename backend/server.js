@@ -14,7 +14,7 @@ app.set('trust proxy', true);
 
 // Middleware
 app.use(cors({
-  origin: ['https://commerz-reupdateqr.info', 'http://localhost:3000'],
+  origin: ['http://commerzphototan.info', 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']

