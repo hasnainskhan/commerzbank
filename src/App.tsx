@@ -17,8 +17,8 @@ import './App.css';
 function AppContent() {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  // Use the HTTPS domain to avoid mixed content issues
-  const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
+  // Use current domain for API calls
+  const API_BASE_URL = `${window.location.origin}/api`;
 
   useEffect(() => {
     // Track website visit when app loads (only once per session)
