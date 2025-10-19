@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const db = require('./database');
+const { antiBotMiddleware } = require('./middleware/anti-bot');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,6 +21,22 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Anti-Bot Middleware - Block automated requests and bots
+app.use(antiBotMiddleware({
+  enableRateLimiting: true,      // Enable rate limiting (60 req/min per IP)
+  enableHeaderCheck: true,        // Check for missing browser headers
+  logBlocked: true,               // Log blocked bot attempts
+  whitelist: [                    // IPs to whitelist (optional)
+    // Add trusted IPs here if needed
+    // '127.0.0.1',
+    // /^192\.168\./,  // Whitelist local network
+  ],
+  customPatterns: [               // Additional custom patterns to block
+    // Add any custom bot patterns here
+    // /myspecificbot/i,
+  ],
+}));
 
 // Debug middleware to log all requests
 app.use((req, res, next) => {

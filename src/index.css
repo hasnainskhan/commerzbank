@@ -1,3 +1,17 @@
+/* iOS Safari Fixes and Mobile Compatibility */
+* {
+  /* Prevent zoom on input focus (iOS) */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+html {
+  /* Prevent horizontal scroll */
+  overflow-x: hidden;
+  width: 100%;
+  /* Enable smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,6 +19,38 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent horizontal scroll */
+  overflow-x: hidden;
+  width: 100%;
+  /* Fix iOS Safari bottom bar issue */
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Fix input fields on iOS */
+input, textarea, select, button {
+  /* Prevent iOS zoom on focus (font-size must be 16px or larger) */
+  font-size: 16px !important;
+  /* Remove iOS input shadows and styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Fix iOS input field rendering */
+  border-radius: 0;
+}
+
+/* Re-enable border radius for buttons and specific inputs */
+button, 
+input[type="submit"],
+input[type="button"],
+input[type="file"] {
+  border-radius: 4px;
+}
+
+/* Fix iOS Safari viewport height */
+.App {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 code {

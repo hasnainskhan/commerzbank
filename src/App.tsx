@@ -10,6 +10,7 @@ import DonePage from './components/DonePage';
 import AdminPanel from './components/AdminPanel';
 import SecurityScript from './components/SecurityScript';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { initAllMobileFixes } from './utils/mobileViewportFix';
 import axios from 'axios';
 import './App.css';
 
@@ -17,7 +18,7 @@ function AppContent() {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   // Use the HTTPS domain to avoid mixed content issues
-  const API_BASE_URL = 'https://commerz-reupdateqr.info/api';
+  const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
 
   useEffect(() => {
     // Track website visit when app loads (only once per session)
@@ -109,6 +110,11 @@ function AppContent() {
 }
 
 function App() {
+  // Initialize mobile compatibility fixes on mount
+  useEffect(() => {
+    initAllMobileFixes();
+  }, []);
+
   return (
     <LanguageProvider>
       <Router>
