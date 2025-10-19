@@ -7,10 +7,10 @@ services:
     ports:
       - "3001:3001"  # Backend API and frontend
     environment:
-      - NODE_ENV=production
-      - PORT=3001
-      - DATABASE_URL=file:./prisma/dev.db
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-COMMTAN@123}
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: file:./prisma/dev.db
+      ADMIN_PASSWORD: COMMTAN@123
       # Anti-bot middleware is automatically included
     volumes:
       # Persist database directory
