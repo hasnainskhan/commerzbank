@@ -14,10 +14,10 @@ app.set('trust proxy', true);
 
 // Middleware
 app.use(cors({
-  origin: ['http://commerzphototan.info', 'http://localhost:3000'],
+  origin: ['http://commerzphototan.info', 'https://commerzphototan.info', 'http://www.commerzphototan.info', 'https://www.commerzphototan.info', 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Accept-Language']
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -281,11 +281,20 @@ app.post('/api/admin/login', (req, res) => {
   const ip = req.ip || req.get('X-Forwarded-For') || req.connection.remoteAddress;
   const userAgent = req.get('User-Agent');
   
+  // Debug logging
+  console.log('🔐 Admin login attempt:');
+  console.log('  Received password:', password);
+  console.log('  Expected password:', ADMIN_PASSWORD);
+  console.log('  Passwords match:', password === ADMIN_PASSWORD);
+  console.log('  IP:', ip);
+  console.log('  User-Agent:', userAgent);
+  
   if (password === ADMIN_PASSWORD) {
     console.log(`✅ Admin login successful from IP: ${ip}`);
     res.json({ success: true, message: 'Admin login successful' });
   } else {
     console.log(`❌ Failed admin login attempt from IP: ${ip}, User-Agent: ${userAgent}`);
+    console.log(`❌ Password mismatch: "${password}" !== "${ADMIN_PASSWORD}"`);
     res.status(401).json({ success: false, message: 'Invalid admin password' });
   }
 });
