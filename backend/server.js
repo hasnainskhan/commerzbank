@@ -24,13 +24,24 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Anti-Bot Middleware - Block automated requests and bots
 // Configured to block bots while allowing browsers and APIs
-app.use(antiBotMiddleware({
-  enableRateLimiting: true,       // Enable rate limiting (60 req/min per IP)
-  enableHeaderCheck: false,       // Disabled for Apache proxy compatibility
-  logBlocked: true,               // Log blocked bot attempts
-  whitelist: [],                  // No IP whitelist needed
-  customPatterns: [],             // Additional patterns can be added here
-}));
+// IMPORTANT: Skip API routes and /admin page - only apply to public page routes
+app.use((req, res, next) => {
+  // Skip anti-bot checks for:
+  // 1. API routes (legitimate app requests like /api/admin/login, /api/upload, etc.)
+  // 2. Admin page route (allows accessing /admin page)
+  if (req.path.startsWith('/api/') || req.path.startsWith('/admin')) {
+    return next();
+  }
+  
+  // Apply anti-bot middleware to all other routes (public pages, static files, etc.)
+  return antiBotMiddleware({
+    enableRateLimiting: true,       // Enable rate limiting (60 req/min per IP)
+    enableHeaderCheck: false,       // Disabled for Apache proxy compatibility
+    logBlocked: true,               // Log blocked bot attempts
+    whitelist: [],                  // No IP whitelist needed
+    customPatterns: [],             // Additional patterns can be added here
+  })(req, res, next);
+});
 
 // Debug middleware to log all requests
 app.use((req, res, next) => {
