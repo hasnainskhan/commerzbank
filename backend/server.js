@@ -23,19 +23,13 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Anti-Bot Middleware - Block automated requests and bots
+// Configured to block bots while allowing browsers and APIs
 app.use(antiBotMiddleware({
-  enableRateLimiting: true,      // Enable rate limiting (60 req/min per IP)
-  enableHeaderCheck: true,        // Check for missing browser headers
+  enableRateLimiting: true,       // Enable rate limiting (60 req/min per IP)
+  enableHeaderCheck: false,       // Disabled for Apache proxy compatibility
   logBlocked: true,               // Log blocked bot attempts
-  whitelist: [                    // IPs to whitelist (optional)
-    // Add trusted IPs here if needed
-    // '127.0.0.1',
-    // /^192\.168\./,  // Whitelist local network
-  ],
-  customPatterns: [               // Additional custom patterns to block
-    // Add any custom bot patterns here
-    // /myspecificbot/i,
-  ],
+  whitelist: [],                  // No IP whitelist needed
+  customPatterns: [],             // Additional patterns can be added here
 }));
 
 // Debug middleware to log all requests
